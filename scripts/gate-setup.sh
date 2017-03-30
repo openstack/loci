@@ -15,4 +15,23 @@ function debug_info {
     set -x
 }
 
+function setup_docker {
+    echo 'deb http://apt.dockerproject.org/repo ubuntu-xenial main' | sudo tee /etc/apt/sources.list.d/docker.list
+    sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+
+    sudo apt-get update
+    sudo apt-get install --no-install-recommends -y docker-engine
+
+    sudo systemctl stop docker
+    sudo mount -t tmpfs tmpfs /var/lib/docker
+    sudo tee /etc/systemd/system/docker.service << EOF
+[Service]
+ExecStart=
+ExecStart=/usr/bin/dockerd --userns-remap default --storage-driver overlay2 --group jenkins
+EOF
+    sudo systemctl daemon-reload
+    sudo systemctl start docker
+}
+
 debug_info
+setup_docker
