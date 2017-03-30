@@ -34,7 +34,10 @@ export -f $(compgen -A function)
 prep_log_dir
 
 echo "Building images"
+# NOTE(SamYaple): The $1 gets interpreted as an unbound variable incorrectly
+set +u
 find . -type f -name Dockerfile -printf '%h\0' | xargs -0 -P10 -n1 bash -c 'builder $1' _
+set -u
 
 if [[ -f /tmp/loci_logs/build_error ]]; then
     echo "Building images failure; Dumping failed logs to stdout"
