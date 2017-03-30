@@ -12,8 +12,8 @@ Currently we build images for the following OpenStack projects:
   * [Neutron](https://github.com/openstack/loci-neutron)
   * [Nova](https://github.com/openstack/loci-nova)
 
-Images are built in the Docker Hub automatically on each commit to LOCI as on
-every commit to the backing service. Using Keystone as an example, if
+Images are built in the Docker Hub automatically on each commit to LOCI and
+also on every commit to the service itself. Using Keystone as an example, if
 openstack/keystone or openstack/loci-keystone merges a commit then a new image
 is built to provide a continuously updated set of images based on a number of
 distributions. Additionally, individual repos may be used to build images for
