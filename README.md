@@ -2,6 +2,15 @@
 
 OpenStack LOCI is a project designed to quickly build Lightweight OCI compatible images of OpenStack services.
 
+Currently we build images for the following OpenStack projects:
+
+  * [Cinder](https://github.com/openstack/loci-cinder)
+  * [Glance](https://github.com/openstack/loci-glance)
+  * [Heat](https://github.com/openstack/loci-heat)
+  * [Keystone](https://github.com/openstack/loci-keystone)
+  * [Neutron](https://github.com/openstack/loci-neutron)
+  * [Nova](https://github.com/openstack/loci-nova)
+
 Images are built in the Docker Hub automatically on each commit to LOCI as on every commit to the backing service. Using Keystone as an example, if openstack/keystone or openstack/loci-keystone merges a commit then a new image is built to provide a continuously updated set of images based on a number of distributions. Additionally, individual repos may be used to build images for development purposes or as part of a CI/CD workflow.
 
 The instructions below can be used for any OpenStack service currently targeted by LOCI. For simplicity, we will continue to use Keystone as an example.
