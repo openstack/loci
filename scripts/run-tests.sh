@@ -20,6 +20,64 @@ function dump_error_logs {
     exit 1
 }
 
+function generate_override {
+    set -eux
+
+    local distro=$1
+    source /etc/nodepool/provider
+
+    NODEPOOL_MIRROR_HOST=${NODEPOOL_MIRROR_HOST:-mirror.${NODEPOOL_REGION,,}.$NODEPOOL_CLOUD.openstack.org}
+
+    CURDIR=$(pwd)
+    cd $(mktemp -d)
+    case $distro in
+    ubuntu)
+        mkdir -p etc/apt
+        echo 'APT::Get::AllowUnauthenticated "true";' > etc/apt/apt.conf
+        cat << EOF > etc/apt/sources.list
+deb http://${NODEPOOL_MIRROR_HOST}/ubuntu xenial main restricted universe
+deb http://${NODEPOOL_MIRROR_HOST}/ubuntu xenial-updates main restricted universe
+deb http://${NODEPOOL_MIRROR_HOST}/ubuntu xenial-security main restricted universe
+EOF
+    ;;
+    debian)
+        mkdir -p etc/apt
+        echo 'APT::Get::AllowUnauthenticated "true";' >> etc/apt/apt.conf
+        cat << EOF > etc/apt/sources.list
+deb http://${NODEPOOL_MIRROR_HOST}/debian jessie main
+deb http://${NODEPOOL_MIRROR_HOST}/debian jessie-updates main
+deb http://${NODEPOOL_MIRROR_HOST}/debian jessie-security main
+deb http://${NODEPOOL_MIRROR_HOST}/debian jessie-backports main
+EOF
+    ;;
+    centos)
+        mkdir -p etc/yum.repos.d
+        cat << EOF > etc/yum.repos.d/CentOS-Base.repo
+[base]
+name=CentOS-\$releasever - Base
+baseurl=http://${NODEPOOL_MIRROR_HOST}/centos/\$releasever/os/\$basearch/
+gpgcheck=0
+
+[updates]
+name=CentOS-\$releasever - Updates
+baseurl=http://${NODEPOOL_MIRROR_HOST}/centos/\$releasever/updates/\$basearch/
+gpgcheck=0
+
+[extras]
+name=CentOS-\$releasever - Extras
+baseurl=http://${NODEPOOL_MIRROR_HOST}/centos/\$releasever/extras/\$basearch/
+gpgcheck=0
+EOF
+    ;;
+    *)
+    echo "Unknown distro: ${distro}"
+    exit 1
+    ;;
+    esac
+
+    tar cfz ${CURDIR}/override.tar.gz .
+}
+
 function builder {
     set -eux
 
@@ -27,7 +85,9 @@ function builder {
     cd ${directory}
     local distro=${PWD##*/}
     local log=${LOGS_DIR}/builds/${distro}.log
-    docker build --no-cache . 2>&1 > ${log} || echo ${log} >> ${LOGS_DIR}/build_error
+
+    $(generate_override $distro)
+    docker build --no-cache --build-arg OVERRIDE=override.tar.gz . 2>&1 > ${log} || echo ${log} >> ${LOGS_DIR}/build_error
 }
 
 # NOTE(SamYaple): We must export the functions for use with subshells (xargs)
