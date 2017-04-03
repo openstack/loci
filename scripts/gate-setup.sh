@@ -45,13 +45,7 @@ function setup_logs {
     mkdir logs
 }
 
-# TODO(SamYaple): Should this be done in infra?
-function clone_project {
-    /usr/zuul-env/bin/zuul-cloner --cache-dir /opt/git git://git.openstack.org $ZUUL_PROJECT
-}
-
 setup_logs
 debug_info | tee logs/gate_info.log
 setup_swap
 setup_docker
-clone_project
