@@ -1,10 +1,8 @@
 #!/bin/bash -ex
 
-git clone ${GIT_REPO} /tmp/${PROJECT}
-if [[ -n "$GIT_REF" ]]; then
-    git --git-dir /tmp/${PROJECT}/.git fetch ${GIT_REF_REPO} ${GIT_REF}
-    git --git-dir /tmp/${PROJECT}/.git checkout FETCH_HEAD
-fi
+git init /tmp/${PROJECT}
+git --git-dir /tmp/${PROJECT}/.git fetch --depth 1 ${GIT_REPO} ${GIT_REF:-master}
+git --work-tree /tmp/${PROJECT} --git-dir /tmp/${PROJECT}/.git checkout FETCH_HEAD
 
 curl -sSL https://bootstrap.pypa.io/get-pip.py -o get-pip.py
 python get-pip.py
