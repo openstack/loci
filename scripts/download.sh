@@ -1,9 +1,5 @@
 #!/bin/bash -ex
 
-DOCKER_REPO=$1
-DOCKER_TAG=$2
-WHEELS=$3
-
 if [[ "${DOCKER_TAG}" == "latest" ]] || [[ "${DOCKER_TAG}" == "ubuntu" ]]; then
     apt-get install -y --no-install-recommends python git
 elif [[ "${DOCKER_TAG}" == "centos" ]]; then

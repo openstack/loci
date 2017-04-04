@@ -1,10 +1,5 @@
 #!/bin/bash -ex
 
-PROJECT=$1
-GIT_REPO=$2
-GIT_REF_REPO=$3
-GIT_REF=$4
-
 git clone ${GIT_REPO} /tmp/${PROJECT}
 if [[ -n "$GIT_REF" ]]; then
     git --git-dir /tmp/${PROJECT}/.git fetch ${GIT_REF_REPO} ${GIT_REF}
