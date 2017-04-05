@@ -92,12 +92,11 @@ function builder {
     local distro=${PWD##*/}
     local log=${LOGS_DIR}/builds/${distro}.log
 
+    local build_args="--build-arg OVERRIDE=override.tar.gz"
+    build_args+=" --build-arg PROJECT_REPO=http://172.17.0.1/openstack/${ZUUL_PROJECT#*-}"
+    build_args+=" --build-arg SCRIPTS_REPO=http://172.17.0.1/openstack/loci"
     $(generate_override $distro)
-    BUILDARGS="--build-arg OVERRIDE=override.tar.gz"
-    if [[ $ZUUL_CHANGES == *"openstack/loci:"* ]]; then
-        BUILDARGS+=" --build-arg SCRIPTS_REPO=${ZUUL_URL}/openstack/loci --build-arg SCRIPTS_REF=${ZUUL_REF}"
-    fi
-    docker build --no-cache ${BUILDARGS} . 2>&1 > ${log} || echo ${log} >> ${LOGS_DIR}/build_error
+    docker build --no-cache ${build_args} . 2>&1 > ${log} || echo ${log} >> ${LOGS_DIR}/build_error
 }
 
 # NOTE(SamYaple): We must export the functions for use with subshells (xargs)

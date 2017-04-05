@@ -1,7 +1,7 @@
 #!/bin/bash -ex
 
 git init /tmp/${PROJECT}
-git --git-dir /tmp/${PROJECT}/.git fetch --depth 1 ${PROJECT_REPO} ${PROJECT_REF}
+git --git-dir /tmp/${PROJECT}/.git fetch ${PROJECT_REPO} ${PROJECT_REF}
 git --work-tree /tmp/${PROJECT} --git-dir /tmp/${PROJECT}/.git checkout FETCH_HEAD
 
 curl -sSL https://bootstrap.pypa.io/get-pip.py -o get-pip.py
