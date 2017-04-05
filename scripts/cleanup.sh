@@ -10,4 +10,4 @@ fi
 
 pip uninstall wheel pip -y
 rm -rf /tmp/* /root/.cache
-find / -type f -name "*.pyc" -delete
+find /usr/ -type f -name "*.pyc" -delete
