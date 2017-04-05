@@ -24,7 +24,9 @@ function setup_docker {
 
     sudo systemctl stop docker
     sudo mount -o size=25g -t tmpfs tmpfs /var/lib/docker
-    # TODO(SamYaple): Images cannot be build with userns-remap enabled. figure that out
+    # TODO(SamYaple): CentOS cannot be build with userns-remap enabled. httpd
+    # uses cap_set_file capability and there is no way to pass that in at build
+    # time yet.
     sudo tee /etc/systemd/system/docker.service << EOF
 [Service]
 ExecStart=
