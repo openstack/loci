@@ -2,6 +2,21 @@
 
 set -eux
 
+function setup_git_server {
+    sudo apt-get install --no-install-recommends -y apache2 gitweb
+    sudo systemctl stop apache2
+
+    mkdir repos logs/git-server
+    pushd repos
+    /usr/zuul-env/bin/zuul-cloner --cache-dir /opt/git git://git.openstack.org \
+        openstack/loci \
+        openstack/${ZUUL_PROJECT#*-}
+    popd
+
+    sed -i "s|##WORKSPACE##|${WORKSPACE}|g" openstack/loci/confs/git-server.conf
+    sudo apache2 -f ${WORKSPACE}/openstack/loci/confs/git-server.conf
+}
+
 function debug_info {
     set +x
     local PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
@@ -34,6 +49,9 @@ ExecStart=/usr/bin/dockerd --storage-driver overlay2 --group jenkins
 EOF
     sudo systemctl daemon-reload
     sudo systemctl start docker
+
+    # NOTE(SamYaple): Allow all connections from containers to host ports
+    sudo iptables -I INPUT -i docker0 -j ACCEPT
 }
 
 function setup_swap {
@@ -51,3 +69,4 @@ setup_logs
 debug_info | tee logs/gate_info.log
 setup_swap
 setup_docker
+setup_git_server
