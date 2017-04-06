@@ -1,9 +1,10 @@
 #!/bin/bash -ex
 
 if [[ "${DOCKER_TAG}" == "latest" ]] || [[ "${DOCKER_TAG}" == "ubuntu" ]]; then
-    apt-get install -y --no-install-recommends python git
-elif [[ "${DOCKER_TAG}" == "centos" ]]; then
-    yum install -y git
+    apt-get install -y --no-install-recommends \
+        ca-certificates \
+        curl \
+        python
 fi
 
 if [[ -n "$WHEELS" ]]; then
