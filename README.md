@@ -35,14 +35,17 @@ by LOCI. For simplicity, we will continue to use Keystone as an example.
 It's really easy to build images locally for the distro of your choice. To
 build an image you only need to run:
 ``` bash
-$ docker build https://github.com/openstack/loci-keystone.git#:debian --tag keystone:latest
+$ docker build https://git.openstack.org/openstack/loci-keystone.git#:debian --tag keystone:latest
 ```
 You can, of course, substitute `debian` with your distro of choice.
 
 For more advanced building you can use docker build arguments to define:
-  * The git repo containing the OpenStack project the container should contain, `GIT_REPO`
-  * The git ref the container should use when building, `GIT_REF`
-  * The git repo the container should use when building from a git ref, `GIT_REF_REPO`
+  * The git repo containing the OpenStack project the container should contain, `PROJECT_REPO`
+  * The git ref or branch the container should fetch for the project, `PROJECT_REF`
+  * The git repo containing the common install scripts, `SCRIPTS_REPO`
+  * The git ref or branch the container should fetch for the scripts, `SCRIPTS_REF`
+  * To inject anything into the image before hand (sources.list, keys, etc),
+    create a tarball and reference its location, `OVERRIDE`
   * The docker image name to use for the base requirements python wheels, `DOCKER_REPO`
   * The docker image tag to use for the base requirements python wheels, `DOCKER_TAG`
   * If present, rather than using a docker image containing OpenStack
@@ -52,11 +55,10 @@ This makes it really easy to integrate LOCI images into your development or
 CI/CD workflow, for example, if you wanted to build an image from [this
 PS](https://review.openstack.org/#/c/418167/) you could run:
 ``` bash
-$ docker build https://github.com/openstack/loci-keystone.git#:debian \
+$ docker build https://git.openstack.org/openstack/loci-keystone.git#:debian \
     --tag mydockernamespace/keystone-testing:418167-1 \
-    --build-arg GIT_REPO=http://git.openstack.org/openstack/keystone.git \
-    --build-arg GIT_REF_REPO=http://git.openstack.org/openstack/keystone.git \
-    --build-arg GIT_REF=refs/changes/67/418167/1
+    --build-arg PROJECT_REPO=http://git.openstack.org/openstack/keystone.git \
+    --build-arg PROJECT_REF=refs/changes/67/418167/1
 ```
 
 
