@@ -6,7 +6,13 @@
 
 set -eux
 
-export LOGS_DIR=${WORKSPACE:-/tmp/loci}/logs
+if [[ -e /etc/nodepool/provider ]]; then
+    export RUNNING_IN_GATE=true
+    export LOGS_DIR=${WORKSPACE}/logs
+else
+    export RUNNING_IN_GATE=false
+    export LOGS_DIR=$(mktemp -d)
+fi
 
 function prep_log_dir {
     rm -rf ${LOGS_DIR}/build_error
@@ -26,9 +32,11 @@ function generate_override {
     local distro=$1
     source /etc/nodepool/provider
 
-    NODEPOOL_MIRROR_HOST=${NODEPOOL_MIRROR_HOST:-mirror.${NODEPOOL_REGION,,}.$NODEPOOL_CLOUD.openstack.org}
+    if [[ -z "${NODEPOOL_MIRROR_HOST-}" ]]; then
+        local NODEPOOL_MIRROR_HOST=mirror.${NODEPOOL_REGION,,}.${NODEPOOL_CLOUD}.openstack.org
+    fi
 
-    CURDIR=$(pwd)
+    local CURDIR=$(pwd)
     cd $(mktemp -d)
     case $distro in
     ubuntu)
@@ -42,7 +50,7 @@ EOF
     ;;
     debian)
         mkdir -p etc/apt
-        echo 'APT::Get::AllowUnauthenticated "true";' >> etc/apt/apt.conf
+        echo 'APT::Get::AllowUnauthenticated "true";' > etc/apt/apt.conf
         cat << EOF > etc/apt/sources.list
 deb http://${NODEPOOL_MIRROR_HOST}/debian jessie main
 deb http://${NODEPOOL_MIRROR_HOST}/debian jessie-updates main
@@ -91,11 +99,14 @@ function builder {
     cd ${directory}
     local distro=${PWD##*/}
     local log=${LOGS_DIR}/builds/${distro}.log
+    local build_args=""
 
-    local build_args="--build-arg OVERRIDE=override.tar.gz"
-    build_args+=" --build-arg PROJECT_REPO=http://172.17.0.1/openstack/${ZUUL_PROJECT#*-} --build-arg PROJECT_REF=zuul"
-    build_args+=" --build-arg SCRIPTS_REPO=http://172.17.0.1/openstack/loci --build-arg SCRIPTS_REF=zuul"
-    $(generate_override $distro)
+    if $RUNNING_IN_GATE; then
+        build_args+="--build-arg OVERRIDE=override.tar.gz"
+        build_args+=" --build-arg PROJECT_REPO=http://172.17.0.1/openstack/${ZUUL_PROJECT#*-} --build-arg PROJECT_REF=zuul"
+        build_args+=" --build-arg SCRIPTS_REPO=http://172.17.0.1/openstack/loci --build-arg SCRIPTS_REF=zuul"
+        $(generate_override $distro)
+    fi
     docker build --no-cache ${build_args} . 2>&1 > ${log} || echo ${log} >> ${LOGS_DIR}/build_error
 }
 
