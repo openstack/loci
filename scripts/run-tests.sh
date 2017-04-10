@@ -93,8 +93,8 @@ function builder {
     local log=${LOGS_DIR}/builds/${distro}.log
 
     local build_args="--build-arg OVERRIDE=override.tar.gz"
-    build_args+=" --build-arg PROJECT_REPO=http://172.17.0.1/openstack/${ZUUL_PROJECT#*-}"
-    build_args+=" --build-arg SCRIPTS_REPO=http://172.17.0.1/openstack/loci"
+    build_args+=" --build-arg PROJECT_REPO=http://172.17.0.1/openstack/${ZUUL_PROJECT#*-} --build-arg PROJECT_REF=zuul"
+    build_args+=" --build-arg SCRIPTS_REPO=http://172.17.0.1/openstack/loci --build-arg SCRIPTS_REF=zuul"
     $(generate_override $distro)
     docker build --no-cache ${build_args} . 2>&1 > ${log} || echo ${log} >> ${LOGS_DIR}/build_error
 }

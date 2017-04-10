@@ -8,9 +8,11 @@ function setup_git_server {
 
     mkdir repos logs/git-server
     pushd repos
-    /usr/zuul-env/bin/zuul-cloner --cache-dir /opt/git git://git.openstack.org \
-        openstack/loci \
-        openstack/${ZUUL_PROJECT#*-}
+    local repos=(openstack/{loci,${ZUUL_PROJECT#*-}})
+    /usr/zuul-env/bin/zuul-cloner --cache-dir /opt/git git://git.openstack.org ${repos[@]}
+    for p in ${repos[@]}; do
+        git --git-dir ${p}/.git checkout -b zuul
+    done
     popd
 
     sed -i "s|##WORKSPACE##|${WORKSPACE}|g" openstack/loci/confs/git-server.conf
