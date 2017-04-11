@@ -7,7 +7,7 @@ if [[ "${DOCKER_TAG}" == "latest" ]] || [[ "${DOCKER_TAG}" == "ubuntu" ]]; then
         git
     rm -rf /var/lib/apt/lists/*
 elif [[ "${DOCKER_TAG}" == "centos" ]]; then
-    yum history -y undo $(yum history list git | tail -2 | head -1 | awk '{ print $1}')
+    yum -y autoremove git
     yum clean all
 fi
 
