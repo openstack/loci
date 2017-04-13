@@ -77,7 +77,7 @@ baseurl=http://${NODEPOOL_MIRROR_HOST}/centos/\$releasever/extras/\$basearch/
 gpgcheck=0
 
 [centos-openstack-ocata]
-includepkgs=liberasurecode*
+includepkgs=liberasurecode* python-pip*
 name=CentOS-7 - OpenStack Ocata
 baseurl=http://${NODEPOOL_MIRROR_HOST}/centos/7/cloud/\$basearch/openstack-ocata/
 gpgcheck=0
