@@ -33,11 +33,15 @@ function debug_info {
 }
 
 function setup_docker {
-    echo 'deb http://apt.dockerproject.org/repo ubuntu-xenial main' | sudo tee /etc/apt/sources.list.d/docker.list
-    sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+    sudo apt-get update
+    sudo apt-get install --no-install-recommends -y apt-transport-https
+    echo 'deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable' | sudo tee /etc/apt/sources.list.d/docker.list
+    for ks in hkp://pgp.mit.edu hkp://keyserver.ubuntu.com; do
+        sudo apt-key adv --keyserver ${ks} --recv-keys 9DC858229FC7DD38854AE2D88D81803C0EBFCD88 && break || continue
+    done
 
     sudo apt-get update
-    sudo apt-get install --no-install-recommends -y docker-engine
+    sudo apt-get install --no-install-recommends -y docker-ce
 
     sudo systemctl stop docker
     sudo mount -o size=25g -t tmpfs tmpfs /var/lib/docker
