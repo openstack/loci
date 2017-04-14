@@ -1,6 +1,6 @@
 #!/bin/bash -ex
 
-if [[ "${DOCKER_TAG}" == "latest" ]] || [[ "${DOCKER_TAG}" == "ubuntu" ]]; then
+if [[ "${DOCKER_TAG}" == "debian" ]] || [[ "${DOCKER_TAG}" == "ubuntu" ]]; then
     apt-get install -y --no-install-recommends \
         ca-certificates \
         curl \

@@ -24,18 +24,18 @@ by LOCI. For simplicity, we will continue to use Keystone as an example.
 
 
 ### Keystone Image Layer Info
-[![](https://images.microbadger.com/badges/version/yaodu/keystone:latest.svg)](https://microbadger.com/images/yaodu/keystone:latest "yaodu/keystone:latest") [![](https://images.microbadger.com/badges/image/yaodu/keystone:latest.svg)](https://microbadger.com/images/yaodu/keystone:latest "yaodu/keystone:latest")
+[![](https://images.microbadger.com/badges/version/openstackloci/keystone:debian.svg)](https://microbadger.com/images/openstackloci/keystone:debian "openstackloci/keystone:debian") [![](https://images.microbadger.com/badges/image/openstackloci/keystone:debian.svg)](https://microbadger.com/images/openstackloci/keystone:debian "openstackloci/keystone:debian")
 
-[![](https://images.microbadger.com/badges/version/yaodu/keystone:ubuntu.svg)](https://microbadger.com/images/yaodu/keystone:ubuntu "yaodu/keystone:ubuntu") [![](https://images.microbadger.com/badges/image/yaodu/keystone:ubuntu.svg)](https://microbadger.com/images/yaodu/keystone:ubuntu "yaodu/keystone:ubuntu")
+[![](https://images.microbadger.com/badges/version/openstackloci/keystone:ubuntu.svg)](https://microbadger.com/images/openstackloci/keystone:ubuntu "openstackloci/keystone:ubuntu") [![](https://images.microbadger.com/badges/image/openstackloci/keystone:ubuntu.svg)](https://microbadger.com/images/openstackloci/keystone:ubuntu "openstackloci/keystone:ubuntu")
 
-[![](https://images.microbadger.com/badges/version/yaodu/keystone:centos.svg)](https://microbadger.com/images/yaodu/keystone:centos "yaodu/keystone:centos") [![](https://images.microbadger.com/badges/image/yaodu/keystone:centos.svg)](https://microbadger.com/images/yaodu/keystone:centos "yaodu/keystone:centos")
+[![](https://images.microbadger.com/badges/version/openstackloci/keystone:centos.svg)](https://microbadger.com/images/openstackloci/keystone:centos "openstackloci/keystone:centos") [![](https://images.microbadger.com/badges/image/openstackloci/keystone:centos.svg)](https://microbadger.com/images/openstackloci/keystone:centos "openstackloci/keystone:centos")
 
 
 ### Building locally
 It's really easy to build images locally for the distro of your choice. To
 build an image you only need to run:
 ``` bash
-$ docker build https://git.openstack.org/openstack/loci-keystone.git#:debian --tag keystone:latest
+$ docker build https://git.openstack.org/openstack/loci-keystone.git#:debian --tag keystone:debian
 ```
 You can, of course, substitute `debian` with your distro of choice.
 
@@ -70,7 +70,7 @@ possible. To do this we recommend that you perform any required customisation
 in a child image using a pattern similar to:
 
 ``` Dockerfile
-FROM openstackloci/keystone:latest
+FROM openstackloci/keystone:debian
 MAINTAINER you@example.com
 
 RUN set -x \
