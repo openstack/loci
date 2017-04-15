@@ -46,10 +46,8 @@ For more advanced building you can use docker build arguments to define:
   * The git ref or branch the container should fetch for the scripts, `SCRIPTS_REF`
   * To inject anything into the image before hand (sources.list, keys, etc),
     create a tarball and reference its location, `OVERRIDE`
-  * The docker image name to use for the base requirements python wheels, `DOCKER_REPO`
-  * The docker image tag to use for the base requirements python wheels, `DOCKER_TAG`
-  * If present, rather than using a docker image containing OpenStack
-    requirements a tarball will be used from the defined URL, `WHEELS`
+  * The location of the wheels tarball. This accepts a url to a tarball or a Docker image name
+    in the form of [myregistry/]mydockernamespace/requirements:debian, `WHEELS`
 
 This makes it really easy to integrate LOCI images into your development or
 CI/CD workflow, for example, if you wanted to build an image from [this
@@ -57,10 +55,14 @@ PS](https://review.openstack.org/#/c/418167/) you could run:
 ``` bash
 $ docker build https://git.openstack.org/openstack/loci-keystone.git#:debian \
     --tag mydockernamespace/keystone-testing:418167-1 \
-    --build-arg PROJECT_REPO=http://git.openstack.org/openstack/keystone.git \
     --build-arg PROJECT_REF=refs/changes/67/418167/1
 ```
 
+To build with the wheels from a private Docker registry rather than DockerHub run:
+``` bash
+$ docker build https://git.openstack.org/openstack/loci-keystone.git#:debian \
+    --build-arg WHEELS=172.17.0.1:5000/mydockernamespace/keystone:debian
+```
 
 ### Customizing
 The images should contain all the required assets for running the service. But
