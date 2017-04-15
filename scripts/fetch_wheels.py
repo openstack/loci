@@ -19,20 +19,24 @@ def get_token(repo):
     return json.loads(resp_text)['token']
 
 
-def get_sha(repo, tag):
-    url = "https://registry.hub.docker.com/v2/{}/manifests/{}".format(repo, tag)
+def get_sha(repo, tag, registry, token):
+    url = "http://{}/v2/{}/manifests/{}".format(registry, repo, tag)
+    print(url)
     r = urllib2.Request(url=url)
-    r.add_header('Authorization', 'Bearer {}'.format(get_token(repo)))
+    if token:
+        r.add_header('Authorization', 'Bearer {}'.format(token))
     resp = urllib2.urlopen(r)
     resp_text = resp.read().decode('utf-8').strip()
     return json.loads(resp_text)['fsLayers'][0]['blobSum']
 
 
-def get_blob(repo, tag):
-    sha = get_sha(repo, tag)
-    url = "https://registry.hub.docker.com/v2/{}/blobs/{} ".format(repo, sha)
+def get_blob(repo, tag, registry='registry.hub.docker.com', token=None):
+    sha = get_sha(repo, tag, registry, token)
+    url = "http://{}/v2/{}/blobs/{} ".format(registry, repo, sha)
+    print(url)
     r = urllib2.Request(url=url)
-    r.add_header('Authorization', 'Bearer {}'.format(get_token(repo)))
+    if token:
+        r.add_header('Authorization', 'Bearer {}'.format(token))
     resp = urllib2.urlopen(r)
     return resp.read()
 
@@ -43,11 +47,40 @@ def get_wheels(url):
     return resp.read()
 
 
-repo = os.environ['DOCKER_REPO']
-tag = os.environ['DOCKER_TAG']
+def parse_image(full_image):
+    if '/' in full_image:
+        registry, image_with_tag = full_image.split('/', 1)
+    else:
+        registry = None
+        image_with_tag = full_image
+
+    if ':' in image_with_tag:
+        image, tag = image_with_tag.rsplit(':', 1)
+    else:
+        image = image_with_tag
+        tag = 'latest'
+
+    if '/' in image:
+        return registry, image, tag
+
+    if registry:
+        return None, '/'.join([registry, image]), tag
+    else:
+        return None, image, tag
+
+
+wheels = os.environ['WHEELS']
+if wheels.startswith('http'):
+    data = get_wheels(wheels)
+else:
+    registry, image, tag = parse_image(wheels)
+    kwargs = dict()
+    if registry:
+        kwargs.update({'registry': registry})
+    else:
+        kwargs.update({'token': get_token(image)})
+    print(kwargs)
+    data = get_blob(image, tag, **kwargs)
 
 with open('/tmp/wheels.tar.gz', 'wb') as f:
-    if 'WHEELS' in os.environ:
-        f.write(get_wheels(os.environ['WHEELS']))
-    else:
-        f.write(get_blob(repo, tag))
+    f.write(data)
