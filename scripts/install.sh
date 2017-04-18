@@ -6,11 +6,11 @@ case ${distro} in
     debian|ubuntu)
         apt-get install -y --no-install-recommends \
             ca-certificates \
-            curl \
-            python
+            python \
+            python-pip
         ;;
     centos)
-        :
+        yum install -y python-pip
         ;;
     *)
         echo "Unknown distro: ${distro}"
@@ -27,9 +27,9 @@ git init /tmp/${PROJECT}
 git --git-dir /tmp/${PROJECT}/.git fetch ${PROJECT_REPO} ${PROJECT_REF}
 git --work-tree /tmp/${PROJECT} --git-dir /tmp/${PROJECT}/.git checkout FETCH_HEAD
 
-curl -sSL https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-python get-pip.py
-rm get-pip.py
+pip install -U pip
+hash -r
+pip install -U setuptools wheel
 
 pip install --no-cache-dir --no-index --no-compile --find-links /tmp/packages --constraint /tmp/packages/upper-constraints.txt \
         /tmp/${PROJECT} \
@@ -47,8 +47,8 @@ case ${distro} in
     debian|ubuntu)
         apt-get purge -y --auto-remove \
             ca-certificates \
-            curl \
-            git
+            git \
+            python-pip
         rm -rf /var/lib/apt/lists/*
         ;;
     centos)
@@ -61,6 +61,5 @@ case ${distro} in
         ;;
 esac
 
-pip uninstall wheel pip -y
 rm -rf /tmp/* /root/.cache
 find /usr/ -type f -name "*.pyc" -delete
