@@ -9,10 +9,13 @@ case ${distro} in
         apt-get install -y --no-install-recommends \
             ca-certificates \
             python \
-            python-pip
+            python-pip \
+            sudo
         ;;
     centos)
-        yum install -y python-pip
+        yum install -y \
+            python-pip \
+            sudo
         ;;
     *)
         echo "Unknown distro: ${distro}"
