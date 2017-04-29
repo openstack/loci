@@ -33,6 +33,7 @@ pip install -U setuptools wheel
 
 pip install --no-cache-dir --no-index --no-compile --find-links /tmp/packages --constraint /tmp/packages/upper-constraints.txt \
         /tmp/${PROJECT} \
+        pycrypto \
         pymysql \
         python-memcached \
         uwsgi
