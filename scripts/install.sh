@@ -1,5 +1,7 @@
 #!/bin/bash -ex
 
+packages=$@
+
 distro=$(awk -F= '/^ID=/ {print $2}' /etc/*release | tr -d \")
 
 case ${distro} in
@@ -36,7 +38,8 @@ pip install --no-cache-dir --no-index --no-compile --find-links /tmp/packages --
         pycrypto \
         pymysql \
         python-memcached \
-        uwsgi
+        uwsgi \
+        ${packages[@]}
 
 groupadd -g 42424 ${PROJECT}
 useradd -u 42424 -g ${PROJECT} -M -d /var/lib/${PROJECT} -s /usr/sbin/nologin -c "${PROJECT} user" ${PROJECT}
