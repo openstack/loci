@@ -9,12 +9,12 @@ case ${distro} in
         apt-get install -y --no-install-recommends \
             ca-certificates \
             python \
-            python-pip \
+            virtualenv \
             sudo
         ;;
     centos)
         yum install -y \
-            python-pip \
+            python-virtualenv \
             sudo
         ;;
     *)
@@ -32,8 +32,13 @@ git init /tmp/${PROJECT}
 git --git-dir /tmp/${PROJECT}/.git fetch ${PROJECT_REPO} ${PROJECT_REF}
 git --work-tree /tmp/${PROJECT} --git-dir /tmp/${PROJECT}/.git checkout FETCH_HEAD
 
+# NOTE(SamYaple): --system-site-packages flag allows python to use libraries
+# outside of the virtualenv if they do not exist inside the venv. This is a
+# requirement for using python-rbd which is not pip installable and is only
+# available in packaged form.
+virtualenv --system-site-packages /var/lib/openstack/
+source /var/lib/openstack/bin/activate
 pip install -U pip
-hash -r
 pip install -U setuptools wheel
 
 pip install --no-cache-dir --no-index --no-compile --find-links /tmp/packages --constraint /tmp/packages/upper-constraints.txt \
@@ -55,11 +60,13 @@ case ${distro} in
         apt-get purge -y --auto-remove \
             ca-certificates \
             git \
-            python-pip
+            virtualenv
         rm -rf /var/lib/apt/lists/*
         ;;
     centos)
-        yum -y autoremove git
+        yum -y autoremove \
+            git \
+            python-virtualenv
         yum clean all
         ;;
     *)
@@ -69,4 +76,4 @@ case ${distro} in
 esac
 
 rm -rf /tmp/* /root/.cache
-find /usr/ -type f -name "*.pyc" -delete
+find /usr/ /var/ -type f -name "*.pyc" -delete
