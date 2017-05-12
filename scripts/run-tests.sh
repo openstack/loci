@@ -116,7 +116,9 @@ export -f $(compgen -A function)
 prep_log_dir
 
 echo "Building images"
-find . -type f -name Dockerfile -printf '%h\0' | xargs -0 -P10 -n1 bash -c 'builder $1' _
+find . -mindepth 2 -maxdepth 2 -type f -name Dockerfile -printf '%h\0' | xargs -r -0 -P10 -n1 bash -c 'builder $1' _
+echo "Building plugins"
+find . -mindepth 3 -maxdepth 3 -type f -name Dockerfile -printf '%h\0' | xargs -r -0 -P10 -n1 bash -c 'builder $1' _
 
 if [[ -f ${LOGS_DIR}/build_error ]]; then
     echo "Building images failure; Dumping failed logs to stdout"
