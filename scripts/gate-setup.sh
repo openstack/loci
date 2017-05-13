@@ -45,14 +45,23 @@ function setup_docker {
 
     sudo systemctl stop docker
     sudo mount -o size=25g -t tmpfs tmpfs /var/lib/docker
+    source /etc/ci/mirror_info.sh
+
     # TODO(SamYaple): CentOS cannot be build with userns-remap enabled. httpd
     # uses cap_set_file capability and there is no way to pass that in at build
     # time yet.
-    sudo tee /etc/systemd/system/docker.service << EOF
-[Service]
-ExecStart=
-ExecStart=/usr/bin/dockerd --storage-driver overlay2 --group jenkins
-EOF
+    sudo tee /etc/systemd/system/docker.service <<-EOF
+	[Service]
+	ExecStart=
+	ExecStart=/usr/bin/dockerd
+	EOF
+    sudo tee /etc/docker/daemon.json <<-EOF
+	{
+	    "group": "jenkins",
+	    "registry-mirrors": ["${NODEPOOL_DOCKER_REGISTRY_PROXY}"],
+	    "storage-driver": "overlay2"
+	}
+	EOF
     sudo systemctl daemon-reload
     sudo systemctl start docker
 
