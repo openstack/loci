@@ -75,5 +75,8 @@ case ${distro} in
         ;;
 esac
 
+mkdir -p /opt/loci/
+cp $(dirname $0)/fetch_wheels.py /opt/loci/
+
 rm -rf /tmp/* /root/.cache
 find /usr/ /var/ -type f -name "*.pyc" -delete
