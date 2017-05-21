@@ -23,7 +23,9 @@ case ${distro} in
         ;;
 esac
 
-$(dirname $0)/fetch_wheels.py
+mkdir -p /opt/loci/
+cp $(dirname $0)/fetch_wheels.py /opt/loci/
+/opt/loci/fetch_wheels.py
 
 mkdir /tmp/packages
 # NOTE(SamYaple): We exclude all files starting with '.' as these can be
@@ -77,9 +79,6 @@ case ${distro} in
         exit 1
         ;;
 esac
-
-mkdir -p /opt/loci/
-cp $(dirname $0)/fetch_wheels.py /opt/loci/
 
 rm -rf /tmp/* /root/.cache
 find /usr/ /var/ -type f -name "*.pyc" -delete

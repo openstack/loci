@@ -68,8 +68,15 @@ def parse_image(full_image):
     else:
         return None, image, tag
 
+if 'WHEELS' in os.environ:
+    wheels = os.environ['WHEELS']
+else:
+    with open('/opt/loci/wheels', 'ro') as f:
+        wheels = f.read()
 
-wheels = os.environ['WHEELS']
+with open('/opt/loci/wheels', 'w+') as f:
+    f.write(wheels)
+
 if wheels.startswith('http'):
     data = get_wheels(wheels)
 else:
