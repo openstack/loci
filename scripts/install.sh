@@ -26,7 +26,10 @@ esac
 $(dirname $0)/fetch_wheels.py
 
 mkdir /tmp/packages
-tar xf /tmp/wheels.tar.gz -C /tmp/packages/ --strip-components=2 root/packages
+# NOTE(SamYaple): We exclude all files starting with '.' as these can be
+# control files for AUFS which have special meaning on AUFS backed file
+# stores.
+tar xf /tmp/wheels.tar.gz --exclude='.*' -C /tmp/packages/ --strip-components=2 root/packages
 
 git init /tmp/${PROJECT}
 git --git-dir /tmp/${PROJECT}/.git fetch ${PROJECT_REPO} ${PROJECT_REF}
