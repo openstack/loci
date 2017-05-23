@@ -24,7 +24,7 @@ case ${distro} in
 esac
 
 mkdir -p /opt/loci/
-cp $(dirname $0)/fetch_wheels.py /opt/loci/
+cp $(dirname $0)/{clone_project.sh,pip_install.sh,fetch_wheels.py} /opt/loci/
 
 # NOTE(SamYaple): --system-site-packages flag allows python to use libraries
 # outside of the virtualenv if they do not exist inside the venv. This is a
@@ -35,9 +35,7 @@ source /var/lib/openstack/bin/activate
 pip install -U pip
 pip install -U setuptools wheel
 
-git init /tmp/${PROJECT}
-git --git-dir /tmp/${PROJECT}/.git fetch ${PROJECT_REPO} ${PROJECT_REF}
-git --work-tree /tmp/${PROJECT} --git-dir /tmp/${PROJECT}/.git checkout FETCH_HEAD
+$(dirname $0)/clone_project.sh
 
 $(dirname $0)/pip_install.sh \
         /tmp/${PROJECT} \
