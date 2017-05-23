@@ -175,10 +175,10 @@ function generate_override {
     cd $(mktemp -d)
 
     ${DISTRO}_override
-    if [[ -n ${PLUGIN-} ]]; then
+    if [[ -n ${PLUGIN-} ]] && type -t ${DISTRO}_${PLUGIN}_override; then
         ${DISTRO}_${PLUGIN}_override
     fi
-    if [[ -n ${EXTRA-} ]]; then
+    if [[ -n ${EXTRA-} ]] && type -t ${DISTRO}_${EXTRA}_override; then
         ${DISTRO}_${EXTRA}_override
     fi
 
