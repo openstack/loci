@@ -23,6 +23,9 @@ case ${distro} in
         ;;
 esac
 
+mkdir -p /opt/loci/
+cp $(dirname $0)/fetch_wheels.py /opt/loci/
+
 # NOTE(SamYaple): --system-site-packages flag allows python to use libraries
 # outside of the virtualenv if they do not exist inside the venv. This is a
 # requirement for using python-rbd which is not pip installable and is only
@@ -36,17 +39,7 @@ git init /tmp/${PROJECT}
 git --git-dir /tmp/${PROJECT}/.git fetch ${PROJECT_REPO} ${PROJECT_REF}
 git --work-tree /tmp/${PROJECT} --git-dir /tmp/${PROJECT}/.git checkout FETCH_HEAD
 
-mkdir -p /opt/loci/
-cp $(dirname $0)/fetch_wheels.py /opt/loci/
-/opt/loci/fetch_wheels.py
-
-mkdir /tmp/packages
-# NOTE(SamYaple): We exclude all files starting with '.' as these can be
-# control files for AUFS which have special meaning on AUFS backed file
-# stores.
-tar xf /tmp/wheels.tar.gz --exclude='.*' -C /tmp/packages/ --strip-components=2 root/packages
-
-pip install --no-cache-dir --no-index --no-compile --find-links /tmp/packages --constraint /tmp/packages/upper-constraints.txt \
+$(dirname $0)/pip_install.sh \
         /tmp/${PROJECT} \
         pycrypto \
         pymysql \
