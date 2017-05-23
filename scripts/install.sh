@@ -54,7 +54,6 @@ chown ${PROJECT}:${PROJECT} /etc/${PROJECT} /var/log/${PROJECT} /var/lib/${PROJE
 case ${distro} in
     debian|ubuntu)
         apt-get purge -y --auto-remove \
-            ca-certificates \
             git \
             virtualenv
         rm -rf /var/lib/apt/lists/*
