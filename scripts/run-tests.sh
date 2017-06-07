@@ -150,7 +150,9 @@ function builder {
         build_args+="--build-arg OVERRIDE=override.tar.gz"
         build_args+=" --build-arg PROJECT_REPO=http://172.17.0.1/openstack/${ZUUL_PROJECT#*-} --build-arg PROJECT_REF=zuul"
         build_args+=" --build-arg SCRIPTS_REPO=http://172.17.0.1/openstack/loci --build-arg SCRIPTS_REF=zuul"
-        $(generate_override)
+        old_path=${PWD}
+        generate_override
+        cd ${old_path}
     fi
     if [[ ! -n "${PLUGIN-}" ]]; then
         docker build --tag openstackloci/${PROJECT}:${DISTRO} --no-cache ${build_args} . 2>&1 > ${log} || echo ${log} >> ${LOGS_DIR}/build_error
