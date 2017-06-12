@@ -7,6 +7,7 @@ distro=$(awk -F= '/^ID=/ {print $2}' /etc/*release | tr -d \")
 case ${distro} in
     debian|ubuntu)
         apt-get install -y --no-install-recommends \
+            netbase \
             ca-certificates \
             python \
             virtualenv \
