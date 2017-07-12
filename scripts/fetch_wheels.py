@@ -20,7 +20,7 @@ def get_token(repo):
 
 
 def get_sha(repo, tag, registry, token):
-    url = "http://{}/v2/{}/manifests/{}".format(registry, repo, tag)
+    url = "https://{}/v2/{}/manifests/{}".format(registry, repo, tag)
     print(url)
     r = urllib2.Request(url=url)
     if token:
@@ -32,7 +32,7 @@ def get_sha(repo, tag, registry, token):
 
 def get_blob(repo, tag, registry='registry.hub.docker.com', token=None):
     sha = get_sha(repo, tag, registry, token)
-    url = "http://{}/v2/{}/blobs/{} ".format(registry, repo, sha)
+    url = "https://{}/v2/{}/blobs/{} ".format(registry, repo, sha)
     print(url)
     r = urllib2.Request(url=url)
     if token:
