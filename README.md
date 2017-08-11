@@ -37,6 +37,14 @@ build an image you only need to run:
 ``` bash
 $ docker build https://git.openstack.org/openstack/loci-keystone.git#:debian --tag keystone:debian
 ```
+
+If building behind a proxy, remember to use build arguments to pass these through to the build:
+``` bash
+$ docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy \
+    --build-arg no_proxy=$no_proxy https://git.openstack.org/openstack/loci-keystone.git#:debian \
+    --tag keystone:debian
+```
+
 You can, of course, substitute `debian` with your distro of choice.
 
 For more advanced building you can use docker build arguments to define:
