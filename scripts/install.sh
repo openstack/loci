@@ -2,7 +2,7 @@
 
 packages=$@
 
-distro=$(awk -F= '/^ID=/ {print $2}' /etc/*release | tr -d \")
+distro=${DISTRO:=$(awk -F= '/^ID=/ {print $2}' /etc/*release | tr -d \")}
 
 case ${distro} in
     debian|ubuntu)
