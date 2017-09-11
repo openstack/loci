@@ -46,6 +46,11 @@ $(dirname $0)/pip_install.sh \
         uwsgi \
         ${packages[@]}
 
+# add custom requirements
+if [[ -e /tmp/${PROJECT}/custom-requirements.txt ]]; then
+    pip install --no-cache-dir -r /tmp/${PROJECT}/custom-requirements.txt --constraint /tmp/packages/upper-constraints.txt
+fi
+
 groupadd -g 42424 ${PROJECT}
 useradd -u 42424 -g ${PROJECT} -M -d /var/lib/${PROJECT} -s /usr/sbin/nologin -c "${PROJECT} user" ${PROJECT}
 
