@@ -1,0 +1,52 @@
+# Apache
+apache2            [platform:dpkg apache]
+libapache2-mod-wsgi [platform:dpkg apache]
+
+httpd              [platform:rpm apache]
+mod_ssl            [platform:rpm apache]
+mod_wsgi           [platform:rpm apache]
+
+# Ceph
+ceph-common        [ceph]
+# TODO(SamYaple): extend bindep to allow 'profile AND profile' rather than the
+# current 'profile OR profile' so we can set this to 'ceph AND glance' so this
+# would only get installed in glance container
+python-rbd         [ceph]
+
+# LVM
+lvm2               [lvm]
+tgt                [platform:dpkg lvm]
+targetcli          [platform:rpm lvm]
+
+# QEMU
+qemu-utils         [platform:dpkg qemu]
+qemu-img           [platform:rpm qemu]
+
+# Nova
+libpython2.7       [nova]
+libvirt0           [nova]
+
+iproute2           [platform:dpkg nova]
+openvswitch-switch [platform:dpkg nova]
+
+openvswitch        [platform:rpm nova]
+
+# Neutron
+bridge-utils       [neutron]
+dnsmasq            [neutron]
+dnsmasq-utils      [neutron]
+ebtables           [neutron]
+ipset              [neutron]
+iptables           [neutron]
+iputils-arping     [neutron]
+keepalived         [neutron]
+libpython2.7       [neutron]
+
+conntrack          [platform:dpkg neutron]
+iproute2           [platform:dpkg neutron]
+openvswitch-switch [platform:dpkg neutron]
+uuid-runtime       [platform:dpkg neutron]
+
+conntrack-tools    [platform:rpm neutron]
+openvswitch        [platform:rpm neutron]
+uuid               [platform:rpm neutron]

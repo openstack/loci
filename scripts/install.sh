@@ -8,9 +8,9 @@ case ${distro} in
     debian|ubuntu)
         apt-get install -y --no-install-recommends \
             netbase \
-            ca-certificates \
             python \
             virtualenv \
+            lsb-release \
             sudo
         ;;
     centos)
@@ -44,7 +44,10 @@ $(dirname $0)/pip_install.sh \
         pymysql \
         python-memcached \
         uwsgi \
+        bindep \
         ${packages[@]}
+
+PACKAGES=$((bindep -f $(dirname $0)/../dockerfiles/bindep.txt -b ${PROJECT} ${PROFILES}))
 
 groupadd -g 42424 ${PROJECT}
 useradd -u 42424 -g ${PROJECT} -M -d /var/lib/${PROJECT} -s /usr/sbin/nologin -c "${PROJECT} user" ${PROJECT}
@@ -54,12 +57,14 @@ chown ${PROJECT}:${PROJECT} /etc/${PROJECT} /var/log/${PROJECT} /var/lib/${PROJE
 
 case ${distro} in
     debian|ubuntu)
+        apt-get install -y --no-install-recommends ${PACKAGES[@]}
         apt-get purge -y --auto-remove \
             git \
             virtualenv
         rm -rf /var/lib/apt/lists/*
         ;;
     centos)
+        yum -y install ${PACKAGES[@]}
         yum -y autoremove \
             git \
             python-virtualenv
