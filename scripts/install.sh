@@ -2,6 +2,7 @@
 
 packages=$@
 
+generic=${GENERIC:=no}
 distro=${DISTRO:=$(awk -F= '/^ID=/ {print $2}' /etc/*release | tr -d \")}
 
 case ${distro} in
@@ -47,7 +48,12 @@ $(dirname $0)/pip_install.sh \
         bindep \
         ${packages[@]}
 
-PACKAGES=$((bindep -f $(dirname $0)/../dockerfiles/bindep.txt -b ${PROJECT} ${PROFILES}))
+if [[ ${generic} == 'yes' ]]; then
+    $(dirname $0)/pip_install.sh bindep
+    PACKAGES=($(bindep -f $(dirname $0)/../dockerfiles/bindep.txt -b ${PROJECT} ${PROFILES} || :))
+else
+    PACKAGES=()
+fi
 
 groupadd -g 42424 ${PROJECT}
 useradd -u 42424 -g ${PROJECT} -M -d /var/lib/${PROJECT} -s /usr/sbin/nologin -c "${PROJECT} user" ${PROJECT}
@@ -57,14 +63,14 @@ chown ${PROJECT}:${PROJECT} /etc/${PROJECT} /var/log/${PROJECT} /var/lib/${PROJE
 
 case ${distro} in
     debian|ubuntu)
-        apt-get install -y --no-install-recommends ${PACKAGES[@]}
+        apt-get install -y --no-install-recommends sudo ${PACKAGES[@]}
         apt-get purge -y --auto-remove \
             git \
             virtualenv
         rm -rf /var/lib/apt/lists/*
         ;;
     centos)
-        yum -y install ${PACKAGES[@]}
+        yum -y install sudo ${PACKAGES[@]}
         yum -y autoremove \
             git \
             python-virtualenv

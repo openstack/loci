@@ -1,6 +1,7 @@
 ARG FROM=centos:7
 FROM ${FROM}
 
+ENV GENERIC=yes
 ENV PATH=/var/lib/openstack/bin:$PATH
 ARG PROJECT
 ARG WHEELS=openstackloci/requirements:centos
