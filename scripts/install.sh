@@ -3,7 +3,8 @@
 packages=$@
 
 generic=${GENERIC:=no}
-distro=${DISTRO:=$(awk -F= '/^ID=/ {print $2}' /etc/*release | tr -d \")}
+distro=$(awk -F= '/^ID=/ {gsub(/\"/, "", $2); print $2}' /etc/*release)
+distro=${DISTRO:=$distro}
 
 case ${distro} in
     debian|ubuntu)
