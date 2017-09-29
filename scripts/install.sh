@@ -4,7 +4,7 @@ packages=$@
 
 generic=${GENERIC:=no}
 distro=$(awk -F= '/^ID=/ {gsub(/\"/, "", $2); print $2}' /etc/*release)
-distro=${DISTRO:=$distro}
+export distro=${DISTRO:=$distro}
 
 case ${distro} in
     debian|ubuntu)
@@ -31,6 +31,11 @@ case ${distro} in
         exit 1
         ;;
 esac
+
+if [[ "${PROJECT}" == 'requirements' ]]; then
+    /opt/loci/scripts/requirements.sh
+    exit 0
+fi
 
 mkdir -p /opt/loci/
 cp $(dirname $0)/{clone_project.sh,pip_install.sh,fetch_wheels.py} /opt/loci/
