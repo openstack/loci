@@ -8,7 +8,11 @@ distro=${DISTRO:=$distro}
 
 case ${distro} in
     debian|ubuntu)
+        apt-get update
+        apt-get upgrade -y
         apt-get install -y --no-install-recommends \
+            git \
+            ca-certificates \
             netbase \
             python \
             virtualenv \
@@ -16,7 +20,9 @@ case ${distro} in
             sudo
         ;;
     centos)
+        yum upgrade -y
         yum install -y \
+            git \
             python-virtualenv \
             sudo
         ;;
@@ -51,7 +57,7 @@ $(dirname $0)/pip_install.sh \
 
 if [[ ${generic} == 'yes' ]]; then
     $(dirname $0)/pip_install.sh bindep
-    PACKAGES=($(bindep -f $(dirname $0)/../dockerfiles/bindep.txt -b ${PROJECT} ${PROFILES} || :))
+    PACKAGES=($(bindep -f /opt/loci/bindep.txt -b ${PROJECT} ${PROFILES} || :))
 else
     PACKAGES=()
 fi
