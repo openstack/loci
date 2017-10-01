@@ -105,9 +105,16 @@ mv /tmp/requirements/{global-requirements.txt,upper-constraints.txt} /
 python -m virtualenv /builder
 pip install -U pip
 pip install -U wheel setuptools
-pip wheel -w / -r /global-requirements.txt -c /upper-constraints.txt \
-    bindep==2.5.0 \
-    uwsgi
+
+# NOTE(SamYaple): Build all deps in parallel. This is safe because we are
+# constrained on the version and we are building with --no-deps
+pushd $(mktemp -d)
+split -l1 /upper-constraints.txt
+ls -1 | xargs -n1 -P20 -t pip wheel --no-deps --wheel-dir / -c /upper-constraints.txt -r
+popd
+# NOTE(SamYaple): Handle packages not in global-requirements
+additional_packages=(bindep==2.5.0 uwsgi)
+echo "${additional_packages[@]}" | xargs -n1 -P20 pip wheel --wheel-dir / -c /upper-constraints.txt
 
 # NOTE(SamYaple): We want to purge all files that are not wheels or txt to
 # reduce the size of the layer to only what is needed
