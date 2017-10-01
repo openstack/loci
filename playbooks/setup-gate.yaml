@@ -1,0 +1,79 @@
+- hosts: all
+  tasks:
+    - include_vars: vars.yaml
+
+    - name: Setup swap
+      block:
+        - command: fallocate -l20g /swap
+        - file:
+            path: /swap
+            mode: 0600
+        - command: mkswap /swap
+        - command: swapon /swap
+      become: True
+
+    - name: Install Docker
+      block:
+        - file:
+            path: "{{ item }}"
+            state: directory
+          with_items:
+            - /etc/docker/
+            - /etc/systemd/system/docker.service.d/
+            - /var/lib/docker/
+        - mount:
+            path: /var/lib/docker/
+            src: tmpfs
+            fstype: tmpfs
+            opts: size=25g
+            state: mounted
+        - copy: "{{ item }}"
+          with_items:
+            - content: "{{ docker_daemon | to_json }}"
+              dest: /etc/docker/daemon.json
+            - src: files/docker-systemd.conf
+              dest: /etc/systemd/system/docker.service.d/
+        - apt_key:
+            url: https://download.docker.com/linux/ubuntu/gpg
+        - apt_repository:
+            repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable
+        - apt:
+            name: "{{ item }}"
+          with_items:
+            - docker-ce=17.06*
+            - python-pip
+        - pip:
+            name: docker
+        # NOTE(SamYaple): Allow all connections from containers to host so the
+        # containers can access the http server for git and wheels
+        - iptables:
+            chain: INPUT
+            in_interface: docker0
+            policy: ACCEPT
+      become: True
+
+    - name: Setup http server for git and wheels
+      block:
+        - file:
+            path: "{{ item.path }}"
+            owner: "{{ item.owner }}"
+            state: directory
+          with_items:
+            - path: /logs/
+              owner: zuul
+            - path: /webroot/
+              owner: zuul
+            - path: /etc/systemd/system/apache2.service.d/
+              owner: root
+        - copy: "{{ item }}"
+          with_items:
+            - src: files/apache2-systemd.conf
+              dest: /etc/systemd/system/apache2.service.d/
+            - src: files/apache.conf
+              dest: /webroot/
+        - apt:
+            name: "{{ item }}"
+          with_items:
+            - apache2
+            - gitweb
+      become: True

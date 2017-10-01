@@ -1,0 +1,14 @@
+- hosts: all
+  tasks:
+    - name: Copy logs
+      synchronize:
+        src: '/logs'
+        dest: '{{ zuul.executor.log_root }}'
+        mode: pull
+        copy_links: true
+        verify_host: true
+        rsync_opts:
+          - --include=/logs/**
+          - --include=*/
+          - --exclude=*
+          - --prune-empty-dirs

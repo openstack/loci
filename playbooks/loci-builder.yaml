@@ -1,0 +1,46 @@
+- hosts: all
+  tasks:
+    - include_vars: vars.yaml
+
+    # NOTE(SamYaple): Unused currently
+    - name: Gather wheels
+      block:
+        - docker_image:
+            name: openstackloci/requirements:{{ item }}
+          with_items: "{{ distros }}"
+        - command: "docker save -o /tmp/wheels-{{ item }}.img openstackloci/requirements:{{ item }}"
+          with_items: "{{ distros }}"
+        - command: "{{ zuul.project.src_dir }}/scripts/fetch_wheels.py"
+          environment:
+            WHEELS: /tmp/wheels-{{ item }}.img
+            WHEELS_DEST: "/webroot/{{ item }}.tar.gz"
+          with_items: "{{ distros }}"
+      when: False
+
+    - name: Build images
+      block:
+        - docker_image:
+            path: "{{ zuul.project.src_dir }}/dockerfiles/{{ item }}"
+            name: base
+            tag: "{{ item }}"
+          with_items: "{{ distros }}"
+        - docker_image:
+            path: "{{ zuul.project.src_dir }}"
+            name: openstackloci/{{ project }}:master-{{ item }}
+            pull: False
+            buildargs:
+              PROJECT: "{{ project }}"
+              #PROJECT_REPO: http://172.17.0.1/openstack/{{ project }}
+              #WHEELS: http://172.17.0.1/{{ item }}.tar.gz
+              FROM: base:{{ item }}
+          with_items: "{{ distros }}"
+          async: 1000
+          poll: 0
+          register: builder
+        - async_status:
+            jid: "{{ item.ansible_job_id }}"
+          with_items: "{{ builder.results }}"
+          register: builder_result
+          until: builder_result.finished
+          retries: 30
+          delay: 60

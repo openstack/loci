@@ -1,0 +1,10 @@
+docker_daemon:
+  group: zuul
+  registry-mirrors:
+    - "http://{{ zuul_site_mirror_fqdn }}:8081/registry-1.docker/"
+  storage-driver: overlay2
+  debug: True
+
+distros:
+  - centos
+  - ubuntu

@@ -2,7 +2,173 @@
     name: openstack/loci
     check:
       jobs:
-        - noop
+        - loci-cinder
+        #- loci-designate
+        - loci-glance
+        - loci-heat
+        - loci-horizon
+        - loci-ironic
+        - loci-keystone
+        #- loci-murano
+        - loci-neutron
+        - loci-nova
+        - loci-requirements
+        #- loci-swift
+        #- loci-trove
     gate:
       jobs:
-        - noop
+        - loci-cinder
+        #- loci-designate
+        - loci-glance
+        - loci-heat
+        - loci-horizon
+        - loci-ironic
+        - loci-keystone
+        #- loci-murano
+        - loci-neutron
+        - loci-nova
+        - loci-requirements
+        #- loci-swift
+        #- loci-trove
+
+- job:
+    name: loci-cinder
+    pre-run: playbooks/setup-gate
+    run: playbooks/loci-builder
+    post-run: playbooks/post
+    timeout: 1200
+    vars:
+      project: cinder
+    required-projects:
+      - openstack/cinder
+
+- job:
+    name: loci-designate
+    pre-run: playbooks/setup-gate
+    run: playbooks/loci-builder
+    post-run: playbooks/post
+    timeout: 1200
+    vars:
+      project: designate
+    required-projects:
+      - openstack/designate
+
+- job:
+    name: loci-glance
+    pre-run: playbooks/setup-gate
+    run: playbooks/loci-builder
+    post-run: playbooks/post
+    vars:
+      project: glance
+    required-projects:
+      - openstack/glance
+
+- job:
+    name: loci-heat
+    pre-run: playbooks/setup-gate
+    run: playbooks/loci-builder
+    post-run: playbooks/post
+    timeout: 1200
+    vars:
+      project: heat
+    required-projects:
+      - openstack/heat
+
+- job:
+    name: loci-horizon
+    pre-run: playbooks/setup-gate
+    run: playbooks/loci-builder
+    post-run: playbooks/post
+    timeout: 1200
+    vars:
+      project: horizon
+    required-projects:
+      - openstack/horizon
+
+- job:
+    name: loci-ironic
+    pre-run: playbooks/setup-gate
+    run: playbooks/loci-builder
+    post-run: playbooks/post
+    timeout: 1200
+    vars:
+      project: ironic
+    required-projects:
+      - openstack/ironic
+
+- job:
+    name: loci-keystone
+    pre-run: playbooks/setup-gate
+    run: playbooks/loci-builder
+    post-run: playbooks/post
+    timeout: 1200
+    vars:
+      project: keystone
+    required-projects:
+      - openstack/keystone
+
+- job:
+    name: loci-murano
+    pre-run: playbooks/setup-gate
+    run: playbooks/loci-builder
+    post-run: playbooks/post
+    timeout: 1200
+    vars:
+      project: murano
+    required-projects:
+      - openstack/murano
+
+- job:
+    name: loci-neutron
+    pre-run: playbooks/setup-gate
+    run: playbooks/loci-builder
+    post-run: playbooks/post
+    timeout: 1200
+    vars:
+      project: neutron
+    required-projects:
+      - openstack/neutron
+
+- job:
+    name: loci-nova
+    pre-run: playbooks/setup-gate
+    run: playbooks/loci-builder
+    post-run: playbooks/post
+    timeout: 1200
+    vars:
+      project: nova
+    required-projects:
+      - openstack/nova
+
+- job:
+    name: loci-requirements
+    pre-run: playbooks/setup-gate
+    run: playbooks/loci-builder
+    post-run: playbooks/post
+    timeout: 3600
+    vars:
+      project: requirements
+    required-projects:
+      - openstack/requirements
+
+- job:
+    name: loci-swift
+    pre-run: playbooks/setup-gate
+    run: playbooks/loci-builder
+    post-run: playbooks/post
+    timeout: 1200
+    vars:
+      project: swift
+    required-projects:
+      - openstack/swift
+
+- job:
+    name: loci-trove
+    pre-run: playbooks/setup-gate
+    run: playbooks/loci-builder
+    post-run: playbooks/post
+    timeout: 1200
+    vars:
+      project: trove
+    required-projects:
+      - openstack/trove
