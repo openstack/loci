@@ -1,7 +1,6 @@
 ARG FROM=ubuntu:xenial
 FROM ${FROM}
 
-ENV GENERIC=yes
 ENV PATH=/var/lib/openstack/bin:$PATH
 ARG PROJECT
 ARG WHEELS=openstackloci/requirements:ubuntu
