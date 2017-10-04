@@ -18,12 +18,12 @@
     # NOTE(SamYaple): Unused right now
     - name: Extract wheels for tarball.o.o
       block:
-        - command: "docker save -o /tmp/wheels-{{ item }}.img openstackloci/{{ project }}:master-{{ item }}"
+        - command: "docker save -o /tmp/wheels-{{ item.name }}.img openstackloci/{{ project }}:master-{{ item.name }}"
           with_items: "{{ distros }}"
         - command: "{{ zuul.project.src_dir }}/scripts/fetch_wheels.py"
           environment:
-            WHEELS: /tmp/wheels-{{ item }}.img
-            WHEELS_DEST: "{{ zuul.executor.work_root }}/artifacts/{{ item }}.tar.gz"
+            WHEELS: /tmp/wheels-{{ item.name }}.img
+            WHEELS_DEST: "{{ zuul.executor.work_root }}/artifacts/{{ item.name }}.tar.gz"
           with_items: "{{ distros }}"
       become: True
       when: False
@@ -32,7 +32,7 @@
       block:
         - command: docker login -u {{ loci_docker_login.user }} -p {{ loci_docker_login.password }}
           no_log: True
-        - command: docker push openstackloci/{{ project }}:master-{{ item }}
+        - command: docker push openstackloci/{{ project }}:master-{{ item.name }}
           with_items: "{{ distros }}"
       become: True
       when: loci_docker_login is defined

@@ -1,0 +1,23 @@
+[base]
+name=CentOS-$releasever - Base
+baseurl=http://%%PACKAGE_MIRROR%%/centos/$releasever/os/$basearch/
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+
+[updates]
+name=CentOS-$releasever - Updates
+baseurl=http://%%PACKAGE_MIRROR%%/centos/$releasever/updates/$basearch/
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+
+[extras]
+name=CentOS-$releasever - Extras
+baseurl=http://%%PACKAGE_MIRROR%%/centos/$releasever/extras/$basearch/
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+
+[openstack]
+name=CentOS-$releasever - OpenStack
+baseurl=http://%%PACKAGE_MIRROR%%/centos/\$releasever/cloud/$basearch/openstack-pike/
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-Cloud

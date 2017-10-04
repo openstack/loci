@@ -14,7 +14,7 @@ case ${distro} in
             ca-certificates \
             netbase \
             python \
-            virtualenv \
+            python-pip \
             lsb-release \
             sudo
         ;;
@@ -22,7 +22,7 @@ case ${distro} in
         yum upgrade -y
         yum install -y --setopt=skip_missing_names_on_install=False \
             git \
-            python-virtualenv \
+            python-pip \
             redhat-lsb-core \
             sudo
         ;;
@@ -33,24 +33,12 @@ case ${distro} in
 esac
 
 if [[ "${PROJECT}" == 'requirements' ]]; then
-    /opt/loci/scripts/requirements.sh
+    $(dirname $0)/requirements.sh
     exit 0
 fi
 
-mkdir -p /opt/loci/
-cp $(dirname $0)/{clone_project.sh,pip_install.sh,fetch_wheels.py} /opt/loci/
-
-# NOTE(SamYaple): --system-site-packages flag allows python to use libraries
-# outside of the virtualenv if they do not exist inside the venv. This is a
-# requirement for using python-rbd which is not pip installable and is only
-# available in packaged form.
-virtualenv --system-site-packages /var/lib/openstack/
-source /var/lib/openstack/bin/activate
-pip install -U pip
-pip install -U setuptools wheel
-
+$(dirname $0)/setup_pip.sh
 $(dirname $0)/clone_project.sh
-
 $(dirname $0)/pip_install.sh \
         /tmp/${PROJECT} \
         pycrypto \
@@ -72,18 +60,20 @@ case ${distro} in
         if [[ ! -z ${PACKAGES} ]]; then
             apt-get install -y --no-install-recommends ${PACKAGES[@]}
         fi
+        pip uninstall -y virtualenv
         apt-get purge -y --auto-remove \
             git \
-            virtualenv
+            python-pip
         rm -rf /var/lib/apt/lists/*
         ;;
     centos)
         if [[ ! -z ${PACKAGES} ]]; then
             yum -y --setopt=skip_missing_names_on_install=False install ${PACKAGES[@]}
         fi
+        pip uninstall -y virtualenv
         yum -y autoremove \
             git \
-            python-virtualenv
+            python-pip
         yum clean all
         ;;
     *)

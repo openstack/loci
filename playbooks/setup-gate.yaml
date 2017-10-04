@@ -36,20 +36,28 @@
         - apt_key:
             url: https://download.docker.com/linux/ubuntu/gpg
         - apt_repository:
-            repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable
+            repo: deb http://{{ zuul_site_mirror_fqdn }}/deb-docker xenial stable
         - apt:
             name: "{{ item }}"
+            allow_unauthenticated: True
           with_items:
-            - docker-ce=17.06*
+            - docker-ce
             - python-pip
         - pip:
             name: docker
+        - docker_container:
+            name: registry
+            image: registry:2
+            state: started
+            published_ports:
+              - 172.17.0.1:5000:5000
         # NOTE(SamYaple): Allow all connections from containers to host so the
         # containers can access the http server for git and wheels
         - iptables:
+            action: insert
             chain: INPUT
             in_interface: docker0
-            policy: ACCEPT
+            jump: ACCEPT
       become: True
 
     - name: Setup http server for git and wheels

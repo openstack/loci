@@ -98,13 +98,10 @@ case ${distro} in
         ;;
 esac
 
-/opt/loci/scripts/clone_project.sh
+$(dirname $0)/setup_pip.sh
+$(dirname $0)/clone_project.sh
 
 mv /tmp/requirements/{global-requirements.txt,upper-constraints.txt} /
-
-python -m virtualenv /builder
-pip install -U pip
-pip install -U wheel setuptools
 
 # NOTE(SamYaple): Build all deps in parallel. This is safe because we are
 # constrained on the version and we are building with --no-deps

@@ -4,7 +4,7 @@ set -ex
 
 packages=$@
 
-/opt/loci/fetch_wheels.py
+$(dirname $0)/fetch_wheels.py
 
 mkdir -p /tmp/wheels/
 # NOTE(SamYaple): We exclude all files starting with '.' as these can be
