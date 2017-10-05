@@ -14,9 +14,12 @@ ceph-common        [ceph]
 python-rbd         [ceph]
 
 # LVM
-lvm2               [lvm]
-tgt                [platform:dpkg lvm]
-targetcli          [platform:rpm lvm]
+lvm2                    [lvm]
+
+tgt                     [platform:dpkg lvm]
+thin-provisioning-tools [platform:dpkg lvm]
+
+targetcli               [platform:rpm lvm]
 
 # QEMU
 qemu-utils         [platform:dpkg qemu]
