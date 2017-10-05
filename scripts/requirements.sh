@@ -62,8 +62,8 @@ case ${distro} in
     centos)
         yum upgrade -y
         # NOTE(SamYaple): https://bugs.centos.org/view.php?id=10750
-        yum install -y --setopt=tsflags=docs libffi-devel
-        yum install -y \
+        yum install -y --setopt=tsflags=docs --setopt=skip_missing_names_on_install=False libffi-devel
+        yum install -y --setopt=skip_missing_names_on_install=False \
             gcc \
             gcc-c++ \
             make \

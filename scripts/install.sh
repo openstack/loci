@@ -20,7 +20,7 @@ case ${distro} in
         ;;
     centos)
         yum upgrade -y
-        yum install -y \
+        yum install -y --setopt=skip_missing_names_on_install=False \
             git \
             python-virtualenv \
             sudo
@@ -77,7 +77,7 @@ case ${distro} in
         rm -rf /var/lib/apt/lists/*
         ;;
     centos)
-        yum -y install ${PACKAGES[@]}
+        yum -y --setopt=skip_missing_names_on_install=False install ${PACKAGES[@]}
         yum -y autoremove \
             git \
             python-virtualenv
