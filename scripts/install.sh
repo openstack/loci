@@ -23,6 +23,7 @@ case ${distro} in
         yum install -y --setopt=skip_missing_names_on_install=False \
             git \
             python-virtualenv \
+            redhat-lsb-core \
             sudo
         ;;
     *)
@@ -59,7 +60,6 @@ $(dirname $0)/pip_install.sh \
         bindep \
         ${packages[@]}
 
-$(dirname $0)/pip_install.sh bindep
 PACKAGES=($(bindep -f /opt/loci/bindep.txt -b ${PROJECT} ${PROFILES} || :))
 
 groupadd -g 42424 ${PROJECT}
@@ -70,14 +70,18 @@ chown ${PROJECT}:${PROJECT} /etc/${PROJECT} /var/log/${PROJECT} /var/lib/${PROJE
 
 case ${distro} in
     debian|ubuntu)
-        apt-get install -y --no-install-recommends ${PACKAGES[@]}
+        if [[ ! -z ${PACKAGES} ]]; then
+            apt-get install -y --no-install-recommends ${PACKAGES[@]}
+        fi
         apt-get purge -y --auto-remove \
             git \
             virtualenv
         rm -rf /var/lib/apt/lists/*
         ;;
     centos)
-        yum -y --setopt=skip_missing_names_on_install=False install ${PACKAGES[@]}
+        if [[ ! -z ${PACKAGES} ]]; then
+            yum -y --setopt=skip_missing_names_on_install=False install ${PACKAGES[@]}
+        fi
         yum -y autoremove \
             git \
             python-virtualenv

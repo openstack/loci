@@ -26,12 +26,12 @@ qemu-utils         [platform:dpkg qemu]
 qemu-img           [platform:rpm qemu]
 
 # Nova
-libpython2.7       [nova]
-libvirt0           [nova]
-
 iproute2           [platform:dpkg nova]
+libpython2.7       [platform:dpkg nova]
+libvirt0           [platform:dpkg nova]
 openvswitch-switch [platform:dpkg nova]
 
+libvirt-libs       [platform:rpm nova]
 openvswitch        [platform:rpm nova]
 
 # Neutron
@@ -41,12 +41,12 @@ dnsmasq-utils      [neutron]
 ebtables           [neutron]
 ipset              [neutron]
 iptables           [neutron]
-iputils-arping     [neutron]
 keepalived         [neutron]
-libpython2.7       [neutron]
 
 conntrack          [platform:dpkg neutron]
 iproute2           [platform:dpkg neutron]
+iputils-arping     [platform:dpkg neutron]
+libpython2.7       [platform:dpkg neutron]
 openvswitch-switch [platform:dpkg neutron]
 uuid-runtime       [platform:dpkg neutron]
 
