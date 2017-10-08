@@ -36,11 +36,13 @@
           with_items: "{{ distros }}"
           async: 1000
           poll: 0
-          register: builder
+          register: build
         - async_status:
             jid: "{{ item.ansible_job_id }}"
-          with_items: "{{ builder.results }}"
-          register: builder_result
-          until: builder_result.finished
-          retries: 30
-          delay: 60
+          with_items: "{{ build.results }}"
+          register: build_result
+          until:
+            - build_result.finished is defined
+            - build_result.finished
+          retries: 300
+          delay: 5
