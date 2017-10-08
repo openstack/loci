@@ -1,4 +1,6 @@
-#!/bin/bash -ex
+#!/bin/bash
+
+set -ex
 
 packages=$@
 
@@ -10,4 +12,4 @@ mkdir -p /tmp/wheels/
 # stores.
 tar xf /tmp/wheels.tar.gz --exclude='.*' -C /tmp/wheels/
 
-pip install --no-cache-dir --no-index --no-compile --find-links /tmp/wheels/ ${packages[@]}
+pip install --no-cache-dir --no-index --no-compile --find-links /tmp/wheels/ ${packages} ${PIP_PACKAGES}

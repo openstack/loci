@@ -8,9 +8,9 @@ ARG PROJECT_REPO=https://git.openstack.org/openstack/${PROJECT}
 ARG PROJECT_REF=master
 ARG DISTRO
 ARG PROFILES
-ARG PYPI_PACKAGES
+ARG PIP_PACKAGES
 
 COPY scripts /opt/loci/scripts
 COPY bindep.txt /opt/loci/
 
-RUN /opt/loci/scripts/install.sh ${PYPI_PACKAGES}
+RUN /opt/loci/scripts/install.sh

@@ -69,7 +69,7 @@ For more advanced building you can use docker build arguments to define:
     base image.
   * `PROFILES` The bindep profiles to specify to configure which packages get
     installed. This is a space sperated list.
-  * `PYPI_PACKAGES` Specify additional packages you would like installed. The
+  * `PIP_PACKAGES` Specify additional packages you would like installed. The
     only caveat is these packages must exist in your WHEELS tarball. So if you
     wanted to include rpdb, you would need to have built that into your WHEELS.
 

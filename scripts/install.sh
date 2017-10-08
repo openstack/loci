@@ -1,6 +1,6 @@
-#!/bin/bash -ex
+#!/bin/bash
 
-packages=$@
+set -ex
 
 distro=$(awk -F= '/^ID=/ {gsub(/\"/, "", $2); print $2}' /etc/*release)
 export distro=${DISTRO:=$distro}
@@ -57,8 +57,7 @@ $(dirname $0)/pip_install.sh \
         pymysql \
         python-memcached \
         uwsgi \
-        bindep \
-        ${packages[@]}
+        bindep
 
 PACKAGES=($(bindep -f /opt/loci/bindep.txt -b ${PROJECT} ${PROFILES} || :))
 
