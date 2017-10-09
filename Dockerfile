@@ -9,6 +9,7 @@ ARG PROJECT_REF=master
 ARG DISTRO
 ARG PROFILES
 ARG PIP_PACKAGES
+ARG PLUGIN=no
 
 COPY scripts /opt/loci/scripts
 COPY bindep.txt /opt/loci/
