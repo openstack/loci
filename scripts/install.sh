@@ -51,6 +51,13 @@ if [[ -e /tmp/${PROJECT}/custom-requirements.txt ]]; then
     pip install --no-cache-dir -r /tmp/${PROJECT}/custom-requirements.txt --constraint /tmp/packages/upper-constraints.txt
 fi
 
+
+# run custom script
+if [[ -e /tmp/loci-${PROJECT}.sh ]]; then
+    /tmp/loci-${PROJECT}.sh
+fi
+
+
 groupadd -g 42424 ${PROJECT}
 useradd -u 42424 -g ${PROJECT} -M -d /var/lib/${PROJECT} -s /usr/sbin/nologin -c "${PROJECT} user" ${PROJECT}
 
