@@ -14,7 +14,7 @@ case ${distro} in
             ca-certificates \
             netbase \
             python \
-            python-pip \
+            virtualenv \
             lsb-release \
             sudo
         ;;
@@ -22,7 +22,8 @@ case ${distro} in
         yum upgrade -y
         yum install -y --setopt=skip_missing_names_on_install=False \
             git \
-            python-pip \
+            python \
+            python-virtualenv \
             redhat-lsb-core \
             sudo
         ;;
@@ -37,6 +38,7 @@ if [[ "${PROJECT}" == 'requirements' ]]; then
     exit 0
 fi
 
+$(dirname $0)/fetch_wheels.sh
 $(dirname $0)/setup_pip.sh
 $(dirname $0)/clone_project.sh
 $(dirname $0)/pip_install.sh \
@@ -45,7 +47,8 @@ $(dirname $0)/pip_install.sh \
         pymysql \
         python-memcached \
         uwsgi \
-        bindep
+        bindep \
+        ${PIP_PACKAGES}
 
 PACKAGES=($(bindep -f /opt/loci/bindep.txt -b ${PROJECT} ${PROFILES} || :))
 
@@ -60,7 +63,6 @@ case ${distro} in
         if [[ ! -z ${PACKAGES} ]]; then
             apt-get install -y --no-install-recommends ${PACKAGES[@]}
         fi
-        pip uninstall -y virtualenv
         apt-get purge -y --auto-remove \
             git \
             python-pip
@@ -70,7 +72,6 @@ case ${distro} in
         if [[ ! -z ${PACKAGES} ]]; then
             yum -y --setopt=skip_missing_names_on_install=False install ${PACKAGES[@]}
         fi
-        pip uninstall -y virtualenv
         yum -y autoremove \
             git \
             python-pip
@@ -81,6 +82,12 @@ case ${distro} in
         exit 1
         ;;
 esac
+
+# NOTE(SamYaple): Removing this file allows python to use libraries outside of
+# the virtualenv if they do not exist inside the venv. This is a requirement
+# for using python-rbd which is not pip installable and is only available in
+# packaged form.
+rm /var/lib/openstack/lib/python*/no-global-site-packages.txt
 
 rm -rf /tmp/* /root/.cache
 find /usr/ /var/ -type f -name "*.pyc" -delete

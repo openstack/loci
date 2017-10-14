@@ -2,15 +2,14 @@
 
 set -ex
 
-pip install -U virtualenv
-
-# NOTE(SamYaple): --system-site-packages flag allows python to use libraries
-# outside of the virtualenv if they do not exist inside the venv. This is a
-# requirement for using python-rbd which is not pip installable and is only
-# available in packaged form.
-# --no-pip --no-setuptools --no-wheel is declared because it was breaking pypi
-# mirrors until setuptools is setup properly
-virtualenv --no-pip --no-setuptools --no-wheel --system-site-packages /var/lib/openstack/
-source /var/lib/openstack/bin/activate
-pip install -U pip
-pip install -U setuptools wheel
+# NOTE(SamYaple): This little dance allows us to install the latest pip and
+# setuptools without get_pip.py or the python-pip package (which is in epel on
+# centos)
+if (( $(virtualenv --version | cut -d. -f1) >= 14 )); then
+    SETUPTOOLS="--no-setuptools"
+fi
+virtualenv --extra-search-dir=/tmp/wheels ${SETUPTOOLS} /tmp/venv
+source /tmp/venv/bin/activate
+pip install --upgrade virtualenv
+hash -r
+virtualenv --extra-search-dir=/tmp/wheels /var/lib/openstack

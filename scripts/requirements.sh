@@ -56,8 +56,7 @@ case ${distro} in
             libz-dev \
             pkg-config \
             python-dev \
-            python-pip \
-            python-virtualenv
+            python-pip
         ;;
     centos)
         yum upgrade -y
@@ -87,7 +86,6 @@ case ${distro} in
             python \
             python-devel \
             python-pip \
-            python-virtualenv \
             libgcrypt \
             nss-util \
             systemd-devel
@@ -100,7 +98,6 @@ esac
 
 $(dirname $0)/setup_pip.sh
 $(dirname $0)/clone_project.sh
-
 mv /tmp/requirements/{global-requirements.txt,upper-constraints.txt} /
 
 # NOTE(SamYaple): Build all deps in parallel. This is safe because we are
@@ -110,7 +107,7 @@ split -l1 /upper-constraints.txt
 ls -1 | xargs -n1 -P20 -t pip wheel --no-deps --wheel-dir / -c /upper-constraints.txt -r
 popd
 # NOTE(SamYaple): Handle packages not in global-requirements
-additional_packages=(bindep==2.5.0 uwsgi)
+additional_packages=(argparse bindep==2.5.0 pip setuptools uwsgi wheel virtualenv)
 echo "${additional_packages[@]}" | xargs -n1 -P20 pip wheel --wheel-dir / -c /upper-constraints.txt
 
 # NOTE(SamYaple): We want to purge all files that are not wheels or txt to
