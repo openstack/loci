@@ -90,7 +90,7 @@
 - job:
     name: publish-loci-cinder
     parent: loci-cinder
-    run: playbooks/push
+    post-run: playbooks/push
     secrets:
       - loci_docker_login
 
@@ -105,7 +105,7 @@
 - job:
     name: publish-loci-designate
     parent: loci-designate
-    run: playbooks/push
+    post-run: playbooks/push
     secrets:
       - loci_docker_login
 
@@ -120,7 +120,7 @@
 - job:
     name: publish-loci-glance
     parent: loci-glance
-    run: playbooks/push
+    post-run: playbooks/push
     secrets:
       - loci_docker_login
 
@@ -135,7 +135,7 @@
 - job:
     name: publish-loci-heat
     parent: loci-heat
-    run: playbooks/push
+    post-run: playbooks/push
     secrets:
       - loci_docker_login
 
@@ -150,7 +150,7 @@
 - job:
     name: publish-loci-horizon
     parent: loci-horizon
-    run: playbooks/push
+    post-run: playbooks/push
     secrets:
       - loci_docker_login
 
@@ -165,7 +165,7 @@
 - job:
     name: publish-loci-ironic
     parent: loci-ironic
-    run: playbooks/push
+    post-run: playbooks/push
     secrets:
       - loci_docker_login
 
@@ -180,7 +180,7 @@
 - job:
     name: publish-loci-keystone
     parent: loci-keystone
-    run: playbooks/push
+    post-run: playbooks/push
     secrets:
       - loci_docker_login
 
@@ -195,7 +195,7 @@
 - job:
     name: publish-loci-murano
     parent: loci-murano
-    run: playbooks/push
+    post-run: playbooks/push
     secrets:
       - loci_docker_login
 
@@ -210,7 +210,7 @@
 - job:
     name: publish-loci-neutron
     parent: loci-neutron
-    run: playbooks/push
+    post-run: playbooks/push
     secrets:
       - loci_docker_login
 
@@ -225,7 +225,7 @@
 - job:
     name: publish-loci-nova
     parent: loci-nova
-    run: playbooks/push
+    post-run: playbooks/push
     secrets:
       - loci_docker_login
 
@@ -241,7 +241,7 @@
 - job:
     name: publish-loci-requirements
     parent: loci-requirements
-    run: playbooks/push
+    post-run: playbooks/push
     secrets:
       - loci_docker_login
 
@@ -256,7 +256,7 @@
 - job:
     name: publish-loci-swift
     parent: loci-swift
-    run: playbooks/push
+    post-run: playbooks/push
     secrets:
       - loci_docker_login
 
@@ -271,6 +271,6 @@
 - job:
     name: publish-loci-trove
     parent: loci-trove
-    run: playbooks/push
+    post-run: playbooks/push
     secrets:
       - loci_docker_login

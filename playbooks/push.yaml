@@ -8,4 +8,3 @@
           no_log: True
         - command: docker push openstackloci/{{ project }}:master-{{ item.name }}
           with_items: "{{ distros }}"
-      become: True

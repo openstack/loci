@@ -53,7 +53,8 @@
       block:
         - docker_image:
             path: "{{ zuul.project.src_dir }}"
-            name: openstackloci/{{ project }}:master-{{ item.name }}
+            name: openstackloci/{{ project }}
+            tag: master-{{ item.name }}
             pull: False
             buildargs: "{{ item.buildargs.project }}"
           with_items: "{{ distros }}"
@@ -69,12 +70,3 @@
             - build_result.finished
           retries: 300
           delay: 5
-
-    - name: Push project to DockerHub
-      block:
-        - command: docker login -u {{ loci_docker_login.user }} -p {{ loci_docker_login.password }}
-          no_log: True
-        - command: docker push openstackloci/{{ project }}:master-{{ item.name }}
-          with_items: "{{ distros }}"
-      become: True
-      when: loci_docker_login is defined
