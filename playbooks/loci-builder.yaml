@@ -24,7 +24,7 @@
           until:
             - pull_result.finished is defined
             - pull_result.finished
-          retries: 60
+          retries: 1000
           delay: 5
       when: project != 'requirements'
 
@@ -46,7 +46,7 @@
           until:
             - base_result.finished is defined
             - base_result.finished
-          retries: 30
+          retries: 1000
           delay: 5
 
     - name: Build project images
@@ -68,5 +68,5 @@
           until:
             - build_result.finished is defined
             - build_result.finished
-          retries: 300
+          retries: 1000
           delay: 5
