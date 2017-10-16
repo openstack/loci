@@ -1,0 +1,11 @@
+- hosts: all
+  tasks:
+    - include_vars: vars.yaml
+
+    - name: Push project to DockerHub
+      block:
+        - command: docker login -u {{ loci_docker_login.user }} -p {{ loci_docker_login.password }}
+          no_log: True
+        - command: docker push openstackloci/{{ project }}:master-{{ item.name }}
+          with_items: "{{ distros }}"
+      become: True
