@@ -85,6 +85,7 @@
     vars:
       project: cinder
     required-projects:
+      - openstack/loci
       - openstack/cinder
 
 - job:
@@ -100,6 +101,7 @@
     vars:
       project: designate
     required-projects:
+      - openstack/loci
       - openstack/designate
 
 - job:
@@ -115,6 +117,7 @@
     vars:
       project: glance
     required-projects:
+      - openstack/loci
       - openstack/glance
 
 - job:
@@ -130,6 +133,7 @@
     vars:
       project: heat
     required-projects:
+      - openstack/loci
       - openstack/heat
 
 - job:
@@ -145,6 +149,7 @@
     vars:
       project: horizon
     required-projects:
+      - openstack/loci
       - openstack/horizon
 
 - job:
@@ -160,6 +165,7 @@
     vars:
       project: ironic
     required-projects:
+      - openstack/loci
       - openstack/ironic
 
 - job:
@@ -175,6 +181,7 @@
     vars:
       project: keystone
     required-projects:
+      - openstack/loci
       - openstack/keystone
 
 - job:
@@ -190,6 +197,7 @@
     vars:
       project: murano
     required-projects:
+      - openstack/loci
       - openstack/murano
 
 - job:
@@ -205,6 +213,7 @@
     vars:
       project: neutron
     required-projects:
+      - openstack/loci
       - openstack/neutron
 
 - job:
@@ -220,6 +229,7 @@
     vars:
       project: nova
     required-projects:
+      - openstack/loci
       - openstack/nova
 
 - job:
@@ -236,6 +246,7 @@
     vars:
       project: requirements
     required-projects:
+      - openstack/loci
       - openstack/requirements
 
 - job:
@@ -251,6 +262,7 @@
     vars:
       project: swift
     required-projects:
+      - openstack/loci
       - openstack/swift
 
 - job:
@@ -266,6 +278,7 @@
     vars:
       project: trove
     required-projects:
+      - openstack/loci
       - openstack/trove
 
 - job:
