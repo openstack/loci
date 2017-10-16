@@ -27,12 +27,3 @@
           with_items: "{{ distros }}"
       become: True
       when: False
-
-    - name: Push requirements to DockerHub
-      block:
-        - command: docker login -u {{ loci_docker_login.user }} -p {{ loci_docker_login.password }}
-          no_log: True
-        - command: docker push openstackloci/{{ project }}:master-{{ item.name }}
-          with_items: "{{ distros }}"
-      become: True
-      when: loci_docker_login is defined
