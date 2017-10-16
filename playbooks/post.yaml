@@ -1,7 +1,5 @@
 - hosts: all
   tasks:
-    - include_vars: vars.yaml
-
     - name: Copy logs
       synchronize:
         src: '/logs'
@@ -14,16 +12,3 @@
           - --include=*/
           - --exclude=*
           - --prune-empty-dirs
-
-    # NOTE(SamYaple): Unused right now
-    - name: Extract wheels for tarball.o.o
-      block:
-        - command: "docker save -o /tmp/wheels-{{ item.name }}.img openstackloci/{{ project }}:master-{{ item.name }}"
-          with_items: "{{ distros }}"
-        - command: "{{ zuul.project.src_dir }}/scripts/fetch_wheels.py"
-          environment:
-            WHEELS: /tmp/wheels-{{ item.name }}.img
-            WHEELS_DEST: "{{ zuul.executor.work_root }}/artifacts/{{ item.name }}.tar.gz"
-          with_items: "{{ distros }}"
-      become: True
-      when: False

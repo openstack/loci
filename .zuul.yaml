@@ -90,6 +90,7 @@
 - job:
     name: publish-loci-cinder
     parent: loci-cinder
+    run: playbooks/push
     secrets:
       - loci_docker_login
 
@@ -104,6 +105,7 @@
 - job:
     name: publish-loci-designate
     parent: loci-designate
+    run: playbooks/push
     secrets:
       - loci_docker_login
 
@@ -118,6 +120,7 @@
 - job:
     name: publish-loci-glance
     parent: loci-glance
+    run: playbooks/push
     secrets:
       - loci_docker_login
 
@@ -132,6 +135,7 @@
 - job:
     name: publish-loci-heat
     parent: loci-heat
+    run: playbooks/push
     secrets:
       - loci_docker_login
 
@@ -146,6 +150,7 @@
 - job:
     name: publish-loci-horizon
     parent: loci-horizon
+    run: playbooks/push
     secrets:
       - loci_docker_login
 
@@ -160,6 +165,7 @@
 - job:
     name: publish-loci-ironic
     parent: loci-ironic
+    run: playbooks/push
     secrets:
       - loci_docker_login
 
@@ -174,6 +180,7 @@
 - job:
     name: publish-loci-keystone
     parent: loci-keystone
+    run: playbooks/push
     secrets:
       - loci_docker_login
 
@@ -188,6 +195,7 @@
 - job:
     name: publish-loci-murano
     parent: loci-murano
+    run: playbooks/push
     secrets:
       - loci_docker_login
 
@@ -202,6 +210,7 @@
 - job:
     name: publish-loci-neutron
     parent: loci-neutron
+    run: playbooks/push
     secrets:
       - loci_docker_login
 
@@ -216,6 +225,7 @@
 - job:
     name: publish-loci-nova
     parent: loci-nova
+    run: playbooks/push
     secrets:
       - loci_docker_login
 
@@ -231,6 +241,7 @@
 - job:
     name: publish-loci-requirements
     parent: loci-requirements
+    run: playbooks/push
     secrets:
       - loci_docker_login
 
@@ -245,6 +256,7 @@
 - job:
     name: publish-loci-swift
     parent: loci-swift
+    run: playbooks/push
     secrets:
       - loci_docker_login
 
@@ -259,5 +271,6 @@
 - job:
     name: publish-loci-trove
     parent: loci-trove
+    run: playbooks/push
     secrets:
       - loci_docker_login
