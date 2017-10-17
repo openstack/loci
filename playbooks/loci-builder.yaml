@@ -31,7 +31,7 @@
     - name: Build base images
       block:
         - docker_image:
-            path: "{{ zuul.project.src_dir }}/dockerfiles/{{ item.name }}"
+            path: "{{ loci_src_dir }}/dockerfiles/{{ item.name }}"
             name: base
             tag: "{{ item.name }}"
             buildargs: "{{ item.buildargs.base }}"
@@ -52,7 +52,7 @@
     - name: Build project images
       block:
         - docker_image:
-            path: "{{ zuul.project.src_dir }}"
+            path: "{{ loci_src_dir }}"
             name: openstackloci/{{ project }}
             tag: "{{ branch }}-{{ item.name }}"
             pull: False

@@ -7,6 +7,10 @@ docker_daemon:
   insecure-registries:
     - 172.17.0.1:5000
 
+# NOTE(SamYaple): When running in the loci repo, the project is "loci", but
+# when running as a post job for cinder, the project is "cinder". We statically
+# declare the path rather than using zuul variables so thats not an issue
+loci_src_dir: "src/git.openstack.org/openstack/loci"
 branch: "{{ zuul_execution_branch.split('/')[-1] }}"
 
 distros:
