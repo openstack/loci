@@ -1,14 +1,19 @@
 - hosts: all
   tasks:
+    - name: Collect logs
+      block:
+        # NOTE(SamYaple): https://github.com/ansible/ansible/issues/14131
+        - command: cp -r /home/zuul/.ansible_async /logs/async_logs
+        - command: journalctl -xb -u docker.service
+          register: docker_daemon_log
+          no_log: True
+        - copy:
+            content: "{{ docker_daemon_log.stdout }}"
+            dest: /logs/docker_daemon.log
+      become: true
+
     - name: Copy logs
       synchronize:
-        src: '/logs'
-        dest: '{{ zuul.executor.log_root }}'
+        src: /logs
+        dest: "{{ zuul.executor.log_root }}/{{ inventory_hostname }}"
         mode: pull
-        copy_links: true
-        verify_host: true
-        rsync_opts:
-          - --include=/logs/**
-          - --include=*/
-          - --exclude=*
-          - --prune-empty-dirs

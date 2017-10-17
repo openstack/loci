@@ -60,15 +60,16 @@
             jump: ACCEPT
       become: True
 
-    - name: Setup http server for git and wheels
+    - name: Setup http server for git repos
       block:
         - file:
             path: "{{ item.path }}"
             owner: "{{ item.owner }}"
             state: directory
           with_items:
-            - path: /logs/
+            - path: /logs/apache/
               owner: zuul
+              recurse: True
             - path: /webroot/
               owner: zuul
             - path: /etc/systemd/system/apache2.service.d/
