@@ -54,7 +54,7 @@
         - docker_image:
             path: "{{ zuul.project.src_dir }}"
             name: openstackloci/{{ project }}
-            tag: master-{{ item.name }}
+            tag: "{{ branch }}-{{ item.name }}"
             pull: False
             buildargs: "{{ item.buildargs.project }}"
           with_items: "{{ distros }}"

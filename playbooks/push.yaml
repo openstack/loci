@@ -6,5 +6,5 @@
       block:
         - command: docker login -u {{ loci_docker_login.user }} -p {{ loci_docker_login.password }}
           no_log: True
-        - command: docker push openstackloci/{{ project }}:master-{{ item.name }}
+        - command: docker push openstackloci/{{ project }}:{{ branch }}-{{ item.name }}
           with_items: "{{ distros }}"

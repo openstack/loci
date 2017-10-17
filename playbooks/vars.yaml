@@ -7,6 +7,8 @@ docker_daemon:
   insecure-registries:
     - 172.17.0.1:5000
 
+branch: "{{ zuul_execution_branch.split('/')[-1] }}"
+
 distros:
   - name: centos
     image: centos:7
