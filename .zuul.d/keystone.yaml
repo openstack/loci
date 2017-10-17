@@ -1,0 +1,27 @@
+- project:
+    name: openstack/loci
+    check:
+      jobs:
+        - loci-keystone
+    gate:
+      jobs:
+        - loci-keystone
+    post:
+      jobs:
+        - publish-loci-keystone
+
+- job:
+    name: loci-keystone
+    parent: loci-base
+    vars:
+      project: keystone
+    required-projects:
+      - openstack/loci
+      - openstack/keystone
+
+- job:
+    name: publish-loci-keystone
+    parent: loci-keystone
+    post-run: playbooks/push
+    secrets:
+      - loci_docker_login

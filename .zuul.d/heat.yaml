@@ -1,0 +1,27 @@
+- project:
+    name: openstack/loci
+    check:
+      jobs:
+        - loci-heat
+    gate:
+      jobs:
+        - loci-heat
+    post:
+      jobs:
+        - publish-loci-heat
+
+- job:
+    name: loci-heat
+    parent: loci-base
+    vars:
+      project: heat
+    required-projects:
+      - openstack/loci
+      - openstack/heat
+
+- job:
+    name: publish-loci-heat
+    parent: loci-heat
+    post-run: playbooks/push
+    secrets:
+      - loci_docker_login
