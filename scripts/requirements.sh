@@ -12,11 +12,18 @@ mv /tmp/requirements/{global-requirements.txt,upper-constraints.txt} /
 # constrained on the version and we are building with --no-deps
 pushd $(mktemp -d)
 split -l1 /upper-constraints.txt
-ls -1 | xargs -n1 -P20 -t pip wheel --no-deps --wheel-dir / -c /upper-constraints.txt -r
+ls -1 | xargs -n1 -P20 -t pip wheel --no-deps --wheel-dir / -c /upper-constraints.txt -r | tee /tmp/wheels.txt
 popd
-# NOTE(SamYaple): Handle packages not in global-requirements
-additional_packages=(argparse git+https://github.com/openstack-infra/bindep pip setuptools uwsgi wheel virtualenv)
+# NOTE(SamYaple): Handle packages not in upper-constriants and not in PyPI as
+# native whls
+additional_packages=(git+https://github.com/openstack-infra/bindep@24427065c5f30047ac80370be0a390e7f417ce34 uwsgi)
 echo "${additional_packages[@]}" | xargs -n1 -P20 pip wheel --wheel-dir / -c /upper-constraints.txt
+
+# NOTE(SamYaple) Remove native-binary wheels, we only want to keep wheels that
+# we compiled ourselves
+# TODO(SamYaple): Figure out how to not download a whl if it already exists in
+# whl form upstream
+awk -F'[ ,]+' '/^Skipping/ {gsub("-","_");print $2}' /tmp/wheels.txt | xargs -n1 bash -c 'ls /$1-*' _ | xargs rm
 
 # NOTE(SamYaple): We want to purge all files that are not wheels or txt to
 # reduce the size of the layer to only what is needed
