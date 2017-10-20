@@ -8,6 +8,12 @@ $(dirname $0)/install_packages.sh
 $(dirname $0)/clone_project.sh
 mv /tmp/requirements/{global-requirements.txt,upper-constraints.txt} /
 
+# NOTE(SamYaple): https://issues.apache.org/jira/browse/PROTON-1381
+# TODO(SamYaple): Make python-qpid-proton build here (possibly patch it)
+if (( $(openssl version | awk -F'[ .]' '{print $3}') >= 1 )); then
+    sed -i '/python-qpid-proton/d' /upper-constraints.txt
+fi
+
 # NOTE(SamYaple): Build all deps in parallel. This is safe because we are
 # constrained on the version and we are building with --no-deps
 pushd $(mktemp -d)
