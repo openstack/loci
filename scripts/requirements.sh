@@ -16,6 +16,7 @@ fi
 
 # NOTE(SamYaple): Build all deps in parallel. This is safe because we are
 # constrained on the version and we are building with --no-deps
+export CASS_DRIVER_BUILD_CONCURRENCY=8
 pushd $(mktemp -d)
 split -l1 /upper-constraints.txt
 ls -1 | xargs -n1 -P20 -t pip wheel --no-deps --wheel-dir / -c /upper-constraints.txt -r | tee /tmp/wheels.txt
