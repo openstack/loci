@@ -1,0 +1,6 @@
+- job:
+    name: loci-base
+    pre-run: playbooks/setup-gate
+    run: playbooks/loci-builder
+    post-run: playbooks/post
+    timeout: 1200

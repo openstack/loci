@@ -1,0 +1,27 @@
+- project:
+    name: openstack/loci
+    check:
+      jobs:
+        - loci-cinder
+    gate:
+      jobs:
+        - loci-cinder
+    post:
+      jobs:
+        - publish-loci-cinder
+
+- job:
+    name: loci-cinder
+    parent: loci-base
+    vars:
+      project: cinder
+    required-projects:
+      - openstack/loci
+      - openstack/cinder
+
+- job:
+    name: publish-loci-cinder
+    parent: loci-cinder
+    post-run: playbooks/push
+    secrets:
+      - loci_docker_login
