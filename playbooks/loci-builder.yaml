@@ -10,7 +10,7 @@
       block:
         - docker_image:
             name: openstackloci/requirements
-            tag: "{{ item.name }}"
+            tag: "{{ branch}}-{{ item.name }}"
             repository: 172.17.0.1:5000/openstackloci/requirements
             push: yes
           with_items: "{{ distros }}"

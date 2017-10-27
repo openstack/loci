@@ -24,7 +24,7 @@ distros:
       project:
         PROJECT: "{{ project }}"
         PROJECT_REPO: http://172.17.0.1/git/openstack/{{ project }}
-        WHEELS: 172.17.0.1:5000/openstackloci/requirements:centos
+        WHEELS: 172.17.0.1:5000/openstackloci/requirements:{{ branch }}-centos
         FROM: base:centos
   - name: ubuntu
     image: ubuntu:xenial
@@ -39,5 +39,5 @@ distros:
       project:
         PROJECT: "{{ project }}"
         PROJECT_REPO: http://172.17.0.1/git/openstack/{{ project }}
-        WHEELS: 172.17.0.1:5000/openstackloci/requirements:ubuntu
+        WHEELS: 172.17.0.1:5000/openstackloci/requirements:{{ branch }}-ubuntu
         FROM: base:ubuntu
