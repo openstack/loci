@@ -23,6 +23,6 @@
 - job:
     name: publish-loci-requirements
     parent: loci-requirements
-    post-run: playbooks/push
+    post-run: playbooks/push.yaml
     secrets:
       - loci_docker_login

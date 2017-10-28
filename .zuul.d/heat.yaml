@@ -22,6 +22,6 @@
 - job:
     name: publish-loci-heat
     parent: loci-heat
-    post-run: playbooks/push
+    post-run: playbooks/push.yaml
     secrets:
       - loci_docker_login
