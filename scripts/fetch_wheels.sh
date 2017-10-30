@@ -2,7 +2,13 @@
 
 set -ex
 
-$(dirname $0)/fetch_wheels.py
+if [[ "${PYTHON3}" == "no" ]]; then
+    python=python2
+else
+    python=python3
+fi
+
+${python} $(dirname $0)/fetch_wheels.py
 
 mkdir -p /tmp/wheels/
 # NOTE(SamYaple): We exclude all files starting with '.' as these can be

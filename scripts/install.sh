@@ -5,6 +5,14 @@ set -ex
 distro=$(awk -F= '/^ID=/ {gsub(/\"/, "", $2); print $2}' /etc/*release)
 export distro=${DISTRO:=$distro}
 
+if [[ "${PYTHON3}" == "no" ]]; then
+    dpkg_python_packages=("python" "virtualenv")
+    rpm_python_packages=("python" "python-virtualenv")
+else
+    dpkg_python_packages=("python3" "python3-virtualenv")
+    rpm_python_packages=("python3" "python3-virtualenv")
+fi
+
 case ${distro} in
     debian|ubuntu)
         apt-get update
@@ -13,19 +21,17 @@ case ${distro} in
             git \
             ca-certificates \
             netbase \
-            python \
-            virtualenv \
             lsb-release \
-            sudo
+            sudo \
+            ${dpkg_python_packages[@]}
         ;;
     centos)
         yum upgrade -y
         yum install -y --setopt=skip_missing_names_on_install=False \
             git \
-            python \
-            python-virtualenv \
             redhat-lsb-core \
-            sudo
+            sudo \
+            ${rpm_python_packages[@]}
         ;;
     *)
         echo "Unknown distro: ${distro}"
