@@ -43,7 +43,7 @@ if [[ "${PLUGIN}" == "no" ]]; then
     $(dirname $0)/create_user.sh
     $(dirname $0)/setup_pip.sh
     $(dirname $0)/pip_install.sh \
-        bindep \
+        bindep==2.5.1.dev1 \
         pycrypto \
         pymysql \
         python-memcached \
