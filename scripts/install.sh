@@ -62,6 +62,9 @@ fi
 patch /var/lib/openstack/lib/python*/site-packages/bindep/depends.py < /opt/loci/scripts/bindep.depends.patch
 rm -f /var/lib/openstack/lib/python*/site-packages/bindep/depends.pyc
 
+if [[ ${PROJECT} == 'nova' ]]; then
+    $(dirname $0)/pip_install.sh libvirt-python
+fi
 $(dirname $0)/clone_project.sh
 $(dirname $0)/pip_install.sh /tmp/${PROJECT} ${PIP_PACKAGES}
 $(dirname $0)/install_packages.sh
