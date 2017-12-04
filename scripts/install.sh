@@ -50,7 +50,7 @@ if [[ "${PLUGIN}" == "no" ]]; then
     $(dirname $0)/setup_pip.sh
     $(dirname $0)/pip_install.sh \
         bindep==2.5.1.dev1 \
-        pycrypto \
+        cryptography \
         pymysql \
         python-memcached \
         uwsgi
