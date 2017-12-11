@@ -6,11 +6,14 @@ case ${distro} in
     debian|ubuntu)
         apt-get purge -y --auto-remove \
             git \
+            patch \
             python3-virtualenv \
             virtualenv
         rm -rf /var/lib/apt/lists/*
         ;;
     centos)
+        # NOTE(SamYaple): We should be removing 'patch' here, but that breaks
+        # centos as it tries to rip out systemd for some reason
         yum -y autoremove \
             git \
             python-virtualenv \

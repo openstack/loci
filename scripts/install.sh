@@ -22,6 +22,7 @@ case ${distro} in
             ca-certificates \
             netbase \
             lsb-release \
+            patch \
             sudo \
             ${dpkg_python_packages[@]}
         ;;
@@ -29,6 +30,7 @@ case ${distro} in
         yum upgrade -y
         yum install -y --setopt=skip_missing_names_on_install=False \
             git \
+            patch \
             redhat-lsb-core \
             sudo \
             ${rpm_python_packages[@]}
@@ -49,12 +51,15 @@ if [[ "${PLUGIN}" == "no" ]]; then
     $(dirname $0)/create_user.sh
     $(dirname $0)/setup_pip.sh
     $(dirname $0)/pip_install.sh \
-        bindep==2.5.1.dev1 \
+        bindep==2.5.0 \
         cryptography \
         pymysql \
         python-memcached \
         uwsgi
 fi
+
+# NOTE(SamYaple): Remove when bindep>2.5.0 is released
+patch /var/lib/openstack/lib/python*/site-packages/bindep/depends.py < /opt/loci/scripts/bindep.depends.patch
 
 $(dirname $0)/clone_project.sh
 $(dirname $0)/pip_install.sh /tmp/${PROJECT} ${PIP_PACKAGES}

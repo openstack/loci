@@ -2,8 +2,27 @@
 
 set -eux
 
+case ${distro} in
+    debian|ubuntu)
+        apt-get update
+        apt-get upgrade -y
+        apt-get install -y --no-install-recommends patch
+        ;;
+    centos)
+        yum upgrade -y
+        yum install -y --setopt=skip_missing_names_on_install=False patch
+        ;;
+    *)
+        echo "Unknown distro: ${distro}"
+        exit 1
+        ;;
+esac
+
 $(dirname $0)/setup_pip.sh
-pip install git+https://github.com/openstack-infra/bindep
+pip install bindep==2.5.0
+# NOTE(SamYaple): Remove when bindep>2.5.0 is released
+patch /var/lib/openstack/lib/python*/site-packages/bindep/depends.py < /opt/loci/scripts/bindep.depends.patch
+
 $(dirname $0)/install_packages.sh
 $(dirname $0)/clone_project.sh
 mv /tmp/requirements/{global-requirements.txt,upper-constraints.txt} /
@@ -33,7 +52,7 @@ ls -1 | xargs -n1 -P20 -t pip wheel --no-deps --wheel-dir / -c /upper-constraint
 popd
 # NOTE(SamYaple): Handle packages not in upper-constriants and not in PyPI as
 # native whls
-additional_packages=(git+https://github.com/openstack-infra/bindep@24427065c5f30047ac80370be0a390e7f417ce34 uwsgi)
+additional_packages=(uwsgi)
 echo "${additional_packages[@]}" | xargs -n1 -P20 pip wheel --wheel-dir / -c /upper-constraints.txt | tee -a /tmp/wheels.txt
 
 # NOTE(SamYaple) Remove native-binary wheels, we only want to keep wheels that
