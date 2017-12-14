@@ -60,6 +60,7 @@ fi
 
 # NOTE(SamYaple): Remove when bindep>2.5.0 is released
 patch /var/lib/openstack/lib/python*/site-packages/bindep/depends.py < /opt/loci/scripts/bindep.depends.patch
+rm -f /var/lib/openstack/lib/python*/site-packages/bindep/depends.pyc
 
 $(dirname $0)/clone_project.sh
 $(dirname $0)/pip_install.sh /tmp/${PROJECT} ${PIP_PACKAGES}
