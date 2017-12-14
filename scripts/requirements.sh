@@ -22,6 +22,7 @@ $(dirname $0)/setup_pip.sh
 pip install bindep==2.5.0
 # NOTE(SamYaple): Remove when bindep>2.5.0 is released
 patch /var/lib/openstack/lib/python*/site-packages/bindep/depends.py < /opt/loci/scripts/bindep.depends.patch
+rm -f /var/lib/openstack/lib/python*/site-packages/bindep/depends.pyc
 
 $(dirname $0)/install_packages.sh
 $(dirname $0)/clone_project.sh
@@ -48,12 +49,15 @@ cat $(dirname $0)/ignored_wheels{,_${ignore_wheels}} | xargs -n1 -I{} sed -i '/^
 # constrained on the version and we are building with --no-deps
 export CASS_DRIVER_BUILD_CONCURRENCY=8
 split -l1 tmp-upper-constraints.txt
-ls -1 | xargs -n1 -P20 -t pip wheel --no-deps --wheel-dir / -c /upper-constraints.txt -r | tee /tmp/wheels.txt
-popd
-# NOTE(SamYaple): Handle packages not in upper-constriants and not in PyPI as
-# native whls
-additional_packages=(uwsgi)
-echo "${additional_packages[@]}" | xargs -n1 -P20 pip wheel --wheel-dir / -c /upper-constraints.txt | tee -a /tmp/wheels.txt
+echo uwsgi ${PIP_PACKAGES} | xargs -n1 | split -l1 -a3
+ls -1 | xargs -n1 -P20 -t bash -c 'pip wheel --no-deps --wheel-dir / -c /upper-constraints.txt -r $1 || echo %1 >> /failure' _ | tee /tmp/wheels.txt
+
+# TODO(SamYaple): Improve the failure catching
+if [[ -f /failure ]]; then
+    echo Wheel failed to build
+    cat /failure
+    exit 1
+fi
 
 # NOTE(SamYaple) Remove native-binary wheels, we only want to keep wheels that
 # we compiled ourselves. We should not have any of these, but as packages
