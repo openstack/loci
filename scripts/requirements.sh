@@ -41,14 +41,11 @@ else
 fi
 
 pushd $(mktemp -d)
-# NOTE(SamYaple): Exclude known native wheels from list
-cp /upper-constraints.txt tmp-upper-constraints.txt
-cat $(dirname $0)/ignored_wheels{,_${ignore_wheels}} | xargs -n1 -I{} sed -i '/^{}=/d' tmp-upper-constraints.txt
 
 # NOTE(SamYaple): Build all deps in parallel. This is safe because we are
 # constrained on the version and we are building with --no-deps
 export CASS_DRIVER_BUILD_CONCURRENCY=8
-split -l1 tmp-upper-constraints.txt
+split -l1 /upper-constraints.txt
 echo uwsgi ${PIP_PACKAGES} | xargs -n1 | split -l1 -a3
 ls -1 | xargs -n1 -P20 -t bash -c 'pip wheel --no-deps --wheel-dir / -c /upper-constraints.txt -r $1 || echo %1 >> /failure' _ | tee /tmp/wheels.txt
 
@@ -60,10 +57,7 @@ if [[ -f /failure ]]; then
 fi
 
 # NOTE(SamYaple) Remove native-binary wheels, we only want to keep wheels that
-# we compiled ourselves. We should not have any of these, but as packages
-# convert to wheels overtime some will slip through
-# TODO(SamYaple): Periodically check that no additional wheels are
-# inappropriately downloaded
+# we compiled ourselves.
 awk -F'[ ,]+' '/^Skipping/ {gsub("-","_");print $2}' /tmp/wheels.txt | xargs -r -n1 bash -c 'ls /$1-*' _ | sort -u | xargs -t -r rm
 
 # NOTE(SamYaple): We want to purge all files that are not wheels or txt to
