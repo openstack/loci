@@ -31,5 +31,5 @@ esac
 # for using python-rbd which is not pip installable and is only available in
 # packaged form.
 rm /var/lib/openstack/lib/python*/no-global-site-packages.txt
-rm -rf /tmp/* /root/.cache
+rm -rf /tmp/* /root/.cache /etc/machine-id
 find /usr/ /var/ \( -name "*.pyc" -o -name "__pycache__" \) -delete
