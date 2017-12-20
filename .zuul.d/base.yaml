@@ -3,4 +3,5 @@
     pre-run: playbooks/setup-gate.yaml
     run: playbooks/loci-builder.yaml
     post-run: playbooks/post.yaml
+    voting: False
     timeout: 1200
