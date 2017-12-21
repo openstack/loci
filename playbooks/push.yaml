@@ -6,5 +6,14 @@
       block:
         - command: docker login -u {{ loci_docker_login.user }} -p {{ loci_docker_login.password }}
           no_log: True
-        - command: docker push openstackloci/{{ project }}:{{ branch }}-{{ item.name }}
+        - command: docker push loci/{{ project }}:{{ branch }}-{{ item.name }}
+          with_items: "{{ distros }}"
+
+    - name: Push project to quay.io
+      block:
+        - command: docker login -u {{ loci_docker_login.user }} -p {{ loci_docker_login.password }} quay.io
+          no_log: True
+        - command: docker tag loci/{{ project }}:{{ branch }}-{{ item.name }} quay.io/loci/{{ project }}:{{ branch }}-{{ item.name }}
+          with_items: "{{ distros }}"
+        - command: docker push quay.io/loci/{{ project }}:{{ branch }}-{{ item.name }}
           with_items: "{{ distros }}"

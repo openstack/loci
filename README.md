@@ -23,11 +23,11 @@ by LOCI. For simplicity, we will continue to use Keystone as an example.
 
 
 ### Keystone Image Layer Info
-[![](https://images.microbadger.com/badges/version/openstackloci/keystone:debian.svg)](https://microbadger.com/images/openstackloci/keystone:debian "openstackloci/keystone:debian") [![](https://images.microbadger.com/badges/image/openstackloci/keystone:debian.svg)](https://microbadger.com/images/openstackloci/keystone:debian "openstackloci/keystone:debian")
+[![](https://images.microbadger.com/badges/version/loci/keystone:debian.svg)](https://microbadger.com/images/loci/keystone:debian "loci/keystone:debian") [![](https://images.microbadger.com/badges/image/loci/keystone:debian.svg)](https://microbadger.com/images/loci/keystone:debian "loci/keystone:debian")
 
-[![](https://images.microbadger.com/badges/version/openstackloci/keystone:ubuntu.svg)](https://microbadger.com/images/openstackloci/keystone:ubuntu "openstackloci/keystone:ubuntu") [![](https://images.microbadger.com/badges/image/openstackloci/keystone:ubuntu.svg)](https://microbadger.com/images/openstackloci/keystone:ubuntu "openstackloci/keystone:ubuntu")
+[![](https://images.microbadger.com/badges/version/loci/keystone:ubuntu.svg)](https://microbadger.com/images/loci/keystone:ubuntu "loci/keystone:ubuntu") [![](https://images.microbadger.com/badges/image/loci/keystone:ubuntu.svg)](https://microbadger.com/images/loci/keystone:ubuntu "loci/keystone:ubuntu")
 
-[![](https://images.microbadger.com/badges/version/openstackloci/keystone:centos.svg)](https://microbadger.com/images/openstackloci/keystone:centos "openstackloci/keystone:centos") [![](https://images.microbadger.com/badges/image/openstackloci/keystone:centos.svg)](https://microbadger.com/images/openstackloci/keystone:centos "openstackloci/keystone:centos")
+[![](https://images.microbadger.com/badges/version/loci/keystone:centos.svg)](https://microbadger.com/images/loci/keystone:centos "loci/keystone:centos") [![](https://images.microbadger.com/badges/image/loci/keystone:centos.svg)](https://microbadger.com/images/loci/keystone:centos "loci/keystone:centos")
 
 
 ### Building locally
@@ -100,13 +100,13 @@ $ docker build https://git.openstack.org/openstack/loci.git \
 
 ### Customizing
 The images should contain all the required assets for running the service. But
-if you wish or need to customize the `openstackloci/keystone` image that's
-great! We hope to have built the images to make this as easy and flexible as
-possible. To do this we recommend that you perform any required customisation
-in a child image using a pattern similar to:
+if you wish or need to customize the `loci/keystone` image that's great! We
+hope to have built the images to make this as easy and flexible as possible. To
+do this we recommend that you perform any required customisation in a child
+image using a pattern similar to:
 
 ``` Dockerfile
-FROM openstackloci/keystone:master-ubuntu
+FROM loci/keystone:master-ubuntu
 MAINTAINER you@example.com
 
 RUN set -x \

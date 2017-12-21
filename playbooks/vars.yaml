@@ -24,7 +24,7 @@ distros:
       project:
         PROJECT: "{{ project }}"
         PROJECT_REPO: http://172.17.0.1/git/openstack/{{ project }}
-        WHEELS: 172.17.0.1:5000/openstackloci/requirements:{{ branch }}-centos
+        WHEELS: 172.17.0.1:5000/loci/requirements:{{ branch }}-centos
         FROM: base:centos
   - name: ubuntu
     image: ubuntu:xenial
@@ -39,7 +39,7 @@ distros:
       project:
         PROJECT: "{{ project }}"
         PROJECT_REPO: http://172.17.0.1/git/openstack/{{ project }}
-        WHEELS: 172.17.0.1:5000/openstackloci/requirements:{{ branch }}-ubuntu
+        WHEELS: 172.17.0.1:5000/loci/requirements:{{ branch }}-ubuntu
         FROM: base:ubuntu
   - name: debian
     image: debian:stretch
@@ -55,5 +55,5 @@ distros:
       project:
         PROJECT: "{{ project }}"
         PROJECT_REPO: http://172.17.0.1/git/openstack/{{ project }}
-        WHEELS: 172.17.0.1:5000/openstackloci/requirements:master-debian
+        WHEELS: 172.17.0.1:5000/loci/requirements:master-debian
         FROM: base:debian
