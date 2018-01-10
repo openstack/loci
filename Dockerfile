@@ -12,6 +12,9 @@ ARG PIP_PACKAGES=""
 ARG PLUGIN=no
 ARG PYTHON3=no
 
+ARG UID=42424
+ARG GID=42424
+
 COPY scripts /opt/loci/scripts
 COPY bindep.txt /opt/loci/
 
