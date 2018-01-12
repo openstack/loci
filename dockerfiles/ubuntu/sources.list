@@ -3,4 +3,4 @@ deb %%UBUNTU_URL%% xenial-updates main universe
 deb %%UBUNTU_URL%% xenial-backports main universe
 deb %%UBUNTU_URL%% xenial-security main universe
 deb %%CEPH_URL%% xenial main
-deb %%CLOUD_ARCHIVE_URL%% xenial-updates/pike main
+#deb %%CLOUD_ARCHIVE_URL%% xenial-updates/pike main
