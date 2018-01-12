@@ -1,0 +1,59 @@
+docker_daemon:
+  group: zuul
+  registry-mirrors:
+    - "http://{{ zuul_site_mirror_fqdn }}:8081/registry-1.docker/"
+  storage-driver: overlay2
+  debug: True
+  insecure-registries:
+    - 172.17.0.1:5000
+
+# NOTE(SamYaple): When running in the loci repo, the project is "loci", but
+# when running as a post job for cinder, the project is "cinder". We statically
+# declare the path rather than using zuul variables so thats not an issue
+loci_src_dir: "src/git.openstack.org/openstack/loci"
+branch: "{{ zuul_execution_branch.split('/')[-1] }}"
+
+distros:
+  - name: centos
+    image: centos:7
+    buildargs:
+      base:
+        PACKAGE_MIRROR: "{{ zuul_site_mirror_fqdn }}"
+        PIP_INDEX_URL: http://{{ zuul_site_mirror_fqdn }}/pypi/simple
+        PIP_TRUSTED_HOST: "{{ zuul_site_mirror_fqdn }}"
+      project:
+        PROJECT: "{{ project }}"
+        PROJECT_REPO: http://172.17.0.1/git/openstack/{{ project }}
+        WHEELS: 172.17.0.1:5000/openstackloci/requirements:{{ branch }}-centos
+        FROM: base:centos
+  - name: ubuntu
+    image: ubuntu:xenial
+    buildargs:
+      base:
+        UBUNTU_URL: http://{{ zuul_site_mirror_fqdn }}/ubuntu/
+        CLOUD_ARCHIVE_URL: http://{{ zuul_site_mirror_fqdn }}/ubuntu-cloud-archive/
+        CEPH_URL: http://{{ zuul_site_mirror_fqdn }}/ceph-deb-luminous/
+        ALLOW_UNAUTHENTICATED: "true"
+        PIP_INDEX_URL: http://{{ zuul_site_mirror_fqdn }}/pypi/simple
+        PIP_TRUSTED_HOST: "{{ zuul_site_mirror_fqdn }}"
+      project:
+        PROJECT: "{{ project }}"
+        PROJECT_REPO: http://172.17.0.1/git/openstack/{{ project }}
+        WHEELS: 172.17.0.1:5000/openstackloci/requirements:{{ branch }}-ubuntu
+        FROM: base:ubuntu
+  - name: debian
+    image: debian:stretch
+    buildargs:
+      base:
+        DEBIAN_URL: http://{{ zuul_site_mirror_fqdn }}/debian/
+        DEBIAN_SECURITY_URL: http://{{ zuul_site_mirror_fqdn }}/debian/
+        DEBIAN_SECURITY_DISTRIBUTION: stretch-security
+        CEPH_URL: http://{{ zuul_site_mirror_fqdn }}/ceph-deb-luminous/
+        ALLOW_UNAUTHENTICATED: "true"
+        PIP_INDEX_URL: http://{{ zuul_site_mirror_fqdn }}/pypi/simple
+        PIP_TRUSTED_HOST: "{{ zuul_site_mirror_fqdn }}"
+      project:
+        PROJECT: "{{ project }}"
+        PROJECT_REPO: http://172.17.0.1/git/openstack/{{ project }}
+        WHEELS: 172.17.0.1:5000/openstackloci/requirements:master-debian
+        FROM: base:debian

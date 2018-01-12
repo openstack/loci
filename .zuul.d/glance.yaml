@@ -1,0 +1,27 @@
+- project:
+    name: openstack/loci
+    check:
+      jobs:
+        - loci-glance
+    gate:
+      jobs:
+        - loci-glance
+    post:
+      jobs:
+        - publish-loci-glance
+
+- job:
+    name: loci-glance
+    parent: loci-base
+    vars:
+      project: glance
+    required-projects:
+      - openstack/loci
+      - openstack/glance
+
+- job:
+    name: publish-loci-glance
+    parent: loci-glance
+    post-run: playbooks/push.yaml
+    secrets:
+      - loci_docker_login

@@ -68,26 +68,37 @@ def parse_image(full_image):
     else:
         return None, image, tag
 
-if 'WHEELS' in os.environ:
-    wheels = os.environ['WHEELS']
-else:
-    with open('/opt/loci/wheels', 'ro') as f:
-        wheels = f.read()
 
-with open('/opt/loci/wheels', 'w+') as f:
-    f.write(wheels)
-
-if wheels.startswith('http'):
-    data = get_wheels(wheels)
-else:
-    registry, image, tag = parse_image(wheels)
-    kwargs = dict()
-    if registry:
-        kwargs.update({'registry': registry})
+def main():
+    if 'WHEELS' in os.environ:
+        wheels = os.environ['WHEELS']
     else:
-        kwargs.update({'token': get_token(image)})
-    print(kwargs)
-    data = get_blob(image, tag, **kwargs)
+        with open('/opt/loci/wheels', 'ro') as f:
+            wheels = f.read()
 
-with open('/tmp/wheels.tar.gz', 'wb') as f:
-    f.write(data)
+    if wheels.startswith('/'):
+        with open(wheels, 'r') as f:
+            data = f.read()
+    elif wheels.startswith('http'):
+        data = get_wheels(wheels)
+    else:
+        registry, image, tag = parse_image(wheels)
+        kwargs = dict()
+        if registry:
+            kwargs.update({'registry': registry})
+        else:
+            kwargs.update({'token': get_token(image)})
+        data = get_blob(image, tag, **kwargs)
+
+    if 'WHEELS_DEST' in os.environ:
+        dest = os.environ['WHEELS_DEST']
+    else:
+        with open('/opt/loci/wheels', 'w') as f:
+            f.write(wheels)
+        dest = '/tmp/wheels.tar.gz'
+    with open(dest, 'wb') as f:
+        f.write(data)
+
+
+if __name__ == '__main__':
+    main()

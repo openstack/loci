@@ -1,0 +1,27 @@
+- project:
+    name: openstack/loci
+    check:
+      jobs:
+        - loci-nova
+    gate:
+      jobs:
+        - loci-nova
+    post:
+      jobs:
+        - publish-loci-nova
+
+- job:
+    name: loci-nova
+    parent: loci-base
+    vars:
+      project: nova
+    required-projects:
+      - openstack/loci
+      - openstack/nova
+
+- job:
+    name: publish-loci-nova
+    parent: loci-nova
+    post-run: playbooks/push.yaml
+    secrets:
+      - loci_docker_login
