@@ -10,9 +10,6 @@ ARG PIP_TRUSTED_HOST=pypi.python.org
 ENV PIP_INDEX_URL=${PIP_INDEX_URL}
 ENV PIP_TRUSTED_HOST=${PIP_TRUSTED_HOST}
 
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
-
 COPY sources.list /etc/apt/
 COPY cloud-archive.gpg ceph.gpg /etc/apt/trusted.gpg.d/
 RUN sed -i \

@@ -12,6 +12,9 @@ ARG PIP_PACKAGES=""
 ARG PLUGIN=no
 ARG PYTHON3=no
 
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
+
 COPY scripts /opt/loci/scripts
 COPY bindep.txt /opt/loci/
 

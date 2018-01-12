@@ -16,7 +16,7 @@ Currently we build and gate images for the following OpenStack projects:
 
 Additionally, we produce a "wheels" image for
 [requirements](https://github.com/openstack/requirements) containing all of the
-packages listed in upper-constraints.txt.
+packages listed in upper-constraints.txt and custom-requirements.txt.
 
 The instructions below can be used for any OpenStack service currently targeted
 by LOCI. For simplicity, we will continue to use Keystone as an example.

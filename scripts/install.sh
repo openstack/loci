@@ -26,10 +26,6 @@ case ${distro} in
             patch \
             sudo \
             wget \
-            ack-grep \
-            cron \
-            dnsutils \
-            inetutils-ping \
             ${dpkg_python_packages[@]}
         ;;
     centos)
