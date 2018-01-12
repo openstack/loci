@@ -51,7 +51,7 @@ if [ -e /custom-requirements.txt ]; then
     grep -v "#" /custom-requirements.txt | split -l1
 fi
 echo uwsgi ${PIP_PACKAGES} | xargs -n1 | split -l1 -a3
-ls -1 | xargs -n1 -P20 -t bash -c 'pip wheel --no-deps --wheel-dir / -c /upper-constraints.txt -r $1 || echo %1 >> /failure' _ | tee /tmp/wheels.txt
+ls -1 | xargs -n1 -P20 -t bash -c 'pip wheel --no-deps --wheel-dir / -c /upper-constraints.txt -r $1 || cat $1 >> /failure' _ | tee /tmp/wheels.txt
 
 # TODO(SamYaple): Improve the failure catching
 if [[ -f /failure ]]; then
