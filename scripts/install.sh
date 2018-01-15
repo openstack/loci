@@ -20,7 +20,6 @@ case ${distro} in
         apt-get upgrade -y
         apt-get install -y --no-install-recommends \
             git \
-            ca-certificates \
             netbase \
             lsb-release \
             patch \
@@ -48,13 +47,6 @@ if [[ "${PROJECT}" == "requirements" ]]; then
     $(dirname $0)/requirements.sh
     exit 0
 else
-    # install SAP certificates
-    wget -O /usr/local/share/ca-certificates/SAP_Global_Root_CA.crt http://aia.pki.co.sap.com/aia/SAP%20Global%20Root%20CA.crt && \
-    wget -O /usr/local/share/ca-certificates/SAP_Global_Sub_CA_02.crt http://aia.pki.co.sap.com/aia/SAP%20Global%20Sub%20CA%2002.crt && \
-    wget -O /usr/local/share/ca-certificates/SAP_Global_Sub_CA_04.crt http://aia.pki.co.sap.com/aia/SAP%20Global%20Sub%20CA%2004.crt && \
-    wget -O /usr/local/share/ca-certificates/SAP_Global_Sub_CA_05.crt http://aia.pki.co.sap.com/aia/SAP%20Global%20Sub%20CA%2005.crt && \
-    wget -O /usr/local/share/ca-certificates/SAPNetCA_G2.crt http://aia.pki.co.sap.com/aia/SAPNetCA_G2.crt
-
     # grab kubernetes-entrypoint
     curl -sLo /usr/local/bin/kubernetes-entrypoint https://github.wdf.sap.corp/d062284/k8s-entrypoint-build/releases/download/f52d105/kubernetes-entrypoint && \
     chmod +x /usr/local/bin/kubernetes-entrypoint
