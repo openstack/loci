@@ -24,7 +24,7 @@ case ${distro} in
             lsb-release \
             patch \
             sudo \
-            wget \
+            curl \
             ${dpkg_python_packages[@]}
         ;;
     centos)
@@ -34,7 +34,7 @@ case ${distro} in
             patch \
             redhat-lsb-core \
             sudo \
-            wget \
+            curl \
             ${rpm_python_packages[@]}
         ;;
     *)
