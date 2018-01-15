@@ -20,6 +20,7 @@ case ${distro} in
         apt-get upgrade -y
         apt-get install -y --no-install-recommends \
             git \
+            ca-certificates \
             netbase \
             lsb-release \
             patch \
