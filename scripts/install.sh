@@ -15,7 +15,6 @@ fi
 
 case ${distro} in
     debian|ubuntu)
-        echo 'precedence ::ffff:0:0/96  100' >> /etc/gai.conf
         apt-get update
         apt-get upgrade -y
         apt-get install -y --no-install-recommends \

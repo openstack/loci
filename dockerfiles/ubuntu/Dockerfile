@@ -21,10 +21,10 @@ RUN sed -i \
 # NOTE(SamYaple): Remove this when infra starts signing thier mirrors
 RUN echo "APT::Get::AllowUnauthenticated \"${ALLOW_UNAUTHENTICATED}\";" > /etc/apt/apt.conf.d/allow-unathenticated
 
-
 # add SAP certificates
 ENV REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
-RUN apt-get update && \
+RUN echo 'precedence ::ffff:0:0/96  100' >> /etc/gai.conf && \
+    apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y --no-install-recommends ca-certificates wget && \
     wget -O /usr/local/share/ca-certificates/SAP_Global_Root_CA.crt http://aia.pki.co.sap.com/aia/SAP%20Global%20Root%20CA.crt && \
