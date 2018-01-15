@@ -4,7 +4,7 @@ set -ex
 
 case ${distro} in
     debian|ubuntu)
-        update-ca-certificates \
+        update-ca-certificates
         apt-get purge -y --auto-remove \
             git \
             patch \
