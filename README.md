@@ -71,9 +71,12 @@ For more advanced building you can use docker build arguments to define:
     base image.
   * `PROFILES` The bindep profiles to specify to configure which packages get
     installed. This is a space sperated list.
-  * `PIP_PACKAGES` Specify additional packages you would like installed. The
-    only caveat is these packages must exist in your WHEELS tarball. So if you
-    wanted to include rpdb, you would need to have built that into your WHEELS.
+  * `PIP_PACKAGES` Specify additional python packages you would like installed.
+    The only caveat is these packages must exist in WHEELS form. So if
+    you wanted to include rpdb, you would need to have built that into your
+    WHEELS.
+  * `DIST_PACKAGES` Specify additional distribution packages you would like
+    installed.
 
 This makes it really easy to integrate LOCI images into your development or
 CI/CD workflow, for example, if you wanted to build an image from [this
