@@ -4,12 +4,13 @@
       block:
         # NOTE(SamYaple): https://github.com/ansible/ansible/issues/14131
         - command: cp -r /home/zuul/.ansible_async /logs/async_logs
-        - command: journalctl -xb -u docker.service
-          register: docker_daemon_log
-          no_log: True
-        - copy:
-            content: "{{ docker_daemon_log.stdout }}"
-            dest: /logs/docker_daemon.log
+        # FIXME(SamYaple): running this is causing the gate to hang
+        #- command: journalctl -xb -u docker.service
+        #  register: docker_daemon_log
+        #  no_log: True
+        #- copy:
+        #    content: "{{ docker_daemon_log.stdout }}"
+        #    dest: /logs/docker_daemon.log
       become: true
 
     - name: Copy logs
