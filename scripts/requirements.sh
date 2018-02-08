@@ -19,10 +19,7 @@ case ${distro} in
 esac
 
 $(dirname $0)/setup_pip.sh
-pip install bindep==2.5.0
-# NOTE(SamYaple): Remove when bindep>2.5.0 is released
-patch /var/lib/openstack/lib/python*/site-packages/bindep/depends.py < /opt/loci/scripts/bindep.depends.patch
-rm -f /var/lib/openstack/lib/python*/site-packages/bindep/depends.pyc
+pip install bindep==2.6.0
 
 $(dirname $0)/install_packages.sh
 $(dirname $0)/clone_project.sh

@@ -51,16 +51,12 @@ if [[ "${PLUGIN}" == "no" ]]; then
     $(dirname $0)/create_user.sh
     $(dirname $0)/setup_pip.sh
     $(dirname $0)/pip_install.sh \
-        bindep==2.5.0 \
+        bindep==2.6.0 \
         cryptography \
         pymysql \
         python-memcached \
         uwsgi
 fi
-
-# NOTE(SamYaple): Remove when bindep>2.5.0 is released
-patch /var/lib/openstack/lib/python*/site-packages/bindep/depends.py < /opt/loci/scripts/bindep.depends.patch
-rm -f /var/lib/openstack/lib/python*/site-packages/bindep/depends.pyc
 
 if [[ ${PROJECT} == 'nova' ]]; then
     $(dirname $0)/pip_install.sh libvirt-python
