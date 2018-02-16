@@ -11,10 +11,10 @@ PACKAGES=($(bindep -f /opt/loci/bindep.txt -b -l newline ${PROJECT} ${PROFILES} 
 if [[ ! -z ${PACKAGES} ]]; then
     case ${distro} in
         debian|ubuntu)
-            apt-get install -y --no-install-recommends ${PACKAGES[@]}
+            apt-get install -y --no-install-recommends ${PACKAGES[@]} ${DIST_PACKAGES}
             ;;
         centos)
-            yum -y --setopt=skip_missing_names_on_install=False install ${PACKAGES[@]}
+            yum -y --setopt=skip_missing_names_on_install=False install ${PACKAGES[@]} ${DIST_PACKAGES}
             ;;
         *)
             echo "Unknown distro: ${distro}"
