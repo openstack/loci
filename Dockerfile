@@ -17,6 +17,6 @@ ARG UID=42424
 ARG GID=42424
 
 COPY scripts /opt/loci/scripts
-COPY bindep.txt /opt/loci/
+COPY bindep.txt pydep.txt /opt/loci/
 
 RUN /opt/loci/scripts/install.sh

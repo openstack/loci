@@ -1,0 +1,7 @@
+cryptography    []
+ldappool        [(keystone ldap)]
+libvirt-python  [nova]
+pyldap          [(keystone ldap)]
+pymysql         []
+python-memcached []
+uwsgi           []

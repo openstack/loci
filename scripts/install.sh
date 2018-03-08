@@ -50,17 +50,11 @@ $(dirname $0)/fetch_wheels.sh
 if [[ "${PLUGIN}" == "no" ]]; then
     $(dirname $0)/create_user.sh
     $(dirname $0)/setup_pip.sh
-    $(dirname $0)/pip_install.sh \
-        bindep==2.6.0 \
-        cryptography \
-        pymysql \
-        python-memcached \
-        uwsgi
+    $(dirname $0)/pip_install.sh bindep==2.6.0
+    PACKAGES=($(bindep -f /opt/loci/pydep.txt -b -l newline ${PROJECT} ${PROFILES} ${python3} || :))
+    $(dirname $0)/pip_install.sh ${PACKAGES[@]}
 fi
 
-if [[ ${PROJECT} == 'nova' ]]; then
-    $(dirname $0)/pip_install.sh libvirt-python
-fi
 $(dirname $0)/clone_project.sh
 $(dirname $0)/pip_install.sh /tmp/${PROJECT} ${PIP_PACKAGES}
 $(dirname $0)/install_packages.sh
