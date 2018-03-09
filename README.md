@@ -122,18 +122,8 @@ RUN set -x \
 
 
 ### A Note on the Stability of LOCI
-LOCI is still a relatively young project. While some of us have been using it
-for going on a year, we have made breaking changes a few times while we flesh
-out the best way to achieve goals. We are targeting a 1.0.0 release for
-OpenStack Queens and will be following upstream practices as far as tagging and
-branching.
+LOCI is considered stable. There are production installs of OpenStack using
+LOCI built images at this time.
 
-We will be adding in a stable/ocata and stable/pike branch (possibly an
-eol-newton and eol-mitaka tag as well) over the next few months so we can build
-images for these versions of OpenStack as well. While the master branch of LOCI
-is currently capable of building all of these versions right now, we will be
-maintaining stable branches going forward so as not to rely on compatibility
-for all versions of OpenStack on one branch.
-
-We highly encourage people to use this, and some have even adopted it into
-build pipelines internally already.
+The project is very low-entopy with very little changing, but this is expected.
+The highest traffic section of LOCI is the gates.
