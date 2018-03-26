@@ -1,6 +1,7 @@
 cryptography    []
 ldappool        [(keystone ldap)]
 libvirt-python  [nova]
+purestorage     [(cinder purestorage) (nova purestorage)]
 pyldap          [(keystone ldap)]
 pymysql         []
 python-memcached []
