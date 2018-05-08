@@ -41,19 +41,19 @@ distros:
         PROJECT_REPO: http://172.17.0.1/git/openstack/{{ project }}
         WHEELS: 172.17.0.1:5000/loci/requirements:{{ branch }}-ubuntu
         FROM: base:ubuntu
-  - name: debian
-    image: debian:stretch
-    buildargs:
-      base:
-        DEBIAN_URL: http://{{ zuul_site_mirror_fqdn }}/debian/
-        DEBIAN_SECURITY_URL: http://{{ zuul_site_mirror_fqdn }}/debian/
-        DEBIAN_SECURITY_DISTRIBUTION: stretch-security
-        CEPH_URL: http://{{ zuul_site_mirror_fqdn }}/ceph-deb-luminous/
-        ALLOW_UNAUTHENTICATED: "true"
-        PIP_INDEX_URL: http://{{ zuul_site_mirror_fqdn }}/pypi/simple
-        PIP_TRUSTED_HOST: "{{ zuul_site_mirror_fqdn }}"
-      project:
-        PROJECT: "{{ project }}"
-        PROJECT_REPO: http://172.17.0.1/git/openstack/{{ project }}
-        WHEELS: 172.17.0.1:5000/loci/requirements:master-debian
-        FROM: base:debian
+#  - name: debian
+#    image: debian:stretch
+#    buildargs:
+#      base:
+#        DEBIAN_URL: http://{{ zuul_site_mirror_fqdn }}/debian/
+#        DEBIAN_SECURITY_URL: http://{{ zuul_site_mirror_fqdn }}/debian/
+#        DEBIAN_SECURITY_DISTRIBUTION: stretch-security
+#        CEPH_URL: http://{{ zuul_site_mirror_fqdn }}/ceph-deb-luminous/
+#        ALLOW_UNAUTHENTICATED: "true"
+#        PIP_INDEX_URL: http://{{ zuul_site_mirror_fqdn }}/pypi/simple
+#        PIP_TRUSTED_HOST: "{{ zuul_site_mirror_fqdn }}"
+#      project:
+#        PROJECT: "{{ project }}"
+#        PROJECT_REPO: http://172.17.0.1/git/openstack/{{ project }}
+#        WHEELS: 172.17.0.1:5000/loci/requirements:master-debian
+#        FROM: base:debian
