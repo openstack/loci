@@ -35,4 +35,3 @@ RUN echo 'precedence ::ffff:0:0/96  100' >> /etc/gai.conf && \
     update-ca-certificates && \
     apt-get purge -y --auto-remove ca-certificates && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /root/.cache
-

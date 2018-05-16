@@ -23,19 +23,25 @@ by LOCI. For simplicity, we will continue to use Keystone as an example.
 
 
 ### Keystone Image Layer Info
-[![](https://images.microbadger.com/badges/version/openstackloci/keystone:debian.svg)](https://microbadger.com/images/openstackloci/keystone:debian "openstackloci/keystone:debian") [![](https://images.microbadger.com/badges/image/openstackloci/keystone:debian.svg)](https://microbadger.com/images/openstackloci/keystone:debian "openstackloci/keystone:debian")
+[![](https://images.microbadger.com/badges/version/loci/keystone:master-debian.svg)](https://microbadger.com/images/loci/keystone:master-debian "loci/keystone:master-debian") [![](https://images.microbadger.com/badges/image/loci/keystone:master-debian.svg)](https://microbadger.com/images/loci/keystone:master-debian "loci/keystone:master-debian")
 
-[![](https://images.microbadger.com/badges/version/openstackloci/keystone:ubuntu.svg)](https://microbadger.com/images/openstackloci/keystone:ubuntu "openstackloci/keystone:ubuntu") [![](https://images.microbadger.com/badges/image/openstackloci/keystone:ubuntu.svg)](https://microbadger.com/images/openstackloci/keystone:ubuntu "openstackloci/keystone:ubuntu")
+[![](https://images.microbadger.com/badges/version/loci/keystone:master-ubuntu.svg)](https://microbadger.com/images/loci/keystone:master-ubuntu "loci/keystone:master-ubuntu") [![](https://images.microbadger.com/badges/image/loci/keystone:master-ubuntu.svg)](https://microbadger.com/images/loci/keystone:master-ubuntu "loci/keystone:master-ubuntu")
 
-[![](https://images.microbadger.com/badges/version/openstackloci/keystone:centos.svg)](https://microbadger.com/images/openstackloci/keystone:centos "openstackloci/keystone:centos") [![](https://images.microbadger.com/badges/image/openstackloci/keystone:centos.svg)](https://microbadger.com/images/openstackloci/keystone:centos "openstackloci/keystone:centos")
+[![](https://images.microbadger.com/badges/version/loci/keystone:master-centos.svg)](https://microbadger.com/images/loci/keystone:master-centos "loci/keystone:master-centos") [![](https://images.microbadger.com/badges/image/loci/keystone:master-centos.svg)](https://microbadger.com/images/loci/keystone:master-centos "loci/keystone:master-centos")
 
 
 ### Building locally
-It's really easy to build images locally for the distro of your choice. To
-build an image you only need to run one of the following commands:
+It's really easy to build images locally:
 ``` bash
-$ docker build https://git.openstack.org/openstack/loci.git --build-arg PROJECT=keystone --tag keystone:ubuntu
-$ docker build https://git.openstack.org/openstack/loci.git --build-arg PROJECT=keystone --tag keystone:centos --build-arg FROM=centos:7
+$ docker build https://git.openstack.org/openstack/loci.git --build-arg PROJECT=keystone \
+    --tag keystone:ubuntu
+```
+
+The default base distro is Ubuntu, however, you can use the following form to build from a distro of
+your choice, in this case, CentOS:
+``` bash
+$ docker build https://git.openstack.org/openstack/loci.git --build-arg PROJECT=keystone \
+    --tag keystone:centos --build-arg FROM=centos:7
 ```
 
 If building behind a proxy, remember to use build arguments to pass these
@@ -49,9 +55,6 @@ $ docker build https://git.openstack.org/openstack/loci.git \
     --tag keystone:ubuntu
 ```
 
-You can, of course, substitute `ubuntu` with your distro of choice using the
-FROM build arg.
-
 For more advanced building you can use docker build arguments to define:
   * `FROM` The base Docker image to build from. Currently supported are
     ubuntu:xenial and centos:7
@@ -64,17 +67,18 @@ For more advanced building you can use docker build arguments to define:
   * `GID` The gid of the group that will be created (default to 42424).
   * `WHEELS` The location of the wheels tarball. This accepts a url to a
     tarball or a Docker image name in the form of
-    [myregistry/]mydockernamespace/requirements[:ubuntu]
+    `[myregistry/]mydockernamespace/requirements[:ubuntu]`
   * `DISTRO` This is a helper variable used for scripts. It would primarily be
     used in situations where the script would not detect the correct distro.
-    For example, you would set DISTRO=centos when running from an oraclelinux
+    For example, you would set `DISTRO=centos` when running from an oraclelinux
     base image.
   * `PROFILES` The bindep profiles to specify to configure which packages get
-    installed. This is a space sperated list.
+    installed. This is a space separated list.
   * `PIP_PACKAGES` Specify additional python packages you would like installed.
     The only caveat is these packages must exist in WHEELS form. So if
     you wanted to include rpdb, you would need to have built that into your
     WHEELS.
+  * `PIP_ARGS` Specify additional pip's parameters you would like.
   * `DIST_PACKAGES` Specify additional distribution packages you would like
     installed.
 
@@ -102,16 +106,15 @@ $ docker build https://git.openstack.org/openstack/loci.git \
     --build-arg PROFILES="lvm ceph"
 ```
 
-
 ### Customizing
 The images should contain all the required assets for running the service. But
-if you wish or need to customize the `openstackloci/keystone` image that's
-great! We hope to have built the images to make this as easy and flexible as
-possible. To do this we recommend that you perform any required customisation
-in a child image using a pattern similar to:
+if you wish or need to customize the `loci/keystone` image that's great! We
+hope to have built the images to make this as easy and flexible as possible. To
+do this we recommend that you perform any required customisation in a child
+image using a pattern similar to:
 
 ``` Dockerfile
-FROM openstackloci/keystone:master-ubuntu
+FROM loci/keystone:master-ubuntu
 MAINTAINER you@example.com
 
 RUN set -x \
@@ -122,18 +125,8 @@ RUN set -x \
 
 
 ### A Note on the Stability of LOCI
-LOCI is still a relatively young project. While some of us have been using it
-for going on a year, we have made breaking changes a few times while we flesh
-out the best way to achieve goals. We are targeting a 1.0.0 release for
-OpenStack Queens and will be following upstream practices as far as tagging and
-branching.
+LOCI is considered stable. There are production installs of OpenStack using
+LOCI built images at this time.
 
-We will be adding in a stable/ocata and stable/pike branch (possibly an
-eol-newton and eol-mitaka tag as well) over the next few months so we can build
-images for these versions of OpenStack as well. While the master branch of LOCI
-is currently capable of building all of these versions right now, we will be
-maintaining stable branches going forward so as not to rely on compatibility
-for all versions of OpenStack on one branch.
-
-We highly encourage people to use this, and some have even adopted it into
-build pipelines internally already.
+The project is very low-entopy with very little changing, but this is expected.
+The highest traffic section of LOCI is the gates.

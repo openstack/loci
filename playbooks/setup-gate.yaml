@@ -45,6 +45,7 @@
             - python-pip
         - pip:
             name: docker
+            version: 2.7.0
         - docker_container:
             name: registry
             image: registry:2
