@@ -1,0 +1,26 @@
+- project:
+    check:
+      jobs:
+        - loci-octavia
+    gate:
+      jobs:
+        - loci-octavia
+    post:
+      jobs:
+        - publish-loci-octavia
+
+- job:
+    name: loci-octavia
+    parent: loci-base
+    vars:
+      project: octavia
+    required-projects:
+      - openstack/loci
+      - openstack/octavia
+
+- job:
+    name: publish-loci-octavia
+    parent: loci-octavia
+    post-run: playbooks/push.yaml
+    secrets:
+      - loci_docker_login
