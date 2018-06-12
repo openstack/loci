@@ -13,9 +13,6 @@
             tag: "{{ branch }}-{{ item.name }}"
             repository: 172.17.0.1:5000/loci/requirements
             push: yes
-            buildargs:
-              # NOTE(SamYaple): enum-compat isnt in upper-constraints yet
-              PIP_PACKAGES: "enum-compat"
           with_items: "{{ distros }}"
           async: 1000
           poll: 0
