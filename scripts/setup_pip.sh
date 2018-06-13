@@ -16,6 +16,7 @@ if (( $(${TMP_VIRTUALENV} --version | cut -d. -f1) >= 14 )); then
 fi
 ${TMP_VIRTUALENV} --extra-search-dir=/tmp/wheels ${SETUPTOOLS} /tmp/venv
 source /tmp/venv/bin/activate
-pip install --upgrade virtualenv
+# f5 packages break with pip 10
+pip install --upgrade 'virtualenv<16'
 hash -r
 virtualenv --extra-search-dir=/tmp/wheels /var/lib/openstack
