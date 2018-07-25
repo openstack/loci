@@ -32,6 +32,9 @@ by LOCI. For simplicity, we will continue to use Keystone as an example.
 
 
 ### Building locally
+
+Note: To build locally, you will need a version of docker >= 17.05.0.
+
 It's really easy to build images locally:
 ``` bash
 $ docker build https://git.openstack.org/openstack/loci.git --build-arg PROJECT=keystone \
