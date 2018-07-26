@@ -13,7 +13,6 @@
     name: loci-requirements
     parent: loci-base
     timeout: 2400
-    voting: True
     vars:
       project: requirements
     required-projects:
