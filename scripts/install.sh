@@ -35,6 +35,26 @@ case ${distro} in
             sudo \
             ${rpm_python_packages[@]}
         ;;
+    opensuse|opensuse-leap|sles)
+        if [[ "${PYTHON3}" == "no" ]]; then
+           rpm_python_packages+=("python-devel" "python-setuptools")
+        else
+           rpm_python_packages+=("python3-devel" "python3-setuptools")
+        fi
+        zypper --non-interactive --gpg-auto-import-keys refresh
+        zypper --non-interactive install --no-recommends \
+            ca-certificates \
+            git-core \
+            lsb-release \
+            patch \
+            sudo \
+            tar \
+            ${rpm_python_packages[@]}
+        #NOTE(evrardjp) Temporary workaround until bindep is fixed
+        # for leap 15: https://review.openstack.org/#/c/586038/
+        # should be merged and released.
+        sed -i 's/ID="opensuse-leap"/ID="opensuse"/g' /etc/os-release
+        ;;
     *)
         echo "Unknown distro: ${distro}"
         exit 1
