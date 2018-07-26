@@ -44,8 +44,11 @@ $ docker build https://git.openstack.org/openstack/loci.git --build-arg PROJECT=
 The default base distro is Ubuntu, however, you can use the following form to build from a distro of
 your choice, in this case, CentOS:
 ``` bash
-$ docker build https://git.openstack.org/openstack/loci.git --build-arg PROJECT=keystone \
-    --tag keystone:centos --build-arg FROM=centos:7
+$ docker build https://git.openstack.org/openstack/loci.git \
+    --build-arg PROJECT=keystone \
+    --build-arg WHEELS="loci/requirements:master-centos" \
+    --build-arg FROM=centos:7 \
+    --tag keystone:centos
 ```
 
 If building behind a proxy, remember to use build arguments to pass these
