@@ -49,7 +49,7 @@ fi
 $(dirname $0)/fetch_wheels.sh
 if [[ "${PROJECT}" == "infra" ]]; then
    $(dirname $0)/setup_pip.sh
-    $(dirname $0)/pip_install.sh bindep==2.6.0 ${PIP_PACKAGES}
+    $(dirname $0)/pip_install.sh bindep ${PIP_PACKAGES}
     $(dirname $0)/install_packages.sh
     $(dirname $0)/cleanup.sh
     exit 0
@@ -57,7 +57,7 @@ fi
 if [[ "${PLUGIN}" == "no" ]]; then
     $(dirname $0)/create_user.sh
     $(dirname $0)/setup_pip.sh
-    $(dirname $0)/pip_install.sh bindep==2.6.0
+    $(dirname $0)/pip_install.sh bindep
     PACKAGES=($(bindep -f /opt/loci/pydep.txt -b -l newline ${PROJECT} ${PROFILES} ${python3} || :))
     $(dirname $0)/pip_install.sh ${PACKAGES[@]}
 fi

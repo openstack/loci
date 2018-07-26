@@ -3,7 +3,7 @@
 set -eux
 
 $(dirname $0)/setup_pip.sh
-pip install bindep==2.6.0
+pip install bindep
 
 $(dirname $0)/install_packages.sh
 $(dirname $0)/clone_project.sh
