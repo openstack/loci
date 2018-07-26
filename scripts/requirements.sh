@@ -26,7 +26,9 @@ pushd $(mktemp -d)
 # NOTE(SamYaple): Build all deps in parallel. This is safe because we are
 # constrained on the version and we are building with --no-deps
 export CASS_DRIVER_BUILD_CONCURRENCY=8
-split -l1 /upper-constraints.txt
+# NOTE(hrw): Drop python packages requested by monasca_analytics. Their
+# build time is huge and on !x86 we do not get binaries from Pypi.
+egrep -v "(scipy|scikit-learn)" /upper-constraints.txt | split -l1
 echo uwsgi enum-compat ${PIP_PACKAGES} | xargs -n1 | split -l1 -a3
 ls -1 | xargs -n1 -P20 -t bash -c 'pip wheel --no-deps --wheel-dir / -c /upper-constraints.txt -r $1 || echo %1 >> /failure' _ | tee /tmp/wheels.txt
 
