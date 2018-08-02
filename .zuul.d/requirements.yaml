@@ -1,0 +1,27 @@
+- project:
+    check:
+      jobs:
+        - loci-requirements
+    gate:
+      jobs:
+        - loci-requirements
+    post:
+      jobs:
+        - publish-loci-requirements
+
+- job:
+    name: loci-requirements
+    parent: loci-base
+    timeout: 2400
+    vars:
+      project: requirements
+    required-projects:
+      - openstack/loci
+      - openstack/requirements
+
+- job:
+    name: publish-loci-requirements
+    parent: loci-requirements
+    post-run: playbooks/push.yaml
+    secrets:
+      - loci_docker_login

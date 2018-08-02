@@ -1,13 +1,12 @@
-#!/bin/bash -ex
+#!/bin/bash
+
+set -ex
 
 packages=$@
 
-/opt/loci/fetch_wheels.py
+pip install --no-cache-dir --only-binary :all: --no-compile -c /tmp/wheels/upper-constraints.txt --find-links /tmp/wheels/ ${PIP_ARGS} ${packages}
 
-mkdir -p /tmp/packages
-# NOTE(SamYaple): We exclude all files starting with '.' as these can be
-# control files for AUFS which have special meaning on AUFS backed file
-# stores.
-tar xf /tmp/wheels.tar.gz --exclude='.*' -C /tmp/packages/ --strip-components=2 root/packages
-
-pip install --no-cache-dir --no-index --no-compile --find-links /tmp/packages --constraint /tmp/packages/upper-constraints.txt ${packages[@]}
+# add custom requirements
+if [[ -e /tmp/${PROJECT}/custom-requirements.txt ]]; then
+    pip install --no-cache-dir --no-compile -r /tmp/${PROJECT}/custom-requirements.txt -c /tmp/wheels/upper-constraints.txt --find-links /tmp/wheels/ ${PIP_ARGS}
+fi

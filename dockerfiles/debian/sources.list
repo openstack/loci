@@ -1,0 +1,5 @@
+deb %%DEBIAN_URL%% stretch main
+deb %%DEBIAN_URL%% stretch-updates main
+deb %%DEBIAN_URL%% stretch-backports main
+deb %%DEBIAN_SECURITY_URL%% %%DEBIAN_SECURITY_DISTRIBUTION%% main
+deb %%CEPH_URL%% stretch main

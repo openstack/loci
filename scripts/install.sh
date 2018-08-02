@@ -1,22 +1,41 @@
-#!/bin/bash -ex
+#!/bin/bash
 
-packages=$@
+set -ex
 
-distro=$(awk -F= '/^ID=/ {print $2}' /etc/*release | tr -d \")
+distro=$(awk -F= '/^ID=/ {gsub(/\"/, "", $2); print $2}' /etc/*release)
+export distro=${DISTRO:=$distro}
+
+if [[ "${PYTHON3}" == "no" ]]; then
+    dpkg_python_packages=("python" "virtualenv")
+    rpm_python_packages=("python" "python-virtualenv")
+else
+    dpkg_python_packages=("python3" "python3-virtualenv")
+    rpm_python_packages=("python3" "python3-virtualenv")
+fi
 
 case ${distro} in
     debian|ubuntu)
+        apt-get update
+        apt-get upgrade -y
         apt-get install -y --no-install-recommends \
-            netbase \
+            git \
             ca-certificates \
-            python \
-            virtualenv \
-            sudo
+            netbase \
+            lsb-release \
+            patch \
+            sudo \
+            curl \
+            ${dpkg_python_packages[@]}
         ;;
     centos)
-        yum install -y \
-            python-virtualenv \
-            sudo
+        yum upgrade -y
+        yum install -y --setopt=skip_missing_names_on_install=False \
+            git \
+            patch \
+            redhat-lsb-core \
+            sudo \
+            curl \
+            ${rpm_python_packages[@]}
         ;;
     *)
         echo "Unknown distro: ${distro}"
@@ -24,64 +43,40 @@ case ${distro} in
         ;;
 esac
 
-mkdir -p /opt/loci/
-cp $(dirname $0)/{clone_project.sh,pip_install.sh,fetch_wheels.py} /opt/loci/
+if [[ "${PROJECT}" == "requirements" ]]; then
+    $(dirname $0)/requirements.sh
+    exit 0
+else
+    # grab kubernetes-entrypoint
+    curl -sLo /usr/local/bin/kubernetes-entrypoint https://github.wdf.sap.corp/d062284/k8s-entrypoint-build/releases/download/f52d105/kubernetes-entrypoint && \
+    chmod +x /usr/local/bin/kubernetes-entrypoint
+fi
 
-# NOTE(SamYaple): --system-site-packages flag allows python to use libraries
-# outside of the virtualenv if they do not exist inside the venv. This is a
-# requirement for using python-rbd which is not pip installable and is only
-# available in packaged form.
-virtualenv --system-site-packages /var/lib/openstack/
-source /var/lib/openstack/bin/activate
-pip install -U 'pip<10'
-pip install -U setuptools wheel
+$(dirname $0)/fetch_wheels.sh
+if [[ "${PROJECT}" == "infra" ]]; then
+   $(dirname $0)/setup_pip.sh
+    $(dirname $0)/pip_install.sh bindep==2.6.0 ${PIP_PACKAGES}
+    $(dirname $0)/install_packages.sh
+    $(dirname $0)/cleanup.sh
+    exit 0
+fi
+if [[ "${PLUGIN}" == "no" ]]; then
+    $(dirname $0)/create_user.sh
+    $(dirname $0)/setup_pip.sh
+    $(dirname $0)/pip_install.sh bindep==2.6.0
+    PACKAGES=($(bindep -f /opt/loci/pydep.txt -b -l newline ${PROJECT} ${PROFILES} ${python3} || :))
+    $(dirname $0)/pip_install.sh ${PACKAGES[@]}
+fi
 
+# special neutron aci drivers installation sauce
+if [[ ${PROJECT} == 'neutron' ]]; then
+    $(dirname $0)/install_apic.sh
+fi
+
+if [[ ${PROJECT} == 'nova' ]]; then
+    $(dirname $0)/install_nova_console.sh
+fi
 $(dirname $0)/clone_project.sh
-
-$(dirname $0)/pip_install.sh \
-        /tmp/${PROJECT} \
-        pycrypto \
-        pymysql \
-        python-memcached \
-        uwsgi \
-        ${packages[@]}
-
-# add custom requirements
-if [[ -e /tmp/${PROJECT}/custom-requirements.txt ]]; then
-    pip install --no-cache-dir -r /tmp/${PROJECT}/custom-requirements.txt --constraint /tmp/packages/upper-constraints.txt
-fi
-
-
-# run custom script
-if [[ -e /tmp/loci-${PROJECT}.sh ]]; then
-    /tmp/loci-${PROJECT}.sh
-fi
-
-
-groupadd -g 42424 ${PROJECT}
-useradd -u 42424 -g ${PROJECT} -M -d /var/lib/${PROJECT} -s /usr/sbin/nologin -c "${PROJECT} user" ${PROJECT}
-
-mkdir -p /etc/${PROJECT} /var/log/${PROJECT} /var/lib/${PROJECT} /var/cache/${PROJECT}
-chown ${PROJECT}:${PROJECT} /etc/${PROJECT} /var/log/${PROJECT} /var/lib/${PROJECT} /var/cache/${PROJECT}
-
-case ${distro} in
-    debian|ubuntu)
-        apt-get purge -y --auto-remove \
-            git \
-            virtualenv
-        rm -rf /var/lib/apt/lists/*
-        ;;
-    centos)
-        yum -y autoremove \
-            git \
-            python-virtualenv
-        yum clean all
-        ;;
-    *)
-        echo "Unknown distro: ${distro}"
-        exit 1
-        ;;
-esac
-
-rm -rf /tmp/* /root/.cache
-find /usr/ /var/ -type f -name "*.pyc" -delete
+$(dirname $0)/pip_install.sh /tmp/${PROJECT} ${PIP_PACKAGES}
+$(dirname $0)/install_packages.sh
+$(dirname $0)/cleanup.sh

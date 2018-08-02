@@ -1,0 +1,26 @@
+- project:
+    check:
+      jobs:
+        - loci-ironic
+    gate:
+      jobs:
+        - loci-ironic
+    post:
+      jobs:
+        - publish-loci-ironic
+
+- job:
+    name: loci-ironic
+    parent: loci-base
+    vars:
+      project: ironic
+    required-projects:
+      - openstack/loci
+      - openstack/ironic
+
+- job:
+    name: publish-loci-ironic
+    parent: loci-ironic
+    post-run: playbooks/push.yaml
+    secrets:
+      - loci_docker_login

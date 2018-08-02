@@ -1,0 +1,26 @@
+- project:
+    check:
+      jobs:
+        - loci-neutron
+    gate:
+      jobs:
+        - loci-neutron
+    post:
+      jobs:
+        - publish-loci-neutron
+
+- job:
+    name: loci-neutron
+    parent: loci-base
+    vars:
+      project: neutron
+    required-projects:
+      - openstack/loci
+      - openstack/neutron
+
+- job:
+    name: publish-loci-neutron
+    parent: loci-neutron
+    post-run: playbooks/push.yaml
+    secrets:
+      - loci_docker_login
