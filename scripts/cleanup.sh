@@ -20,6 +20,19 @@ case ${distro} in
             python3-virtualenv
         yum clean all
         ;;
+    opensuse-leap|sles)
+        # NOTE(evrardjp): Remove all them packages!
+        if [[ "${PYTHON3}" == "no" ]]; then
+            remove_packages=("python-virtualenv")
+        else
+            remove_packages=("python3-virtualenv")
+        fi
+        zypper remove -y --clean-deps \
+            git-core \
+            patch \
+            ${remove_packages}
+        zypper clean -a
+        ;;
     *)
         echo "Unknown distro: ${distro}"
         exit 1
