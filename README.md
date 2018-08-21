@@ -13,6 +13,7 @@ Currently we build and gate images for the following OpenStack projects:
   * [Keystone](https://github.com/openstack/keystone)
   * [Neutron](https://github.com/openstack/neutron)
   * [Nova](https://github.com/openstack/nova)
+  * [Octavia](https://github.com/openstack/octavia)
 
 Additionally, we produce a "wheels" image for
 [requirements](https://github.com/openstack/requirements) containing all of the

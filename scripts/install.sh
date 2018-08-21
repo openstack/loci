@@ -37,6 +37,26 @@ case ${distro} in
             curl \
             ${rpm_python_packages[@]}
         ;;
+    opensuse|opensuse-leap|sles)
+        if [[ "${PYTHON3}" == "no" ]]; then
+           rpm_python_packages+=("python-devel" "python-setuptools")
+        else
+           rpm_python_packages+=("python3-devel" "python3-setuptools")
+        fi
+        zypper --non-interactive --gpg-auto-import-keys refresh
+        zypper --non-interactive install --no-recommends \
+            ca-certificates \
+            git-core \
+            lsb-release \
+            patch \
+            sudo \
+            tar \
+            ${rpm_python_packages[@]}
+        #NOTE(evrardjp) Temporary workaround until bindep is fixed
+        # for leap 15: https://review.openstack.org/#/c/586038/
+        # should be merged and released.
+        sed -i 's/ID="opensuse-leap"/ID="opensuse"/g' /etc/os-release
+        ;;
     *)
         echo "Unknown distro: ${distro}"
         exit 1
@@ -55,7 +75,7 @@ fi
 $(dirname $0)/fetch_wheels.sh
 if [[ "${PROJECT}" == "infra" ]]; then
    $(dirname $0)/setup_pip.sh
-    $(dirname $0)/pip_install.sh bindep==2.6.0 ${PIP_PACKAGES}
+    $(dirname $0)/pip_install.sh bindep ${PIP_PACKAGES}
     $(dirname $0)/install_packages.sh
     $(dirname $0)/cleanup.sh
     exit 0
@@ -63,7 +83,7 @@ fi
 if [[ "${PLUGIN}" == "no" ]]; then
     $(dirname $0)/create_user.sh
     $(dirname $0)/setup_pip.sh
-    $(dirname $0)/pip_install.sh bindep==2.6.0
+    $(dirname $0)/pip_install.sh bindep
     PACKAGES=($(bindep -f /opt/loci/pydep.txt -b -l newline ${PROJECT} ${PROFILES} ${python3} || :))
     $(dirname $0)/pip_install.sh ${PACKAGES[@]}
 fi

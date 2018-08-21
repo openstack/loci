@@ -16,6 +16,9 @@ if [[ ! -z ${PACKAGES} ]]; then
         centos)
             yum -y --setopt=skip_missing_names_on_install=False install ${PACKAGES[@]} ${DIST_PACKAGES}
             ;;
+        opensuse|opensuse-leap|sles)
+            zypper --non-interactive install --no-recommends ${PACKAGES[@]} ${DIST_PACKAGES}
+            ;;
         *)
             echo "Unknown distro: ${distro}"
             exit 1

@@ -2,24 +2,8 @@
 
 set -eux
 
-case ${distro} in
-    debian|ubuntu)
-        apt-get update
-        apt-get upgrade -y
-        apt-get install -y --no-install-recommends patch
-        ;;
-    centos)
-        yum upgrade -y
-        yum install -y --setopt=skip_missing_names_on_install=False patch
-        ;;
-    *)
-        echo "Unknown distro: ${distro}"
-        exit 1
-        ;;
-esac
-
 $(dirname $0)/setup_pip.sh
-pip install bindep==2.6.0
+pip install bindep
 
 $(dirname $0)/install_packages.sh
 $(dirname $0)/clone_project.sh
