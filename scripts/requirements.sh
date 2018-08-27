@@ -41,11 +41,9 @@ if [[ -f /failure ]]; then
     exit 1
 fi
 
-# NOTE(SamYaple) Remove native-binary wheels, we only want to keep wheels that
-# we compiled ourselves.
-awk -F'[ ,]+' '/^Skipping/ {gsub("-","_");print $2}' /tmp/wheels.txt | xargs -r -n1 bash -c 'ls /$1-*' _ | sort -u | xargs -t -r rm
+# NOTE(SamYaple) Remove native-binary wheels, we only want to keep wheels that we compiled ourselves.
+#awk -F'[ ,]+' '/^Skipping/ {gsub("-","_");print $2}' /tmp/wheels.txt | xargs -r -n1 bash -c 'ls /$1-*' _ | sort -u | xargs -t -r rm
 
-# NOTE(SamYaple): We want to purge all files that are not wheels or txt to
-# reduce the size of the layer to only what is needed
+# NOTE(SamYaple): We want to purge all files that are not wheels or txt to reduce the size of the layer to only what is needed
 shopt -s extglob
 rm -rf /!(*whl|*txt) > /dev/null 2>&1 || :

@@ -14,4 +14,4 @@ mkdir -p /tmp/wheels/
 # NOTE(SamYaple): We exclude all files starting with '.' as these can be
 # control files for AUFS which have special meaning on AUFS backed file
 # stores.
-tar xf /tmp/wheels.tar.gz --exclude='.*' -C /tmp/wheels/
+tar xvf /tmp/wheels.tar.gz --exclude='.*' -C /tmp/wheels/
