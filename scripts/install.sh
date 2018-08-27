@@ -65,7 +65,6 @@ esac
 
 if [[ "${PROJECT}" == "requirements" ]]; then
     $(dirname $0)/requirements.sh
-    ls -l /
     exit 0
 else
     # grab kubernetes-entrypoint
@@ -73,9 +72,7 @@ else
     chmod +x /usr/local/bin/kubernetes-entrypoint
 fi
 
-
 $(dirname $0)/fetch_wheels.sh
-ls -l /tmp/wheels
 if [[ "${PROJECT}" == "infra" ]]; then
    $(dirname $0)/setup_pip.sh
     $(dirname $0)/pip_install.sh bindep ${PIP_PACKAGES}
