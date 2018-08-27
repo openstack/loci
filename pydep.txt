@@ -1,4 +1,5 @@
 cryptography    []
+dumb-init       []
 fluent-logger   [fluent]
 ldappool        [(keystone ldap)]
 libvirt-python  [nova]
