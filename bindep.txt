@@ -13,6 +13,7 @@ device-mapper-multipath     [platform:rpm (cinder purestorage) (nova purestorage
 dnsmasq                     [neutron]
 dnsmasq-utils               [neutron]
 dnsutils                    [platform:dpkg]
+dumb-init                   [platform:dpkg]
 ebtables                    [neutron]
 gcc                         [platform:rpm requirements]
 gcc-c++                     [platform:rpm requirements]
