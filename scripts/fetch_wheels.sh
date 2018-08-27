@@ -15,4 +15,3 @@ mkdir -p /tmp/wheels/
 # control files for AUFS which have special meaning on AUFS backed file
 # stores.
 tar xvf /tmp/wheels.tar.gz --exclude='.*' -C /tmp/wheels/
-ls -l /tmp/wheels
