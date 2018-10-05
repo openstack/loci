@@ -136,5 +136,5 @@ RUN set -x \
 LOCI is considered stable. There are production installs of OpenStack using
 LOCI built images at this time.
 
-The project is very low-entopy with very little changing, but this is expected.
+The project is very low-entropy with very little changing, but this is expected.
 The highest traffic section of LOCI is the gates.
