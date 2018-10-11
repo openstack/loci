@@ -9,7 +9,13 @@
           - "pydep.txt"
       environment:
           LC_ALL: C
-
+    # NOTE(evrardjp): While reuse_requirements is very nice and optimises
+    # checks and gating, there is a race condition here, because
+    # we are consuming prebuild wheels (see vars.yaml) by default:
+    # The jobs in zuul can be building a new "requirements" image, working
+    # And the new "nova" image would still build on previous "requirements"
+    # image that was last published. This could cause an issue. Instead
+    # in gating we should build directly what will be consumed.
     # NOTE(SamYaple): This process is so we can take advantage of the infra
     # DockerHub mirroring as configured through the Docker daemon. We do this
     # instead of calling fetch_wheels initially. All-in-all this saves
@@ -25,6 +31,7 @@
           async: 1000
           poll: 0
           register: pull
+
         - async_status:
             jid: "{{ item.ansible_job_id }}"
           with_items: "{{ pull.results }}"
@@ -34,11 +41,14 @@
             - pull_result.finished
           retries: 1000
           delay: 5
-      when: project != 'requirements'
+      when:
+       - reuse_requirements | bool
+       - project != 'requirements'
 
     - name: Build base images
       block:
-        - docker_image:
+        - name: "Build base image for {{ item.name }} asynchronously"
+          docker_image:
             path: "{{ loci_src_dir }}/dockerfiles/{{ item.name }}"
             name: base
             tag: "{{ item.name }}"
@@ -47,6 +57,7 @@
           async: 1000
           poll: 0
           register: base
+
         - async_status:
             jid: "{{ item.ansible_job_id }}"
           with_items: "{{ base.results }}"
@@ -57,9 +68,39 @@
           retries: 1000
           delay: 5
 
+    - name: Build requirements image
+      block:
+        - name: "Build requirements image for {{ item.name }}"
+          docker_image:
+            path: "{{ loci_src_dir }}"
+            name: loci/requirements
+            tag: "{{ branch }}-{{ item.name }}"
+            repository: 172.17.0.1:5000/loci/requirements
+            push: yes
+            pull: False
+            buildargs: "{{ item.buildargs.requirements }}"
+          with_items: "{{ distros }}"
+          async: 1000
+          poll: 0
+          register: build
+
+        - async_status:
+            jid: "{{ item.ansible_job_id }}"
+          with_items: "{{ build.results }}"
+          register: build_result
+          until:
+            - build_result.finished is defined
+            - build_result.finished
+          retries: 1000
+          delay: 5
+      when:
+       - (not reuse_requirements) | bool
+       - project != 'requirements'
+
     - name: Build project images
       block:
-        - docker_image:
+        - name: "Build {{ project }} image for {{ item.name }}"
+          docker_image:
             path: "{{ loci_src_dir }}"
             name: loci/{{ project }}
             tag: "{{ branch }}-{{ item.name }}"
@@ -69,6 +110,7 @@
           async: 1000
           poll: 0
           register: build
+
         - async_status:
             jid: "{{ item.ansible_job_id }}"
           with_items: "{{ build.results }}"
