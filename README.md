@@ -88,6 +88,10 @@ For more advanced building you can use docker build arguments to define:
   * `PIP_ARGS` Specify additional pip's parameters you would like.
   * `DIST_PACKAGES` Specify additional distribution packages you would like
     installed.
+  * `EXTRA_BINDEP` Specify a bindep-* file to add in the container. It would
+     be considered next to the default bindep.txt.
+  * `EXTRA_PYDEP` Specify a pydep-* file to add in the container. It would
+     be considered next to the default pydep.txt.
 
 This makes it really easy to integrate LOCI images into your development or
 CI/CD workflow, for example, if you wanted to build an image from [this

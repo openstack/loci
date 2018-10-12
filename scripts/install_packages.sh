@@ -6,7 +6,9 @@ if [[ "${PYTHON3}" != "no" ]]; then
     python3=python3
 fi
 
-PACKAGES=($(bindep -f /opt/loci/bindep.txt -b -l newline ${PROJECT} ${PROFILES} ${python3} || :))
+for file in /opt/loci/bindep*; do
+    PACKAGES+=($(bindep -f $file -b -l newline ${PROJECT} ${PROFILES} ${python3} || :))
+done
 
 if [[ ! -z ${PACKAGES} ]]; then
     case ${distro} in

@@ -78,8 +78,10 @@ if [[ "${PLUGIN}" == "no" ]]; then
     $(dirname $0)/create_user.sh
     $(dirname $0)/setup_pip.sh
     $(dirname $0)/pip_install.sh bindep
-    PACKAGES=($(bindep -f /opt/loci/pydep.txt -b -l newline ${PROJECT} ${PROFILES} ${python3} || :))
-    $(dirname $0)/pip_install.sh ${PACKAGES[@]}
+    for file in /opt/loci/pydep*; do
+        PYDEP_PACKAGES+=($(bindep -f $file -b -l newline ${PROJECT} ${PROFILES} ${python3} || :))
+    done
+    $(dirname $0)/pip_install.sh ${PYDEP_PACKAGES[@]}
 fi
 
 if [[ ${PROJECT} == 'nova' ]]; then

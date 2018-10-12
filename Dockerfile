@@ -13,6 +13,8 @@ ARG PIP_ARGS=""
 ARG DIST_PACKAGES=""
 ARG PLUGIN=no
 ARG PYTHON3=no
+ARG EXTRA_BINDEP=""
+ARG EXTRA_PYDEP=""
 
 ARG UID=42424
 ARG GID=42424
@@ -23,6 +25,6 @@ ARG SPICE_REPO=https://gitlab.freedesktop.org/spice/spice-html5.git
 ARG SPICE_REF=spice-html5-0.1.6
 
 COPY scripts /opt/loci/scripts
-COPY bindep.txt pydep.txt /opt/loci/
+ADD bindep.txt pydep.txt $EXTRA_BINDEP $EXTRA_PYDEP /opt/loci/
 
 RUN /opt/loci/scripts/install.sh
