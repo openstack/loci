@@ -16,6 +16,7 @@
       project: ironic
     required-projects:
       - openstack/loci
+      - openstack/requirements
       - openstack/ironic
 
 - job:

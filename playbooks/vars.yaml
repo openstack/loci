@@ -7,6 +7,8 @@ docker_daemon:
   insecure-registries:
     - 172.17.0.1:5000
 
+reuse_requirements: False
+
 # NOTE(SamYaple): When running in the loci repo, the project is "loci", but
 # when running as a post job for cinder, the project is "cinder". We statically
 # declare the path rather than using zuul variables so thats not an issue
@@ -26,6 +28,10 @@ distros:
         PROJECT_REPO: http://172.17.0.1/git/openstack/{{ project }}
         WHEELS: 172.17.0.1:5000/loci/requirements:{{ branch }}-centos
         FROM: base:centos
+      requirements:
+        PROJECT: requirements
+        PROJECT_REPO: http://172.17.0.1/git/openstack/requirements
+        FROM: base:centos
   - name: ubuntu
     image: ubuntu:xenial
     buildargs:
@@ -40,6 +46,10 @@ distros:
         PROJECT: "{{ project }}"
         PROJECT_REPO: http://172.17.0.1/git/openstack/{{ project }}
         WHEELS: 172.17.0.1:5000/loci/requirements:{{ branch }}-ubuntu
+        FROM: base:ubuntu
+      requirements:
+        PROJECT: requirements
+        PROJECT_REPO: http://172.17.0.1/git/openstack/requirements
         FROM: base:ubuntu
 #  - name: debian
 #    image: debian:stretch
@@ -56,4 +66,8 @@ distros:
 #        PROJECT: "{{ project }}"
 #        PROJECT_REPO: http://172.17.0.1/git/openstack/{{ project }}
 #        WHEELS: 172.17.0.1:5000/loci/requirements:master-debian
+#        FROM: base:debian
+#      requirements:
+#        PROJECT: requirements
+#        PROJECT_REPO: http://172.17.0.1/git/openstack/requirements
 #        FROM: base:debian

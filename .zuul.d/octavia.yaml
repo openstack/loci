@@ -16,6 +16,7 @@
       project: octavia
     required-projects:
       - openstack/loci
+      - openstack/requirements
       - openstack/octavia
 
 - job:
