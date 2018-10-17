@@ -51,6 +51,21 @@ distros:
         PROJECT: requirements
         PROJECT_REPO: http://172.17.0.1/git/openstack/requirements
         FROM: base:ubuntu
+  - name: leap15
+    buildargs:
+      base:
+        PACKAGE_MIRROR: "http://{{ zuul_site_mirror_fqdn }}/opensuse/"
+        PIP_INDEX_URL: http://{{ zuul_site_mirror_fqdn }}/pypi/simple
+        PIP_TRUSTED_HOST: "{{ zuul_site_mirror_fqdn }}"
+      project:
+        PROJECT: "{{ project }}"
+        PROJECT_REPO: http://172.17.0.1/git/openstack/{{ project }}
+        WHEELS: 172.17.0.1:5000/loci/requirements:{{ branch }}-leap15
+        FROM: base:leap15
+      requirements:
+        PROJECT: requirements
+        PROJECT_REPO: http://172.17.0.1/git/openstack/requirements
+        FROM: base:leap15
 #  - name: debian
 #    image: debian:stretch
 #    buildargs:
