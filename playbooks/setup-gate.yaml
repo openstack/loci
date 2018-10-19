@@ -38,11 +38,10 @@
         - apt_repository:
             repo: deb http://{{ zuul_site_mirror_fqdn }}/deb-docker xenial stable
         - apt:
-            name: "{{ item }}"
+            name:
+              - docker-ce
+              - python-pip
             allow_unauthenticated: True
-          with_items:
-            - docker-ce
-            - python-pip
         - pip:
             name: docker
             version: 2.7.0
@@ -67,6 +66,7 @@
             path: "{{ item.path }}"
             owner: "{{ item.owner }}"
             state: directory
+            recurse: "{{ item.recurse | default(omit) }}"
           with_items:
             - path: /logs/apache/
               owner: zuul
@@ -82,8 +82,7 @@
             - src: files/apache.conf
               dest: /webroot/
         - apt:
-            name: "{{ item }}"
-          with_items:
-            - apache2
-            - gitweb
+            name:
+              - apache2
+              - gitweb
       become: True
