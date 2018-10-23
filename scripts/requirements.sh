@@ -29,6 +29,17 @@ export CASS_DRIVER_BUILD_CONCURRENCY=8
 # NOTE(hrw): Drop python packages requested by monasca_analytics. Their
 # build time is huge and on !x86 we do not get binaries from Pypi.
 egrep -v "(scipy|scikit-learn)" /upper-constraints.txt | split -l1
+
+# NOTE(aostapenko): When a package uses the variable 'setup_requires' in 'setup.py', 'pip wheel'
+# dependency management will be overridden, resulting in possible incompatibilities
+# between packages. Installing packages using upper-constraints.txt before building the wheels
+# ensures the correct package versions will be available and installed locally.
+# https://pip.readthedocs.io/en/stable/user_guide/#installation-bundles
+# This allows to work around such issues as https://github.com/lxc/pylxd/issues/308
+if [ ! -z "${PIP_PACKAGES}" ]; then
+  pip install -c /upper-constraints.txt ${PIP_PACKAGES}
+fi
+
 echo uwsgi enum-compat ${PIP_PACKAGES} | xargs -n1 | split -l1 -a3
 ls -1 | xargs -n1 -P20 -t bash -c 'pip wheel --no-deps --wheel-dir / -c /upper-constraints.txt -r $1 || echo %1 >> /failure' _ | tee /tmp/wheels.txt
 
