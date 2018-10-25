@@ -50,10 +50,6 @@ case ${distro} in
             sudo \
             tar \
             ${rpm_python_packages[@]}
-        #NOTE(evrardjp) Temporary workaround until bindep is fixed
-        # for leap 15: https://review.openstack.org/#/c/586038/
-        # should be merged and released.
-        sed -i 's/ID="opensuse-leap"/ID="opensuse"/g' /etc/os-release
         ;;
     *)
         echo "Unknown distro: ${distro}"

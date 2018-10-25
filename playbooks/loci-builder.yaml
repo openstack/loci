@@ -9,17 +9,6 @@
           - "pydep.txt"
       environment:
           LC_ALL: C
-    # NOTE(evrardjp): While reuse_requirements is very nice and optimises
-    # checks and gating, there is a race condition here, because
-    # we are consuming prebuild wheels (see vars.yaml) by default:
-    # The jobs in zuul can be building a new "requirements" image, working
-    # And the new "nova" image would still build on previous "requirements"
-    # image that was last published. This could cause an issue. Instead
-    # in gating we should build directly what will be consumed.
-    # NOTE(SamYaple): This process is so we can take advantage of the infra
-    # DockerHub mirroring as configured through the Docker daemon. We do this
-    # instead of calling fetch_wheels initially. All-in-all this saves
-    # bandwidth and time.
     - name: Gather wheels to local registry
       block:
         - docker_image:

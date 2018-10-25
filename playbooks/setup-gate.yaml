@@ -51,7 +51,7 @@
             state: started
             published_ports:
               - 172.17.0.1:5000:5000
-        # NOTE(SamYaple): Allow all connections from containers to host so the
+        # Allow all connections from containers to host so the
         # containers can access the http server for git and wheels
         - iptables:
             action: insert

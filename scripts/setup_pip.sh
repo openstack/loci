@@ -8,9 +8,8 @@ else
     TMP_VIRTUALENV="python3 -m virtualenv --python=python3"
 fi
 
-# NOTE(SamYaple): This little dance allows us to install the latest pip and
-# setuptools without get_pip.py or the python-pip package (which is in epel on
-# centos)
+# This little dance allows us to install the latest pip and setuptools
+# without get_pip.py or the python-pip package (in epel on centos)
 if (( $(${TMP_VIRTUALENV} --version | cut -d. -f1) >= 14 )); then
     SETUPTOOLS="--no-setuptools"
 fi
