@@ -122,7 +122,7 @@ $ docker build https://git.openstack.org/openstack/loci.git \
 The images should contain all the required assets for running the service. But
 if you wish or need to customize the `loci/keystone` image that's great! We
 hope to have built the images to make this as easy and flexible as possible. To
-do this we recommend that you perform any required customisation in a child
+do this we recommend that you perform any required customization in a child
 image using a pattern similar to:
 
 ``` Dockerfile
