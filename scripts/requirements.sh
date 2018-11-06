@@ -3,7 +3,7 @@
 set -eux
 
 $(dirname $0)/setup_pip.sh
-pip install bindep
+pip install ${PIP_ARGS} bindep
 
 $(dirname $0)/install_packages.sh
 $(dirname $0)/clone_project.sh
@@ -41,11 +41,11 @@ egrep -v "(scipy|scikit-learn)" /upper-constraints.txt | split -l1
 # This allows to work around such issues as
 #   https://github.com/lxc/pylxd/issues/308
 if [ ! -z "${PIP_PACKAGES}" ]; then
-  pip install -c /upper-constraints.txt ${PIP_PACKAGES}
+  pip install ${PIP_ARGS} -c /upper-constraints.txt ${PIP_PACKAGES}
 fi
 
 echo uwsgi enum-compat ${PIP_PACKAGES} | xargs -n1 | split -l1 -a3
-ls -1 | xargs -n1 -P20 -t bash -c 'pip wheel --no-deps --wheel-dir / -c /upper-constraints.txt -r $1 || echo %1 >> /failure' _ | tee /tmp/wheels.txt
+ls -1 | xargs -n1 -P20 -t bash -c 'pip wheel ${PIP_WHEEL_ARGS} --no-deps --wheel-dir / -c /upper-constraints.txt -r $1 || echo %1 >> /failure' _ | tee /tmp/wheels.txt
 
 # TODO: Improve the failure catching
 if [[ -f /failure ]]; then

@@ -86,6 +86,8 @@ For more advanced building you can use docker build arguments to define:
     you wanted to include rpdb, you would need to have built that into your
     WHEELS.
   * `PIP_ARGS` Specify additional pip's parameters you would like.
+  * `PIP_WHEEL_ARGS` Specify additional pip's wheel parameters you would like.
+     Default is PIP_ARGS.
   * `DIST_PACKAGES` Specify additional distribution packages you would like
     installed.
   * `EXTRA_BINDEP` Specify a bindep-* file to add in the container. It would
