@@ -17,45 +17,19 @@
             repository: 172.17.0.1:5000/loci/requirements
             push: yes
           with_items: "{{ distros }}"
-          async: 1000
-          poll: 0
-          register: pull
-
-        - async_status:
-            jid: "{{ item.ansible_job_id }}"
-          with_items: "{{ pull.results }}"
-          register: pull_result
-          until:
-            - pull_result.finished is defined
-            - pull_result.finished
-          retries: 1000
-          delay: 5
       when:
        - reuse_requirements | bool
        - project != 'requirements'
 
     - name: Build base images
       block:
-        - name: "Build base image for {{ item.name }} asynchronously"
+        - name: "Build base image for {{ item.name }}"
           docker_image:
             path: "{{ loci_src_dir }}/dockerfiles/{{ item.name }}"
             name: base
             tag: "{{ item.name }}"
             buildargs: "{{ item.buildargs.base }}"
           with_items: "{{ distros }}"
-          async: 1000
-          poll: 0
-          register: base
-
-        - async_status:
-            jid: "{{ item.ansible_job_id }}"
-          with_items: "{{ base.results }}"
-          register: base_result
-          until:
-            - base_result.finished is defined
-            - base_result.finished
-          retries: 1000
-          delay: 5
 
     - name: Build requirements image
       block:
@@ -69,19 +43,6 @@
             pull: False
             buildargs: "{{ item.buildargs.requirements }}"
           with_items: "{{ distros }}"
-          async: 1000
-          poll: 0
-          register: build
-
-        - async_status:
-            jid: "{{ item.ansible_job_id }}"
-          with_items: "{{ build.results }}"
-          register: build_result
-          until:
-            - build_result.finished is defined
-            - build_result.finished
-          retries: 1000
-          delay: 5
       when:
        - (not reuse_requirements) | bool
        - project != 'requirements'
@@ -96,16 +57,3 @@
             pull: False
             buildargs: "{{ item.buildargs.project }}"
           with_items: "{{ distros }}"
-          async: 1000
-          poll: 0
-          register: build
-
-        - async_status:
-            jid: "{{ item.ansible_job_id }}"
-          with_items: "{{ build.results }}"
-          register: build_result
-          until:
-            - build_result.finished is defined
-            - build_result.finished
-          retries: 1000
-          delay: 5
