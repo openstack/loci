@@ -35,7 +35,7 @@ case ${distro} in
             sudo \
             ${rpm_python_packages[@]}
         ;;
-    opensuse|opensuse-leap|sles)
+    opensuse|opensuse-leap|opensuse-tumbleweed|sles)
         if [[ "${PYTHON3}" == "no" ]]; then
            rpm_python_packages+=("python-devel" "python-setuptools")
         else

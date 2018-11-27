@@ -20,7 +20,7 @@ case ${distro} in
             python3-virtualenv
         yum clean all
         ;;
-    opensuse|opensuse-leap|sles)
+    opensuse|opensuse-leap|opensuse-tumbleweed|sles)
         if [[ "${PYTHON3}" == "no" ]]; then
             remove_packages=("python-virtualenv")
         else
