@@ -1,20 +1,5 @@
 - hosts: all
   tasks:
-    - name: Collect logs
-      block:
-        # FIXME: https://github.com/ansible/ansible/issues/14131
-        # This issue closed on October 11, 2018. Patch will be released
-        # with Ansible 2.8 release.
-        - command: cp -r /home/zuul/.ansible_async /logs/async_logs
-        # FIXME: running this is causing the gate to hang
-        #- command: journalctl -xb -u docker.service
-        #  register: docker_daemon_log
-        #  no_log: True
-        #- copy:
-        #    content: "{{ docker_daemon_log.stdout }}"
-        #    dest: /logs/docker_daemon.log
-      become: true
-
     - name: Copy logs
       synchronize:
         src: /logs
