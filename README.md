@@ -24,11 +24,14 @@ by LOCI. For simplicity, we will continue to use Keystone as an example.
 
 
 ### Keystone Image Layer Info
-[![](https://images.microbadger.com/badges/version/loci/keystone:master-debian.svg)](https://microbadger.com/images/loci/keystone:master-debian "loci/keystone:master-debian") [![](https://images.microbadger.com/badges/image/loci/keystone:master-debian.svg)](https://microbadger.com/images/loci/keystone:master-debian "loci/keystone:master-debian")
+CentOS: [![](https://images.microbadger.com/badges/version/loci/keystone:master-centos.svg)](https://microbadger.com/images/loci/keystone:master-centos "loci/keystone:master-centos") [![](https://images.microbadger.com/badges/image/loci/keystone:master-centos.svg)](https://microbadger.com/images/loci/keystone:master-centos "loci/keystone:master-centos")
 
-[![](https://images.microbadger.com/badges/version/loci/keystone:master-ubuntu.svg)](https://microbadger.com/images/loci/keystone:master-ubuntu "loci/keystone:master-ubuntu") [![](https://images.microbadger.com/badges/image/loci/keystone:master-ubuntu.svg)](https://microbadger.com/images/loci/keystone:master-ubuntu "loci/keystone:master-ubuntu")
+Debian: [![](https://images.microbadger.com/badges/version/loci/keystone:master-debian.svg)](https://microbadger.com/images/loci/keystone:master-debian "loci/keystone:master-debian") [![](https://images.microbadger.com/badges/image/loci/keystone:master-debian.svg)](https://microbadger.com/images/loci/keystone:master-debian "loci/keystone:master-debian")
 
-[![](https://images.microbadger.com/badges/version/loci/keystone:master-centos.svg)](https://microbadger.com/images/loci/keystone:master-centos "loci/keystone:master-centos") [![](https://images.microbadger.com/badges/image/loci/keystone:master-centos.svg)](https://microbadger.com/images/loci/keystone:master-centos "loci/keystone:master-centos")
+openSUSE Leap: [![](https://images.microbadger.com/badges/version/loci/keystone:master-leap15.svg)](https://microbadger.com/images/loci/keystone:master-leap15 "loci/keystone:master-leap15") [![](https://images.microbadger.com/badges/image/loci/keystone:master-leap15.svg)](https://microbadger.com/images/loci/keystone:master-leap15 "loci/keystone:master-leap15")
+
+Ubuntu: [![](https://images.microbadger.com/badges/version/loci/keystone:master-ubuntu.svg)](https://microbadger.com/images/loci/keystone:master-ubuntu "loci/keystone:master-ubuntu") [![](https://images.microbadger.com/badges/image/loci/keystone:master-ubuntu.svg)](https://microbadger.com/images/loci/keystone:master-ubuntu "loci/keystone:master-ubuntu")
+
 
 
 ### Building locally
