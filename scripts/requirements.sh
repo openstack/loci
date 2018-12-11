@@ -45,7 +45,7 @@ if [ ! -z "${PIP_PACKAGES}" ]; then
 fi
 
 echo uwsgi enum-compat ${PIP_PACKAGES} | xargs -n1 | split -l1 -a3
-ls -1 | xargs -n1 -P20 -t bash -c 'pip wheel ${PIP_WHEEL_ARGS} --no-deps --wheel-dir / -c /upper-constraints.txt -r $1 || echo %1 >> /failure' _ | tee /tmp/wheels.txt
+ls -1 | xargs -n1 -P20 -t bash -c 'pip wheel ${PIP_WHEEL_ARGS} --no-deps --wheel-dir / -c /upper-constraints.txt -r $1 || cat $1 >> /failure' _ | tee /tmp/wheels.txt
 
 # TODO: Improve the failure catching
 if [[ -f /failure ]]; then
