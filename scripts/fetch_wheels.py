@@ -52,8 +52,8 @@ def get_blob(repo, tag, protocol, registry=DOCKER_REGISTRY, token=None):
     resp = urllib2.urlopen(r)
     return resp.read()
 
-def protocol_detection(registry, protocol='https'):
-    PROTOCOLS = ('https','http')
+def protocol_detection(registry, protocol='http'):
+    PROTOCOLS = ('http','https')
     index = PROTOCOLS.index(protocol)
     try:
         url = "{}://{}".format(protocol, registry)
@@ -125,3 +125,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

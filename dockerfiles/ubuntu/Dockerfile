@@ -17,21 +17,5 @@ RUN sed -i \
         -e "s|%%CLOUD_ARCHIVE_URL%%|${CLOUD_ARCHIVE_URL}|g" \
         -e "s|%%CEPH_URL%%|${CEPH_URL}|g" \
         /etc/apt/sources.list
-
-# NOTE(SamYaple): Remove this when infra starts signing thier mirrors
-RUN echo "APT::Get::AllowUnauthenticated \"${ALLOW_UNAUTHENTICATED}\";" > /etc/apt/apt.conf.d/allow-unathenticated
-
-# add SAP certificates
-ENV REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
-RUN echo 'precedence ::ffff:0:0/96  100' >> /etc/gai.conf && \
-    apt-get update && \
-    apt-get upgrade -y && \
-    apt-get install -y --no-install-recommends ca-certificates wget && \
-    wget -O /usr/local/share/ca-certificates/SAP_Global_Root_CA.crt http://aia.pki.co.sap.com/aia/SAP%20Global%20Root%20CA.crt && \
-    wget -O /usr/local/share/ca-certificates/SAP_Global_Sub_CA_02.crt http://aia.pki.co.sap.com/aia/SAP%20Global%20Sub%20CA%2002.crt && \
-    wget -O /usr/local/share/ca-certificates/SAP_Global_Sub_CA_04.crt http://aia.pki.co.sap.com/aia/SAP%20Global%20Sub%20CA%2004.crt && \
-    wget -O /usr/local/share/ca-certificates/SAP_Global_Sub_CA_05.crt http://aia.pki.co.sap.com/aia/SAP%20Global%20Sub%20CA%2005.crt && \
-    wget -O /usr/local/share/ca-certificates/SAPNetCA_G2.crt http://aia.pki.co.sap.com/aia/SAPNetCA_G2.crt && \
-    update-ca-certificates && \
-    apt-get purge -y --auto-remove ca-certificates && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /root/.cache
+RUN echo "APT::Get::AllowUnauthenticated \"${ALLOW_UNAUTHENTICATED}\";" \
+         > /etc/apt/apt.conf.d/allow-unathenticated

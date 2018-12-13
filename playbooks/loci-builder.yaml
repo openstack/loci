@@ -2,10 +2,13 @@
   tasks:
     - include_vars: vars.yaml
 
-    # NOTE(SamYaple): This process is so we can take advantage of the infra
-    # DockerHub mirroring as configured through the Docker daemon. We do this
-    # instead of calling fetch_wheels initially. All-in-all this saves
-    # bandwidth and time.
+    - name: Ensure dep files are sorted
+      command: "sort --check -f {{ loci_src_dir }}/{{ item }}"
+      loop:
+          - "bindep.txt"
+          - "pydep.txt"
+      environment:
+          LC_ALL: C
     - name: Gather wheels to local registry
       block:
         - docker_image:
@@ -14,59 +17,43 @@
             repository: 172.17.0.1:5000/loci/requirements
             push: yes
           with_items: "{{ distros }}"
-          async: 1000
-          poll: 0
-          register: pull
-        - async_status:
-            jid: "{{ item.ansible_job_id }}"
-          with_items: "{{ pull.results }}"
-          register: pull_result
-          until:
-            - pull_result.finished is defined
-            - pull_result.finished
-          retries: 1000
-          delay: 5
-      when: project != 'requirements'
+      when:
+       - reuse_requirements | bool
+       - project != 'requirements'
 
     - name: Build base images
       block:
-        - docker_image:
+        - name: "Build base image for {{ item.name }}"
+          docker_image:
             path: "{{ loci_src_dir }}/dockerfiles/{{ item.name }}"
             name: base
             tag: "{{ item.name }}"
             buildargs: "{{ item.buildargs.base }}"
           with_items: "{{ distros }}"
-          async: 1000
-          poll: 0
-          register: base
-        - async_status:
-            jid: "{{ item.ansible_job_id }}"
-          with_items: "{{ base.results }}"
-          register: base_result
-          until:
-            - base_result.finished is defined
-            - base_result.finished
-          retries: 1000
-          delay: 5
+
+    - name: Build requirements image
+      block:
+        - name: "Build requirements image for {{ item.name }}"
+          docker_image:
+            path: "{{ loci_src_dir }}"
+            name: loci/requirements
+            tag: "{{ branch }}-{{ item.name }}"
+            repository: 172.17.0.1:5000/loci/requirements
+            push: yes
+            pull: False
+            buildargs: "{{ item.buildargs.requirements }}"
+          with_items: "{{ distros }}"
+      when:
+       - (not reuse_requirements) | bool
+       - project != 'requirements'
 
     - name: Build project images
       block:
-        - docker_image:
+        - name: "Build {{ project }} image for {{ item.name }}"
+          docker_image:
             path: "{{ loci_src_dir }}"
             name: loci/{{ project }}
             tag: "{{ branch }}-{{ item.name }}"
             pull: False
             buildargs: "{{ item.buildargs.project }}"
           with_items: "{{ distros }}"
-          async: 1000
-          poll: 0
-          register: build
-        - async_status:
-            jid: "{{ item.ansible_job_id }}"
-          with_items: "{{ build.results }}"
-          register: build_result
-          until:
-            - build_result.finished is defined
-            - build_result.finished
-          retries: 1000
-          delay: 5

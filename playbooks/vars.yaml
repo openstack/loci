@@ -7,11 +7,27 @@ docker_daemon:
   insecure-registries:
     - 172.17.0.1:5000
 
-# NOTE(SamYaple): When running in the loci repo, the project is "loci", but
-# when running as a post job for cinder, the project is "cinder". We statically
-# declare the path rather than using zuul variables so thats not an issue
+# Setting reuse_requirements to True will use the most recent
+# requirements build from the gate registry. This can save bandwidth
+# and time. However, it introduces a gate race condition if a change
+# is posted that updates requirments. We set to false to prefer
+# correctness to speed.
+reuse_requirements: False
+
+# Override Zuul inferrence of source directory from project name to always
+# use "loci".
 loci_src_dir: "src/git.openstack.org/openstack/loci"
-branch: "{{ zuul_execution_branch.split('/')[-1] }}"
+# Branch name used for image building and publishing
+# If running in an environment with zuul and under a branched project
+# (like openstack/cinder, openstack/nova, ... but not openstack/loci)
+# this will be automatically be set to the appropriate branch name (rocky, queens, ...)
+branch: "{{ branchname | default(zuul_execution_branch.split('/')[-1]) }}"
+# Upstream code reference.
+# As LOCI is not building images on a per-commit basis on upstream openstack projects,
+# pointing to upstream zuul_branch for gating is enough.
+# If a project_ref is passed in a gating variable (like how you would do directly
+# in the command line), it will get consumed during image building.
+project_reference: "{% if project_ref is defined %}{{ project_ref }}{% elif zuul_branch is defined %}{{ zuul_branch }}{% else %}master{% endif %}"
 
 distros:
   - name: centos
@@ -24,7 +40,12 @@ distros:
       project:
         PROJECT: "{{ project }}"
         PROJECT_REPO: http://172.17.0.1/git/openstack/{{ project }}
+        PROJECT_REF: "{{ project_reference }}"
         WHEELS: 172.17.0.1:5000/loci/requirements:{{ branch }}-centos
+        FROM: base:centos
+      requirements:
+        PROJECT: requirements
+        PROJECT_REPO: http://172.17.0.1/git/openstack/requirements
         FROM: base:centos
   - name: ubuntu
     image: ubuntu:xenial
@@ -39,8 +60,28 @@ distros:
       project:
         PROJECT: "{{ project }}"
         PROJECT_REPO: http://172.17.0.1/git/openstack/{{ project }}
+        PROJECT_REF: "{{ project_reference }}"
         WHEELS: 172.17.0.1:5000/loci/requirements:{{ branch }}-ubuntu
         FROM: base:ubuntu
+      requirements:
+        PROJECT: requirements
+        PROJECT_REPO: http://172.17.0.1/git/openstack/requirements
+        FROM: base:ubuntu
+  - name: leap15
+    buildargs:
+      base:
+        PACKAGE_MIRROR: "http://{{ zuul_site_mirror_fqdn }}/opensuse/"
+        PIP_INDEX_URL: http://{{ zuul_site_mirror_fqdn }}/pypi/simple
+        PIP_TRUSTED_HOST: "{{ zuul_site_mirror_fqdn }}"
+      project:
+        PROJECT: "{{ project }}"
+        PROJECT_REPO: http://172.17.0.1/git/openstack/{{ project }}
+        WHEELS: 172.17.0.1:5000/loci/requirements:{{ branch }}-leap15
+        FROM: base:leap15
+      requirements:
+        PROJECT: requirements
+        PROJECT_REPO: http://172.17.0.1/git/openstack/requirements
+        FROM: base:leap15
 #  - name: debian
 #    image: debian:stretch
 #    buildargs:
@@ -55,5 +96,10 @@ distros:
 #      project:
 #        PROJECT: "{{ project }}"
 #        PROJECT_REPO: http://172.17.0.1/git/openstack/{{ project }}
+#        PROJECT_REF: "{{ project_reference }}"
 #        WHEELS: 172.17.0.1:5000/loci/requirements:master-debian
+#        FROM: base:debian
+#      requirements:
+#        PROJECT: requirements
+#        PROJECT_REPO: http://172.17.0.1/git/openstack/requirements
 #        FROM: base:debian
