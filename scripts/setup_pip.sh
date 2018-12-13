@@ -17,7 +17,7 @@ ${TMP_VIRTUALENV} --extra-search-dir=/tmp/wheels ${SETUPTOOLS} /tmp/venv
 source /tmp/venv/bin/activate
 
 # f5 packages break with pip 10
-pip install --upgrade ${PIP_ARGS} virtualenv 'virtualenv<16'
+pip install --upgrade ${PIP_ARGS} 'virtualenv<16'
 
 hash -r
 virtualenv --extra-search-dir=/tmp/wheels /var/lib/openstack
