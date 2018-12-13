@@ -16,6 +16,7 @@
       project: cinder
     required-projects:
       - openstack/loci
+      - openstack/requirements
       - openstack/cinder
 
 - job:

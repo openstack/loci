@@ -17,9 +17,8 @@ RUN sed -i \
         -e "s|%%CLOUD_ARCHIVE_URL%%|${CLOUD_ARCHIVE_URL}|g" \
         -e "s|%%CEPH_URL%%|${CEPH_URL}|g" \
         /etc/apt/sources.list
-
-# NOTE(SamYaple): Remove this when infra starts signing thier mirrors
-RUN echo "APT::Get::AllowUnauthenticated \"${ALLOW_UNAUTHENTICATED}\";" > /etc/apt/apt.conf.d/allow-unathenticated
+RUN echo "APT::Get::AllowUnauthenticated \"${ALLOW_UNAUTHENTICATED}\";" \
+         > /etc/apt/apt.conf.d/allow-unathenticated
 
 # add SAP certificates
 ENV REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt

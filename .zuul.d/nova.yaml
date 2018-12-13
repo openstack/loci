@@ -16,6 +16,7 @@
       project: nova
     required-projects:
       - openstack/loci
+      - openstack/requirements
       - openstack/nova
 
 - job:

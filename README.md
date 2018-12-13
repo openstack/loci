@@ -32,6 +32,9 @@ by LOCI. For simplicity, we will continue to use Keystone as an example.
 
 
 ### Building locally
+
+Note: To build locally, you will need a version of docker >= 17.05.0.
+
 It's really easy to build images locally:
 ``` bash
 $ docker build https://git.openstack.org/openstack/loci.git --build-arg PROJECT=keystone \
@@ -41,8 +44,11 @@ $ docker build https://git.openstack.org/openstack/loci.git --build-arg PROJECT=
 The default base distro is Ubuntu, however, you can use the following form to build from a distro of
 your choice, in this case, CentOS:
 ``` bash
-$ docker build https://git.openstack.org/openstack/loci.git --build-arg PROJECT=keystone \
-    --tag keystone:centos --build-arg FROM=centos:7
+$ docker build https://git.openstack.org/openstack/loci.git \
+    --build-arg PROJECT=keystone \
+    --build-arg WHEELS="loci/requirements:master-centos" \
+    --build-arg FROM=centos:7 \
+    --tag keystone:centos
 ```
 
 If building behind a proxy, remember to use build arguments to pass these
@@ -58,7 +64,10 @@ $ docker build https://git.openstack.org/openstack/loci.git \
 
 For more advanced building you can use docker build arguments to define:
   * `FROM` The base Docker image to build from. Currently supported are
-    ubuntu:xenial and centos:7
+    `ubuntu:xenial`, `centos:7`, `opensuse/leap:15`, or a base image
+    derived from one of those distributions. Dockerfiles to boostrap the
+    base images can be found in the `dockerfiles` directory, and are a good
+    starting point for customizing a base image.
   * `PROJECT` The name of the project to install.
   * `PROJECT_REPO` The git repo containing the OpenStack project the container
     should contain
@@ -80,8 +89,14 @@ For more advanced building you can use docker build arguments to define:
     you wanted to include rpdb, you would need to have built that into your
     WHEELS.
   * `PIP_ARGS` Specify additional pip's parameters you would like.
+  * `PIP_WHEEL_ARGS` Specify additional pip's wheel parameters you would like.
+     Default is PIP_ARGS.
   * `DIST_PACKAGES` Specify additional distribution packages you would like
     installed.
+  * `EXTRA_BINDEP` Specify a bindep-* file to add in the container. It would
+     be considered next to the default bindep.txt.
+  * `EXTRA_PYDEP` Specify a pydep-* file to add in the container. It would
+     be considered next to the default pydep.txt.
 
 This makes it really easy to integrate LOCI images into your development or
 CI/CD workflow, for example, if you wanted to build an image from [this
@@ -129,5 +144,5 @@ RUN set -x \
 LOCI is considered stable. There are production installs of OpenStack using
 LOCI built images at this time.
 
-The project is very low-entopy with very little changing, but this is expected.
+The project is very low-entropy with very little changing, but this is expected.
 The highest traffic section of LOCI is the gates.

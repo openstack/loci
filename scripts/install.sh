@@ -37,7 +37,7 @@ case ${distro} in
             curl \
             ${rpm_python_packages[@]}
         ;;
-    opensuse|opensuse-leap|sles)
+    opensuse|opensuse-leap|opensuse-tumbleweed|sles)
         if [[ "${PYTHON3}" == "no" ]]; then
            rpm_python_packages+=("python-devel" "python-setuptools")
         else
@@ -52,10 +52,6 @@ case ${distro} in
             sudo \
             tar \
             ${rpm_python_packages[@]}
-        #NOTE(evrardjp) Temporary workaround until bindep is fixed
-        # for leap 15: https://review.openstack.org/#/c/586038/
-        # should be merged and released.
-        sed -i 's/ID="opensuse-leap"/ID="opensuse"/g' /etc/os-release
         ;;
     *)
         echo "Unknown distro: ${distro}"
@@ -84,8 +80,10 @@ if [[ "${PLUGIN}" == "no" ]]; then
     $(dirname $0)/create_user.sh
     $(dirname $0)/setup_pip.sh
     $(dirname $0)/pip_install.sh bindep
-    PACKAGES=($(bindep -f /opt/loci/pydep.txt -b -l newline ${PROJECT} ${PROFILES} ${python3} || :))
-    $(dirname $0)/pip_install.sh ${PACKAGES[@]}
+    for file in /opt/loci/pydep*; do
+        PYDEP_PACKAGES+=($(bindep -f $file -b -l newline ${PROJECT} ${PROFILES} ${python3} || :))
+    done
+    $(dirname $0)/pip_install.sh ${PYDEP_PACKAGES[@]}
 fi
 
 # special neutron aci drivers installation sauce
@@ -97,6 +95,6 @@ if [[ ${PROJECT} == 'nova' ]]; then
     $(dirname $0)/install_nova_console.sh
 fi
 $(dirname $0)/clone_project.sh
-$(dirname $0)/pip_install.sh /tmp/${PROJECT} ${PIP_PACKAGES}
 $(dirname $0)/install_packages.sh
+$(dirname $0)/pip_install.sh /tmp/${PROJECT} ${PIP_PACKAGES}
 $(dirname $0)/cleanup.sh
