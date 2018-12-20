@@ -1,0 +1,28 @@
+- project:
+    check:
+      jobs:
+        - loci-placement:
+            voting: false
+    #gate:
+    #  jobs:
+    #    - loci-placement
+    #post:
+    #  jobs:
+    #    - publish-loci-placement
+
+- job:
+    name: loci-placement
+    parent: loci-base
+    vars:
+      project: placement
+    required-projects:
+      - openstack/loci
+      - openstack/requirements
+      - openstack/placement
+
+- job:
+    name: publish-loci-placement
+    parent: loci-placement
+    post-run: playbooks/push.yaml
+    secrets:
+      - loci_docker_login
