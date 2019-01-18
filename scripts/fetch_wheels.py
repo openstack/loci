@@ -65,7 +65,7 @@ def protocol_detection(registry, protocol='https'):
         elif index < len(PROTOCOLS) - 1:
             return protocol_detection(registry, PROTOCOLS[index + 1])
         else:
-            raise Exception, "Cannot detect protocol for registry: {} due to error: {}".format(registry,err)
+            raise Exception("Cannot detect protocol for registry: {} due to error: {}".format(registry,err))
     except:
         raise
     else:
@@ -96,7 +96,7 @@ def main():
     if 'WHEELS' in os.environ:
         wheels = os.environ['WHEELS']
     else:
-        with open('/opt/loci/wheels', 'ro') as f:
+        with open('/opt/loci/wheels', 'r') as f:
             wheels = f.read()
 
     if wheels.startswith('/'):
