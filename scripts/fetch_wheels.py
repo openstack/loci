@@ -77,12 +77,12 @@ def get_wheels(url):
     return resp.read()
 
 def parse_image(full_image):
-    slash_occurences = len(re.findall('/',full_image))
+    slash_occurrences = len(re.findall('/',full_image))
     repo = None
     registry = DOCKER_REGISTRY
-    if slash_occurences == 2:
+    if slash_occurrences == 2:
         registry, repo, image = full_image.split('/')
-    elif slash_occurences == 1:
+    elif slash_occurrences == 1:
         repo, image = full_image.split('/')
     else:
         image = full_image

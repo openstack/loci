@@ -10,11 +10,11 @@ docker_daemon:
 # Setting reuse_requirements to True will use the most recent
 # requirements build from the gate registry. This can save bandwidth
 # and time. However, it introduces a gate race condition if a change
-# is posted that updates requirments. We set to false to prefer
+# is posted that updates requirements. We set to false to prefer
 # correctness to speed.
 reuse_requirements: False
 
-# Override Zuul inferrence of source directory from project name to always
+# Override Zuul inference of source directory from project name to always
 # use "loci".
 loci_src_dir: "src/git.openstack.org/openstack/loci"
 # Branch name used for image building and publishing
