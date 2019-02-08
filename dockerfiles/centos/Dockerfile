@@ -10,4 +10,6 @@ ENV PIP_TRUSTED_HOST=${PIP_TRUSTED_HOST}
 RUN rm -rf /etc/yum.repos.d/*
 COPY CentOS.repo /etc/yum.repos.d/
 COPY RPM-GPG-KEY-CentOS-SIG-Cloud /etc/pki/rpm-gpg/
-RUN sed -i "s|%%PACKAGE_MIRROR%%|${PACKAGE_MIRROR}|g" /etc/yum.repos.d/CentOS.repo
+RUN sed -i "s|%%PACKAGE_MIRROR%%|${PACKAGE_MIRROR}|g" /etc/yum.repos.d/CentOS.repo \
+  && yum install -y centos-release-qemu-ev \
+  && yum update -y
