@@ -2,6 +2,7 @@
 
 set -ex
 
+
 if [[ "${PYTHON3}" == "no" ]]; then
     TMP_VIRTUALENV="virtualenv"
 else
@@ -13,12 +14,27 @@ fi
 if (( $(${TMP_VIRTUALENV} --version | cut -d. -f1) >= 14 )); then
     SETUPTOOLS="--no-setuptools"
 fi
-${TMP_VIRTUALENV} --extra-search-dir=/tmp/wheels ${SETUPTOOLS} /tmp/venv
-source /tmp/venv/bin/activate
 
-# TODO: Remove virtualenv version pinning once a suitable fix is found
-# to this issue:
-# http://lists.openstack.org/pipermail/openstack-discuss/2019-February/002592.html
-pip install --upgrade ${PIP_ARGS} virtualenv==16.3.0
+# virtualenv 16.4.0 fixed symlink handling. The interaction of the new
+# corrected behavior with legacy bugs in packaged virtualenv releases in
+# distributions means we need to hold on to the pip bootstrap installation
+# chain to preserve symlinks. As distributions upgrade their default
+# installations we may not need this workaround in the future
+PIPBOOTSTRAP=/var/lib/pipbootstrap
+
+# Create the boostrap environment so we can get pip from virtualenv
+${TMP_VIRTUALENV} --extra-search-dir=/tmp/wheels ${SETUPTOOLS} ${PIPBOOTSTRAP}
+source ${PIPBOOTSTRAP}/bin/activate
+
+# Upgrade to the latest version of virtualenv
+pip install --upgrade ${PIP_ARGS} virtualenv
+
+# Forget the cached locations of python binaries
 hash -r
+
+# Create the virtualenv with the updated toolchain for openstack service
 virtualenv --extra-search-dir=/tmp/wheels /var/lib/openstack
+
+# Deactivate the old bootstrap virtualenv and switch to the new one
+deactivate
+source /var/lib/openstack/bin/activate
