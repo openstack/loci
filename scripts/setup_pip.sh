@@ -15,6 +15,10 @@ if (( $(${TMP_VIRTUALENV} --version | cut -d. -f1) >= 14 )); then
 fi
 ${TMP_VIRTUALENV} --extra-search-dir=/tmp/wheels ${SETUPTOOLS} /tmp/venv
 source /tmp/venv/bin/activate
-pip install --upgrade ${PIP_ARGS} virtualenv
+
+# TODO: Remove virtualenv version pinning once a suitable fix is found
+# to this issue:
+# http://lists.openstack.org/pipermail/openstack-discuss/2019-February/002592.html
+pip install --upgrade ${PIP_ARGS} virtualenv==16.3.0
 hash -r
 virtualenv --extra-search-dir=/tmp/wheels /var/lib/openstack
