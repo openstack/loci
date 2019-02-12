@@ -16,6 +16,7 @@
       project: keystone
     required-projects:
       - openstack/loci
+      - openstack/requirements
       - openstack/keystone
 
 - job:

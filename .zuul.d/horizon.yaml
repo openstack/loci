@@ -16,6 +16,7 @@
       project: horizon
     required-projects:
       - openstack/loci
+      - openstack/requirements
       - openstack/horizon
 
 - job:

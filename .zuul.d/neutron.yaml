@@ -16,6 +16,7 @@
       project: neutron
     required-projects:
       - openstack/loci
+      - openstack/requirements
       - openstack/neutron
 
 - job:

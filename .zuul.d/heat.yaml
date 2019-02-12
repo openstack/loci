@@ -16,6 +16,7 @@
       project: heat
     required-projects:
       - openstack/loci
+      - openstack/requirements
       - openstack/heat
 
 - job:
