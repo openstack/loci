@@ -56,7 +56,7 @@ fi
 
 # Remove native-binary wheels, we only want to keep wheels that we
 # compiled ourselves.
-awk -F'[ ,]+' '/^Skipping/ {gsub("-","_");print $2}' /tmp/wheels.txt | xargs -r -n1 bash -c 'ls /$1-*' _ | sort -u | xargs -t -r rm
+#awk -F'[ ,]+' '/^Skipping/ {gsub("-","_");print $2}' /tmp/wheels.txt | xargs -r -n1 bash -c 'ls /$1-*' _ | sort -u | xargs -t -r rm
 
 # Purge all files that are not wheels or txt to reduce the size of the
 # layer to only what is needed
