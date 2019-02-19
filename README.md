@@ -100,6 +100,12 @@ For more advanced building you can use docker build arguments to define:
      be considered next to the default bindep.txt.
   * `EXTRA_PYDEP` Specify a pydep-* file to add in the container. It would
      be considered next to the default pydep.txt.
+  * `REGISTRY_PROTOCOL` Set this to `https` if you are running your own
+    registry on https, `http` if you are running on http, or leave it as
+    `detect` if you want to re-use existing protocol detection.
+  * `REGISTRY_INSECURE` Set this to `True` if your image registry is
+    running on HTTPS with self-signed certificates to ignore SSL verification.
+    (defaults to False)
 
 This makes it really easy to integrate LOCI images into your development or
 CI/CD workflow, for example, if you wanted to build an image from [this
