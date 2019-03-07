@@ -1,5 +1,6 @@
 apache2                     [platform:dpkg platform:suse apache]
-apache2-mod_wsgi            [platform:suse apache]
+apache2-mod_wsgi            [platform:suse apache !python3]
+apache2-mod_wsgi-python3    [platform:suse apache python3]
 arping2                     [platform:suse neutron]
 blas-devel                  [platform:rpm requirements]
 bridge-utils                [(neutron linuxbridge) (nova linuxbridge)]
