@@ -20,6 +20,15 @@ fi
 # anymore
 sed -i '/python-qpid-proton===0.14.0/d' /upper-constraints.txt
 
+# zVMCloudConnector for queens requires python<=3.5, but Leap has already python3.6
+case ${distro} in
+    opensuse|opensuse-leap|opensuse-tumbleweed|sles)
+        if [[ "${PYTHON3}" != "no" ]] && [[ "${PROJECT_REF}" == "stable/queens" ]]; then
+            sed -i 's/zVMCloudConnector===0.3.5/zVMCloudConnector===1.0.0/' /upper-constraints.txt
+        fi
+    ;;
+esac
+
 if [[ "${PYTHON3}" == "no" ]]; then
     ignore_wheels=py2
 else
