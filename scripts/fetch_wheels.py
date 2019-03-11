@@ -100,7 +100,7 @@ def main():
             wheels = f.read()
 
     if wheels.startswith('/'):
-        with open(wheels, 'r') as f:
+        with open(wheels, 'rb') as f:
             data = f.read()
     elif wheels.startswith('http'):
         data = get_wheels(wheels)
