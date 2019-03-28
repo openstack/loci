@@ -78,10 +78,12 @@ distros:
         PROJECT_REPO: http://172.17.0.1/git/openstack/{{ project }}
         WHEELS: 172.17.0.1:5000/loci/requirements:{{ branch }}-leap15
         FROM: base:leap15
+        PYTHON3: yes
       requirements:
         PROJECT: requirements
         PROJECT_REPO: http://172.17.0.1/git/openstack/requirements
         FROM: base:leap15
+        PYTHON3: yes
 #  - name: debian
 #    image: debian:stretch
 #    buildargs:
