@@ -68,7 +68,7 @@ $ docker build https://git.openstack.org/openstack/loci.git \
 For more advanced building you can use docker build arguments to define:
   * `FROM` The base Docker image to build from. Currently supported are
     `ubuntu:xenial`, `centos:7`, `opensuse/leap:15`, or a base image
-    derived from one of those distributions. Dockerfiles to boostrap the
+    derived from one of those distributions. Dockerfiles to bootstrap the
     base images can be found in the `dockerfiles` directory, and are a good
     starting point for customizing a base image.
   * `PROJECT` The name of the project to install.
@@ -91,8 +91,8 @@ For more advanced building you can use docker build arguments to define:
     The only caveat is these packages must exist in WHEELS form. So if
     you wanted to include rpdb, you would need to have built that into your
     WHEELS.
-  * `PIP_ARGS` Specify additional pip's parameters you would like.
-  * `PIP_WHEEL_ARGS` Specify additional pip's wheel parameters you would like.
+  * `PIP_ARGS` Specify additional pip parameters you would like.
+  * `PIP_WHEEL_ARGS` Specify additional pip wheel parameters you would like.
      Default is PIP_ARGS.
   * `DIST_PACKAGES` Specify additional distribution packages you would like
     installed.
@@ -100,6 +100,12 @@ For more advanced building you can use docker build arguments to define:
      be considered next to the default bindep.txt.
   * `EXTRA_PYDEP` Specify a pydep-* file to add in the container. It would
      be considered next to the default pydep.txt.
+  * `REGISTRY_PROTOCOL` Set this to `https` if you are running your own
+    registry on https, `http` if you are running on http, or leave it as
+    `detect` if you want to re-use existing protocol detection.
+  * `REGISTRY_INSECURE` Set this to `True` if your image registry is
+    running on HTTPS with self-signed certificates to ignore SSL verification.
+    (defaults to False)
 
 This makes it really easy to integrate LOCI images into your development or
 CI/CD workflow, for example, if you wanted to build an image from [this
@@ -111,7 +117,7 @@ $ docker build https://git.openstack.org/openstack/loci.git \
     --build-arg PROJECT_REF=refs/changes/67/418167/1
 ```
 
-To build with the wheels from a private Docker registry rather than DockerHub run:
+To build with the wheels from a private Docker registry rather than Docker Hub run:
 ``` bash
 $ docker build https://git.openstack.org/openstack/loci.git \
     --build-arg PROJECT=keystone \
@@ -130,7 +136,7 @@ $ docker build https://git.openstack.org/openstack/loci.git \
 The images should contain all the required assets for running the service. But
 if you wish or need to customize the `loci/keystone` image that's great! We
 hope to have built the images to make this as easy and flexible as possible. To
-do this we recommend that you perform any required customisation in a child
+do this we recommend that you perform any required customization in a child
 image using a pattern similar to:
 
 ``` Dockerfile

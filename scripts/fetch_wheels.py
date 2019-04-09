@@ -3,6 +3,8 @@
 import json
 import os
 import re
+import ssl
+from distutils.util import strtobool
 
 try:
     import urllib2
@@ -24,7 +26,10 @@ def get_token(protocol, registry, repo):
     print(url)
     try:
         r = urllib2.Request(url=url)
-        resp = urllib2.urlopen(r)
+        if strtobool(os.environ.get('REGISTRY_INSECURE', "False")):
+            resp = urllib2.urlopen(r, context=ssl._create_unverified_context())
+        else:
+            resp = urllib2.urlopen(r)
         resp_text = resp.read().decode('utf-8').strip()
         return json.loads(resp_text)['token']
     except urllib2.HTTPError as err:
@@ -37,7 +42,10 @@ def get_sha(repo, tag, registry, protocol, token):
     r = urllib2.Request(url=url)
     if token:
         r.add_header('Authorization', 'Bearer {}'.format(token))
-    resp = urllib2.urlopen(r)
+    if strtobool(os.environ.get('REGISTRY_INSECURE', "False")):
+        resp = urllib2.urlopen(r, context=ssl._create_unverified_context())
+    else:
+        resp = urllib2.urlopen(r)
     resp_text = resp.read().decode('utf-8').strip()
     return json.loads(resp_text)['fsLayers'][0]['blobSum']
 
@@ -49,7 +57,10 @@ def get_blob(repo, tag, protocol, registry=DOCKER_REGISTRY, token=None):
     r = urllib2.Request(url=url)
     if token:
         r.add_header('Authorization', 'Bearer {}'.format(token))
-    resp = urllib2.urlopen(r)
+    if strtobool(os.environ.get('REGISTRY_INSECURE', "False")):
+        resp = urllib2.urlopen(r, context=ssl._create_unverified_context())
+    else:
+        resp = urllib2.urlopen(r)
     return resp.read()
 
 def protocol_detection(registry, protocol='https'):
@@ -73,16 +84,19 @@ def protocol_detection(registry, protocol='https'):
 
 def get_wheels(url):
     r = urllib2.Request(url=url)
-    resp = urllib2.urlopen(r)
+    if strtobool(os.environ.get('REGISTRY_INSECURE', "False")):
+        resp = urllib2.urlopen(r, context=ssl._create_unverified_context())
+    else:
+        resp = urllib2.urlopen(r)
     return resp.read()
 
 def parse_image(full_image):
-    slash_occurences = len(re.findall('/',full_image))
+    slash_occurrences = len(re.findall('/',full_image))
     repo = None
     registry = DOCKER_REGISTRY
-    if slash_occurences == 2:
+    if slash_occurrences == 2:
         registry, repo, image = full_image.split('/')
-    elif slash_occurences == 1:
+    elif slash_occurrences == 1:
         repo, image = full_image.split('/')
     else:
         image = full_image
@@ -100,13 +114,18 @@ def main():
             wheels = f.read()
 
     if wheels.startswith('/'):
-        with open(wheels, 'r') as f:
+        with open(wheels, 'rb') as f:
             data = f.read()
     elif wheels.startswith('http'):
         data = get_wheels(wheels)
     else:
         registry, image, tag = parse_image(wheels)
-        protocol = protocol_detection(registry)
+        if os.environ.get('REGISTRY_PROTOCOL') in ['http','https']:
+            protocol = os.environ.get('REGISTRY_PROTOCOL')
+        elif os.environ.get('REGISTRY_PROTOCOL') == 'detect':
+            protocol = protocol_detection(registry)
+        else:
+            raise ValueError("Unknown protocol given in argument")
         kwargs = dict()
         if registry:
             kwargs.update({'registry': registry})
@@ -125,3 +144,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

@@ -16,6 +16,10 @@ if (( $(openssl version | awk -F'[ .]' '{print $3}') >= 1 )); then
     sed -i '/python-qpid-proton/d' /upper-constraints.txt
 fi
 
+# Remove python-qpid-proton 0.14.0 as this old version cannot be built in CI
+# anymore
+sed -i '/python-qpid-proton===0.14.0/d' /upper-constraints.txt
+
 if [[ "${PYTHON3}" == "no" ]]; then
     ignore_wheels=py2
 else
