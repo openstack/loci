@@ -8,9 +8,11 @@ export distro=${DISTRO:=$distro}
 if [[ "${PYTHON3}" == "no" ]]; then
     dpkg_python_packages=("python" "virtualenv")
     rpm_python_packages=("python" "python-virtualenv")
+    python3=""
 else
     dpkg_python_packages=("python3" "python3-virtualenv")
     rpm_python_packages=("python3" "python3-virtualenv")
+    python3="python3"
 fi
 
 case ${distro} in
