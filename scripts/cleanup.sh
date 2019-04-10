@@ -6,6 +6,7 @@ case ${distro} in
     debian|ubuntu)
         apt-get purge -y --auto-remove \
             python3-virtualenv \
+            python-virtualenv \
             virtualenv
         rm -rf /var/lib/apt/lists/*
         ;;
