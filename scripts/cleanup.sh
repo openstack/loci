@@ -1,6 +1,7 @@
 #!/bin/bash
 
-set -ex
+# ubuntu trusty apt-get purge 'fails' when packages are not installed: ignore it
+set +e
 
 case ${distro} in
     debian|ubuntu)
