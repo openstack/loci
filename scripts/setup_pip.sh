@@ -27,9 +27,9 @@ ${TMP_VIRTUALENV} --extra-search-dir=/tmp/wheels ${SETUPTOOLS} ${PIPBOOTSTRAP}
 source ${PIPBOOTSTRAP}/bin/activate
 
 # Upgrade to the latest version of virtualenv
-#pip install --upgrade ${PIP_ARGS} virtualenv
+pip install --upgrade ${PIP_ARGS} virtualenv
 # f5 packages break with pip 10
-pip install --upgrade ${PIP_ARGS} 'virtualenv<16'
+#pip install --upgrade ${PIP_ARGS} 'virtualenv<16'
 
 # Forget the cached locations of python binaries
 hash -r
@@ -40,4 +40,4 @@ virtualenv --extra-search-dir=/tmp/wheels /var/lib/openstack
 # Deactivate the old bootstrap virtualenv and switch to the new one
 deactivate
 source /var/lib/openstack/bin/activate
-pip install --force-reinstall pip==9.0.3
+#pip install --force-reinstall pip==9.0.3
