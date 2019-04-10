@@ -6,7 +6,11 @@ distro=$(awk -F= '/^ID=/ {gsub(/\"/, "", $2); print $2}' /etc/*release)
 export distro=${DISTRO:=$distro}
 
 if [[ "${PYTHON3}" == "no" ]]; then
-    dpkg_python_packages=("python" "virtualenv")
+    if [[ "${DISTRO_RELEASE}" == "trusty" ]]; then
+        dpkg_python_packages=("python" "python-virtualenv")
+    else
+        dpkg_python_packages=("python" "virtualenv")
+    fi
     rpm_python_packages=("python" "python-virtualenv")
     python3=""
 else
@@ -84,7 +88,7 @@ if [[ "${PLUGIN}" == "no" ]]; then
     $(dirname $0)/setup_pip.sh
     $(dirname $0)/pip_install.sh bindep
     for file in /opt/loci/pydep*; do
-        PYDEP_PACKAGES+=($(bindep -f $file -b -l newline ${PROJECT} ${PROFILES} ${python3} || :))
+        PYDEP_PACKAGES+=($(bindep -f $file -b -l newline ${PROJECT} ${PROFILES} ${python3} ${DISTRO_RELEASE}|| :))
     done
     $(dirname $0)/pip_install.sh ${PYDEP_PACKAGES[@]}
 fi

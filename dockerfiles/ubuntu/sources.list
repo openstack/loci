@@ -1,6 +1,6 @@
-deb %%UBUNTU_URL%% xenial main universe
-deb %%UBUNTU_URL%% xenial-updates main universe
-deb %%UBUNTU_URL%% xenial-backports main universe
-deb %%UBUNTU_URL%% xenial-security main universe
-deb %%CEPH_URL%% xenial main
-deb %%CLOUD_ARCHIVE_URL%% xenial-updates/pike main
+deb %%UBUNTU_URL%% %%UBUNTU_RELEASE%% main universe
+deb %%UBUNTU_URL%% %%UBUNTU_RELEASE%%-updates main universe
+deb %%UBUNTU_URL%% %%UBUNTU_RELEASE%%-backports main universe
+deb %%UBUNTU_URL%% %%UBUNTU_RELEASE%%-security main universe
+deb %%CEPH_URL%% %%UBUNTU_RELEASE%% main
+deb %%CLOUD_ARCHIVE_URL%% %%UBUNTU_RELEASE%%-updates/%%OPENSTACK_RELEASE%% main

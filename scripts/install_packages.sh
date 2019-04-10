@@ -7,7 +7,7 @@ if [[ "${PYTHON3}" != "no" ]]; then
 fi
 
 for file in /opt/loci/bindep*; do
-    PACKAGES+=($(bindep -f $file -b -l newline ${PROJECT} ${PROFILES} ${python3} || :))
+    PACKAGES+=($(bindep -f $file -b -l newline ${PROJECT} ${PROFILES} ${python3} ${DISTRO_RELEASE} || :))
 done
 
 if [[ ! -z ${PACKAGES} ]]; then

@@ -1,13 +1,16 @@
-ARG FROM=ubuntu:xenial
+ARG DISTRO=ubuntu
+ARG DISTRO_RELEASE=xenial
+ARG FROM=${DISTRO}:${DISTRO_RELEASE}
 FROM ${FROM}
 
 ENV PATH=/var/lib/openstack/bin:$PATH
 ENV UWSGI_EMBED_PLUGINS=stats_pusher_statsd
 ARG PROJECT
+ARG DISTRO=ubuntu
+ARG DISTRO_RELEASE=xenial
 ARG WHEELS=loci/requirements:master-ubuntu
 ARG PROJECT_REPO=https://git.openstack.org/openstack/${PROJECT}
 ARG PROJECT_REF=master
-ARG DISTRO
 ARG PROFILES
 ARG PIP_PACKAGES=""
 ARG PIP_ARGS=""
