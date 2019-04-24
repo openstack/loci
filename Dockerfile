@@ -4,7 +4,7 @@ FROM ${FROM}
 ENV PATH=/var/lib/openstack/bin:$PATH
 ARG PROJECT
 ARG WHEELS=loci/requirements:master-ubuntu
-ARG PROJECT_REPO=https://git.openstack.org/openstack/${PROJECT}
+ARG PROJECT_REPO=https://opendev.org/openstack/${PROJECT}
 ARG PROJECT_REF=master
 ARG DISTRO
 ARG PROFILES

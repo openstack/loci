@@ -16,7 +16,7 @@ reuse_requirements: False
 
 # Override Zuul inference of source directory from project name to always
 # use "loci".
-loci_src_dir: "src/git.openstack.org/openstack/loci"
+loci_src_dir: "src/opendev.org/openstack/loci"
 # Branch name used for image building and publishing
 # If running in an environment with zuul and under a branched project
 # (like openstack/cinder, openstack/nova, ... but not openstack/loci)
