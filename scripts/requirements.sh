@@ -20,6 +20,14 @@ fi
 # anymore
 sed -i '/python-qpid-proton===0.14.0/d' /upper-constraints.txt
 
+# Remove any pylxd before 2.2.7 as the old versions cannot be built in CI.
+lxd_constraint=$(grep pylxd /upper-constraints.txt)
+# This removes (##) everything (*) from the lxd_constraint until the last =,
+# and removes all '.' to look like a number.
+if (( $(echo ${lxd_constraint##*=} | sed 's#\.##g') < 227 )); then
+    sed -i '/pylxd/d' /upper-constraints.txt
+fi
+
 if [[ "${PYTHON3}" == "no" ]]; then
     ignore_wheels=py2
 else
