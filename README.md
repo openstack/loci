@@ -40,14 +40,14 @@ Note: To build locally, you will need a version of docker >= 17.05.0.
 
 It's really easy to build images locally:
 ``` bash
-$ docker build https://git.openstack.org/openstack/loci.git --build-arg PROJECT=keystone \
+$ docker build https://opendev.org/openstack/loci.git --build-arg PROJECT=keystone \
     --tag keystone:ubuntu
 ```
 
 The default base distro is Ubuntu, however, you can use the following form to build from a distro of
 your choice, in this case, CentOS:
 ``` bash
-$ docker build https://git.openstack.org/openstack/loci.git \
+$ docker build https://opendev.org/openstack/loci.git \
     --build-arg PROJECT=keystone \
     --build-arg WHEELS="loci/requirements:master-centos" \
     --build-arg FROM=centos:7 \
@@ -57,7 +57,7 @@ $ docker build https://git.openstack.org/openstack/loci.git \
 If building behind a proxy, remember to use build arguments to pass these
 through to the build:
 ``` bash
-$ docker build https://git.openstack.org/openstack/loci.git \
+$ docker build https://opendev.org/openstack/loci.git \
     --build-arg http_proxy=$http_proxy \
     --build-arg https_proxy=$https_proxy \
     --build-arg no_proxy=$no_proxy \
@@ -109,9 +109,9 @@ For more advanced building you can use docker build arguments to define:
 
 This makes it really easy to integrate LOCI images into your development or
 CI/CD workflow, for example, if you wanted to build an image from [this
-PS](https://review.openstack.org/#/c/418167/) you could run:
+PS](https://review.opendev.org/#/c/418167/) you could run:
 ``` bash
-$ docker build https://git.openstack.org/openstack/loci.git \
+$ docker build https://opendev.org/openstack/loci.git \
     --build-arg PROJECT=keystone \
     --tag mydockernamespace/keystone-testing:418167-1 \
     --build-arg PROJECT_REF=refs/changes/67/418167/1
@@ -119,14 +119,14 @@ $ docker build https://git.openstack.org/openstack/loci.git \
 
 To build with the wheels from a private Docker registry rather than Docker Hub run:
 ``` bash
-$ docker build https://git.openstack.org/openstack/loci.git \
+$ docker build https://opendev.org/openstack/loci.git \
     --build-arg PROJECT=keystone \
     --build-arg WHEELS=172.17.0.1:5000/mydockernamespace/keystone:ubuntu
 ```
 
 To build cinder with lvm and ceph support you would run:
 ``` bash
-$ docker build https://git.openstack.org/openstack/loci.git \
+$ docker build https://opendev.org/openstack/loci.git \
     --build-arg PROJECT=cinder \
     --build-arg PROFILES="lvm ceph"
 ```
