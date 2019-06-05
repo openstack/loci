@@ -3,8 +3,6 @@
 import json
 import os
 import re
-import ssl
-from distutils.util import strtobool
 
 try:
     import urllib2
@@ -26,10 +24,7 @@ def get_token(protocol, registry, repo):
     print(url)
     try:
         r = urllib2.Request(url=url)
-        if strtobool(os.environ.get('REGISTRY_INSECURE', "False")):
-            resp = urllib2.urlopen(r, context=ssl._create_unverified_context())
-        else:
-            resp = urllib2.urlopen(r)
+        resp = urllib2.urlopen(r)
         resp_text = resp.read().decode('utf-8').strip()
         return json.loads(resp_text)['token']
     except urllib2.HTTPError as err:
@@ -42,10 +37,7 @@ def get_sha(repo, tag, registry, protocol, token):
     r = urllib2.Request(url=url)
     if token:
         r.add_header('Authorization', 'Bearer {}'.format(token))
-    if strtobool(os.environ.get('REGISTRY_INSECURE', "False")):
-        resp = urllib2.urlopen(r, context=ssl._create_unverified_context())
-    else:
-        resp = urllib2.urlopen(r)
+    resp = urllib2.urlopen(r)
     resp_text = resp.read().decode('utf-8').strip()
     return json.loads(resp_text)['fsLayers'][0]['blobSum']
 
@@ -57,10 +49,7 @@ def get_blob(repo, tag, protocol, registry=DOCKER_REGISTRY, token=None):
     r = urllib2.Request(url=url)
     if token:
         r.add_header('Authorization', 'Bearer {}'.format(token))
-    if strtobool(os.environ.get('REGISTRY_INSECURE', "False")):
-        resp = urllib2.urlopen(r, context=ssl._create_unverified_context())
-    else:
-        resp = urllib2.urlopen(r)
+    resp = urllib2.urlopen(r)
     return resp.read()
 
 def protocol_detection(registry, protocol='https'):
@@ -84,10 +73,7 @@ def protocol_detection(registry, protocol='https'):
 
 def get_wheels(url):
     r = urllib2.Request(url=url)
-    if strtobool(os.environ.get('REGISTRY_INSECURE', "False")):
-        resp = urllib2.urlopen(r, context=ssl._create_unverified_context())
-    else:
-        resp = urllib2.urlopen(r)
+    resp = urllib2.urlopen(r)
     return resp.read()
 
 def parse_image(full_image):
@@ -110,7 +96,7 @@ def main():
     if 'WHEELS' in os.environ:
         wheels = os.environ['WHEELS']
     else:
-        with open('/opt/loci/wheels', 'r') as f:
+        with open('/opt/loci/wheels', 'rb') as f:
             wheels = f.read()
 
     if wheels.startswith('/'):

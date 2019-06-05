@@ -9,7 +9,7 @@ ARG PROJECT
 ARG DISTRO=ubuntu
 ARG DISTRO_RELEASE=xenial
 ARG WHEELS=loci/requirements:master-ubuntu
-ARG PROJECT_REPO=https://git.openstack.org/openstack/${PROJECT}
+ARG PROJECT_REPO=https://opendev.org/openstack/${PROJECT}
 ARG PROJECT_REF=master
 ARG PROFILES
 ARG PIP_PACKAGES=""
@@ -20,7 +20,7 @@ ARG PLUGIN=no
 ARG PYTHON3=no
 ARG EXTRA_BINDEP=""
 ARG EXTRA_PYDEP=""
-ARG EXTENSIONS
+ARG EXTENSIONS=no
 ARG APIC_URL
 ARG REGISTRY_PROTOCOL="detect"
 ARG REGISTRY_INSECURE="False"
@@ -36,4 +36,4 @@ ARG SPICE_REF=spice-html5-0.1.6
 COPY scripts /opt/loci/scripts
 ADD bindep.txt pydep.txt $EXTRA_BINDEP $EXTRA_PYDEP /opt/loci/
 
-RUN if [ "x$EXTENSIONS" = "x" ] ; then /opt/loci/scripts/install.sh ; else /opt/loci/scripts/install_extensions.sh ; fi
+RUN /opt/loci/scripts/install.sh

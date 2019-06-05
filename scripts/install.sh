@@ -92,11 +92,18 @@ if [[ "${PLUGIN}" == "no" ]]; then
     done
     $(dirname $0)/pip_install.sh ${PYDEP_PACKAGES[@]}
 fi
-
-if [[ ${PROJECT} == 'nova' ]]; then
-    $(dirname $0)/install_nova_console.sh
-fi
 $(dirname $0)/clone_project.sh
-$(dirname $0)/install_packages.sh
-$(dirname $0)/pip_install.sh /tmp/${PROJECT} ${PIP_PACKAGES}
+if [[ "${EXTENSIONS}" == "no" ]]; then
+    if [[ ${PROJECT} == 'nova' ]]; then
+        $(dirname $0)/install_nova_console.sh
+    fi
+    $(dirname $0)/install_packages.sh
+    $(dirname $0)/pip_install.sh /tmp/${PROJECT} ${PIP_PACKAGES}
+else
+    # install custom requirements
+    if [[ -e /tmp/${PROJECT}/custom-requirements.txt ]]; then
+        pip install --no-cache-dir --pre --no-compile -r /tmp/${PROJECT}/custom-requirements.txt --find-links /tmp/wheels/ ${PIP_ARGS}
+    fi
+fi
+
 $(dirname $0)/cleanup.sh
