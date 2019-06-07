@@ -39,12 +39,6 @@ if (( $(echo ${lxd_constraint##*=} | sed 's#\.##g') < 227 )); then
     sed -i '/pylxd/d' /upper-constraints.txt
 fi
 
-if [[ "${PYTHON3}" == "no" ]]; then
-    ignore_wheels=py2
-else
-    ignore_wheels=py3
-fi
-
 pushd $(mktemp -d)
 
 # Build all dependencies in parallel. This is safe because we are
