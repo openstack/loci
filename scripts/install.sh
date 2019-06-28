@@ -14,7 +14,7 @@ if [[ "${PYTHON3}" == "no" ]]; then
     rpm_python_packages=("python" "python-virtualenv")
     python3=""
 else
-    dpkg_python_packages=("python3" "python3-virtualenv")
+    dpkg_python_packages=("python3" "python3-virtualenv" "python3-distutils")
     rpm_python_packages=("python3" "python3-virtualenv")
     python3="python3"
 fi

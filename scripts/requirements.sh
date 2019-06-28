@@ -39,16 +39,8 @@ if (( $(echo ${lxd_constraint##*=} | sed 's#\.##g') < 227 )); then
     sed -i '/pylxd/d' /upper-constraints.txt
 fi
 
-if [[ "${PYTHON3}" == "no" ]]; then
-    ignore_wheels=py2
-else
-    ignore_wheels=py3
-fi
-
 pushd $(mktemp -d)
 
-# Build all dependencies in parallel. This is safe because we are
-# constrained on the version and we are building with --no-deps
 export CASS_DRIVER_BUILD_CONCURRENCY=8
 
 # Drop python packages requested by monasca_analytics. Their
@@ -67,6 +59,8 @@ if [ ! -z "${PIP_PACKAGES}" ]; then
   pip install ${PIP_ARGS} -c /upper-constraints.txt ${PIP_PACKAGES}
 fi
 
+# Build all dependencies in parallel. This is safe because we are
+# constrained on the version and we are building with --no-deps
 echo uwsgi enum-compat ${PIP_PACKAGES} | xargs -n1 | split -l1 -a3
 ls -1 | xargs -n1 -P20 -t bash -c 'pip wheel ${PIP_WHEEL_ARGS} --no-deps --wheel-dir / -c /upper-constraints.txt -r $1 || cat $1 >> /failure' _ | tee /tmp/wheels.txt
 

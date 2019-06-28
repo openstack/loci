@@ -38,21 +38,40 @@ Ubuntu: [![](https://images.microbadger.com/badges/version/loci/keystone:master-
 
 Note: To build locally, you will need a version of docker >= 17.05.0.
 
-It's really easy to build images locally:
+You need to start by building a base image for your distribution that
+included the required build dependencies. Loci has included a collection
+of Dockerfiles to get you started with building a base image. These
+are located in the dockerfiles directory.
+
+It's easy to build a base image:
 ``` bash
-$ docker build https://opendev.org/openstack/loci.git --build-arg PROJECT=keystone \
-    --tag keystone:ubuntu
+$ docker build https://opendev.org/openstack/loci.git#master:dockerfiles/ubuntu \
+    --tag loci-base:ubuntu
+```
+
+Then you can build the rest of the service images locally:
+``` bash
+$ docker build https://opendev.org/openstack/loci.git \
+    --build-arg FROM=loci-base:ubuntu
+    --build-arg PROJECT=keystone \
+    --tag loci-keystone:ubuntu
 ```
 
 The default base distro is Ubuntu, however, you can use the following form to build from a distro of
 your choice, in this case, CentOS:
 ``` bash
+$ docker build https://opendev.org/openstack/loci.git#master:dockerfiles/centos \
+    --tag loci-base:centos
+
 $ docker build https://opendev.org/openstack/loci.git \
     --build-arg PROJECT=keystone \
     --build-arg WHEELS="loci/requirements:master-centos" \
-    --build-arg FROM=centos:7 \
-    --tag keystone:centos
+    --build-arg FROM=loci-base:centos \
+    --tag loci-keystone:centos
 ```
+
+Loci will detect which base OS you're using, so if you need to add additional
+features to your base image the Loci build will still run.
 
 If building behind a proxy, remember to use build arguments to pass these
 through to the build:

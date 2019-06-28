@@ -80,8 +80,11 @@ def parse_image(full_image):
     slash_occurrences = len(re.findall('/',full_image))
     repo = None
     registry = DOCKER_REGISTRY
-    if slash_occurrences == 2:
-        registry, repo, image = full_image.split('/')
+    if slash_occurrences > 1:
+        full_image_list = full_image.split('/')
+        registry = full_image_list[0]
+        repo = '/'.join(full_image_list[1:-1])
+        image = full_image_list[-1]
     elif slash_occurrences == 1:
         repo, image = full_image.split('/')
     else:
