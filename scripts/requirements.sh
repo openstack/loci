@@ -20,6 +20,15 @@ fi
 # anymore
 sed -i '/python-qpid-proton===0.14.0/d' /upper-constraints.txt
 
+# Remove trollius 2.1 because of multiple problems:
+# - It is not published on pypi anymore (only 2.1.post2 is)
+# - Trollius is a py2 only software, and the current requirement from
+#   u-c doesn't have python version matcher.
+# - I have proposed a list of fix which should make things right in u-c:
+# https://review.opendev.org/#/c/673415/
+# https://review.opendev.org/#/c/673414/
+sed -i '/trollius===2.1/d' /upper-constraints.txt
+
 # Ensure M2Crypto doesn't need to be built because it can't be built with
 # the default openssl devel distro packages for ubuntu/centos. (This is
 # because those libraries are not compatible with M2Crypto (outdated).
