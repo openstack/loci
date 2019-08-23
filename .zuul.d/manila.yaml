@@ -1,0 +1,27 @@
+- project:
+    check:
+      jobs:
+        - loci-manila
+    gate:
+      jobs:
+        - loci-manila
+    post:
+      jobs:
+        - publish-loci-manila
+
+- job:
+    name: loci-manila
+    parent: loci-base
+    vars:
+      project: manila
+    required-projects:
+      - openstack/loci
+      - openstack/requirements
+      - openstack/manila
+
+- job:
+    name: publish-loci-manila
+    parent: loci-manila
+    post-run: playbooks/push.yaml
+    secrets:
+      - loci_docker_login
