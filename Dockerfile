@@ -6,6 +6,7 @@ ARG PROJECT
 ARG WHEELS=loci/requirements:master-ubuntu
 ARG PROJECT_REPO=https://opendev.org/openstack/${PROJECT}
 ARG PROJECT_REF=master
+ARG PROJECT_RELEASE=master
 ARG DISTRO
 ARG PROFILES
 ARG PIP_PACKAGES=""

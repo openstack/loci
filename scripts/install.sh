@@ -77,7 +77,7 @@ if [[ "${PLUGIN}" == "no" ]]; then
     $(dirname $0)/setup_pip.sh
     $(dirname $0)/pip_install.sh bindep
     for file in /opt/loci/pydep*; do
-        PYDEP_PACKAGES+=($(bindep -f $file -b -l newline ${PROJECT} ${PROFILES} ${python3} || :))
+        PYDEP_PACKAGES+=($(bindep -f $file -b -l newline ${PROJECT} ${PROJECT_RELEASE} ${PROFILES} ${python3} || :))
     done
     $(dirname $0)/pip_install.sh ${PYDEP_PACKAGES[@]}
 fi
