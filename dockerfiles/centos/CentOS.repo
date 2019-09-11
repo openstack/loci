@@ -18,6 +18,6 @@ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
 
 [openstack]
 name=CentOS-$releasever - OpenStack
-baseurl=http://%%PACKAGE_MIRROR%%/centos/\$releasever/cloud/$basearch/openstack-pike/
+baseurl=http://%%PACKAGE_MIRROR%%/centos/\$releasever/cloud/$basearch/openstack-stein/
 gpgcheck=1
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-Cloud

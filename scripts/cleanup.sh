@@ -21,14 +21,14 @@ case ${distro} in
         ;;
     opensuse|opensuse-leap|opensuse-tumbleweed|sles)
         if [[ "${PYTHON3}" == "no" ]]; then
-            remove_packages=("python-virtualenv")
+            virtualenv_package="python-virtualenv"
         else
-            remove_packages=("python3-virtualenv")
+            virtualenv_package="python3-virtualenv"
         fi
         zypper remove -y --clean-deps \
             git-core \
             patch \
-            ${remove_packages}
+            "${virtualenv_package}"
         zypper clean -a
         ;;
     *)
