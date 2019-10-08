@@ -97,4 +97,5 @@ fi
 $(dirname $0)/clone_project.sh
 $(dirname $0)/install_packages.sh
 $(dirname $0)/pip_install.sh /tmp/${PROJECT} ${PIP_PACKAGES}
+$(dirname $0)/collect_info.sh
 $(dirname $0)/cleanup.sh
