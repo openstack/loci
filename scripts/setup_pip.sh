@@ -41,3 +41,8 @@ virtualenv --extra-search-dir=file:///tmp/wheels /var/lib/openstack
 deactivate
 source /var/lib/openstack/bin/activate
 #pip install --force-reinstall pip==9.0.3
+
+if echo $WHEELS | grep -q mitaka-; then
+    # for mitaka the f5-sdk version needs to import pip.req (hackfix)
+    ln -s /var/lib/openstack/lib/python2.7/site-packages/pip/_internal/req/ /var/lib/openstack/lib/python2.7/site-packages/pip/req
+fi
