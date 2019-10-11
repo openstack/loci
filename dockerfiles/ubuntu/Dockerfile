@@ -17,6 +17,7 @@ ARG OPENSTACK_RELEASE=rocky
 
 COPY sources.list /etc/apt/
 COPY cloud-archive.gpg ceph.gpg /etc/apt/trusted.gpg.d/
+RUN bash -c '[[ "$DISTRO_RELEASE" == "xenial" ]] && sed -i /%%CLOUD_ARCHIVE_URL%%/d'
 RUN sed -i \
         -e "s|%%UBUNTU_URL%%|${UBUNTU_URL}|g" \
         -e "s|%%UBUNTU_RELEASE%%|${DISTRO_RELEASE}|g" \
