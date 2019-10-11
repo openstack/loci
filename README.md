@@ -113,6 +113,9 @@ For more advanced building you can use docker build arguments to define:
     The only caveat is these packages must exist in WHEELS form. So if
     you wanted to include rpdb, you would need to have built that into your
     WHEELS.
+  * `KEEP_ALL_WHEELS` Set this to `True` if you want to keep all packages, even
+     not built ourselfs in the WHEEL image. Is useful for reproducible builts,
+     as 3rd party libraries will be keept in WHEEL image.
   * `PIP_ARGS` Specify additional pip parameters you would like.
   * `PIP_WHEEL_ARGS` Specify additional pip wheel parameters you would like.
      Default is PIP_ARGS.
