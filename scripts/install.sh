@@ -102,7 +102,7 @@ if [[ "${EXTENSIONS}" == "no" ]]; then
 else
     # install custom requirements
     if [[ -e /tmp/${PROJECT}/custom-requirements.txt ]]; then
-        pip install --no-cache-dir --pre --no-compile -r /tmp/${PROJECT}/custom-requirements.txt --find-links /tmp/wheels/ ${PIP_ARGS}
+        pip install --no-cache-dir --pre --no-compile -r /tmp/${PROJECT}/custom-requirements.txt -c /tmp/wheels/upper-constraints.txt --find-links /tmp/wheels/ ${PIP_ARGS}
     fi
 fi
 
