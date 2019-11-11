@@ -13,10 +13,12 @@ if [[ "${PYTHON3}" == "no" ]]; then
     fi
     rpm_python_packages=("python" "python-virtualenv")
     python3=""
+    python_version=2
 else
     dpkg_python_packages=("python3" "python3-virtualenv" "python3-distutils")
     rpm_python_packages=("python3" "python3-virtualenv")
     python3="python3"
+    python_version=3
 fi
 
 case ${distro} in
@@ -32,6 +34,9 @@ case ${distro} in
             sudo \
             curl \
             ${dpkg_python_packages[@]}
+        apt-get install -y --no-install-recommends \
+            libpython${python_version}.$(python${python_version} -c 'import sys;\
+                                         print(sys.version_info.minor);')
         ;;
     centos)
         yum upgrade -y
