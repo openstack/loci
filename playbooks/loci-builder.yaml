@@ -3,7 +3,7 @@
     - include_vars: vars.yaml
 
     - name: Ensure dep files are sorted
-      command: "sort --check -f {{ loci_src_dir }}/{{ item }}"
+      shell: "grep -v '^#' {{ loci_src_dir }}/{{ item }} | sort --check"
       loop:
           - "bindep.txt"
           - "pydep.txt"
