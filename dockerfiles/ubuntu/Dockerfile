@@ -17,7 +17,7 @@ ARG OPENSTACK_RELEASE=rocky
 
 COPY sources.list /etc/apt/
 COPY cloud-archive.gpg ceph.gpg /etc/apt/trusted.gpg.d/
-RUN bash -c '[[ "$OPENSTACK_RELEASE" == "mitaka" ]] && sed -i -e /%%CLOUD_ARCHIVE_URL%%/d /etc/apt/sources.list'
+RUN bash -c '[[ "$OPENSTACK_RELEASE" == "mitaka" ]] && sed -i -e /%%CLOUD_ARCHIVE_URL%%/d /etc/apt/sources.list; exit 0'
 RUN sed -i \
         -e "s|%%UBUNTU_URL%%|${UBUNTU_URL}|g" \
         -e "s|%%UBUNTU_RELEASE%%|${DISTRO_RELEASE}|g" \
