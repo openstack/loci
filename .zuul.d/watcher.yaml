@@ -1,0 +1,27 @@
+- project:
+    check:
+      jobs:
+        - loci-watcher
+    gate:
+      jobs:
+        - loci-watcher
+    post:
+      jobs:
+        - publish-loci-watcher
+
+- job:
+    name: loci-watcher
+    parent: loci-base
+    vars:
+      project: watcher
+    required-projects:
+      - openstack/loci
+      - openstack/requirements
+      - openstack/watcher
+
+- job:
+    name: publish-loci-watcher
+    parent: loci-watcher
+    post-run: playbooks/push.yaml
+    secrets:
+      - loci_docker_login
