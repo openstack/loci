@@ -13,10 +13,13 @@
       block:
         - docker_image:
             name: loci/requirements
-            tag: "{{ branch }}-{{ item.name }}"
+            tag: "{{ item.release }}-{{ item.name }}"
             repository: 172.17.0.1:5000/loci/requirements
             push: yes
           with_items: "{{ distros }}"
+          when: &condition >
+            supported_releases is undefined or
+            item.release in supported_releases
       when:
        - reuse_requirements | bool
        - project != 'requirements'
@@ -30,6 +33,7 @@
             tag: "{{ item.name }}"
             buildargs: "{{ item.buildargs.base }}"
           with_items: "{{ distros }}"
+          when: *condition
 
     - name: Build requirements image
       block:
@@ -37,12 +41,14 @@
           docker_image:
             path: "{{ loci_src_dir }}"
             name: loci/requirements
-            tag: "{{ branch }}-{{ item.name }}"
+            tag: "{{ item.release }}-{{ item.name }}"
             repository: 172.17.0.1:5000/loci/requirements
             push: yes
             pull: False
             buildargs: "{{ item.buildargs.requirements }}"
           with_items: "{{ distros }}"
+          when: *condition
+
       when:
        - (not reuse_requirements) | bool
        - project != 'requirements'
@@ -53,7 +59,8 @@
           docker_image:
             path: "{{ loci_src_dir }}"
             name: loci/{{ project }}
-            tag: "{{ branch }}-{{ item.name }}"
+            tag: "{{ item.release }}-{{ item.name }}"
             pull: False
             buildargs: "{{ item.buildargs.project }}"
           with_items: "{{ distros }}"
+          when: *condition

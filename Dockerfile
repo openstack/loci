@@ -1,4 +1,4 @@
-ARG FROM=ubuntu:xenial
+ARG FROM=ubuntu:bionic
 FROM ${FROM}
 
 ENV PATH=/var/lib/openstack/bin:$PATH

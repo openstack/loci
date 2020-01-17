@@ -1,0 +1,6 @@
+deb %%UBUNTU_URL%% bionic main universe
+deb %%UBUNTU_URL%% bionic-updates main universe
+deb %%UBUNTU_URL%% bionic-backports main universe
+deb %%UBUNTU_URL%% bionic-security main universe
+deb %%CEPH_URL%% bionic main
+deb %%CLOUD_ARCHIVE_URL%% bionic-updates/ussuri main

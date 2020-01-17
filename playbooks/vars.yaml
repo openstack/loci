@@ -17,21 +17,11 @@ reuse_requirements: False
 # Override Zuul inference of source directory from project name to always
 # use "loci".
 loci_src_dir: "src/opendev.org/openstack/loci"
-# Branch name used for image building and publishing
-# If running in an environment with zuul and under a branched project
-# (like openstack/cinder, openstack/nova, ... but not openstack/loci)
-# this will be automatically be set to the appropriate branch name (rocky, queens, ...)
-branch: "{{ branchname | default(zuul_execution_branch.split('/')[-1]) }}"
-# Upstream code reference.
-# As LOCI is not building images on a per-commit basis on upstream openstack projects,
-# pointing to upstream zuul_branch for gating is enough.
-# If a project_ref is passed in a gating variable (like how you would do directly
-# in the command line), it will get consumed during image building.
-project_reference: "{% if project_ref is defined %}{{ project_ref }}{% elif zuul_branch is defined %}{{ zuul_branch }}{% else %}master{% endif %}"
 
 distros:
   - name: centos
     image: centos:7
+    release: master
     buildargs:
       base:
         PACKAGE_MIRROR: "{{ zuul_site_mirror_fqdn }}"
@@ -40,15 +30,39 @@ distros:
       project:
         PROJECT: "{{ project }}"
         PROJECT_REPO: http://172.17.0.1/git/openstack/{{ project }}
-        PROJECT_REF: "{{ project_reference }}"
-        WHEELS: 172.17.0.1:5000/loci/requirements:{{ branch }}-centos
+        WHEELS: 172.17.0.1:5000/loci/requirements:master-centos
         FROM: base:centos
+        PYTHON3: yes
       requirements:
         PROJECT: requirements
         PROJECT_REPO: http://172.17.0.1/git/openstack/requirements
         FROM: base:centos
-  - name: ubuntu
+        PYTHON3: yes
+  - name: ubuntu_bionic
+    image: ubuntu:bionic
+    release: master
+    buildargs:
+      base:
+        UBUNTU_URL: http://{{ zuul_site_mirror_fqdn }}/ubuntu/
+        CLOUD_ARCHIVE_URL: http://{{ zuul_site_mirror_fqdn }}/ubuntu-cloud-archive/
+        CEPH_URL: http://{{ zuul_site_mirror_fqdn }}/ceph-deb-nautilus/
+        ALLOW_UNAUTHENTICATED: "true"
+        PIP_INDEX_URL: http://{{ zuul_site_mirror_fqdn }}/pypi/simple
+        PIP_TRUSTED_HOST: "{{ zuul_site_mirror_fqdn }}"
+      project:
+        PROJECT: "{{ project }}"
+        PROJECT_REPO: http://172.17.0.1/git/openstack/{{ project }}
+        WHEELS: 172.17.0.1:5000/loci/requirements:master-ubuntu_bionic
+        FROM: base:ubuntu_bionic
+        PYTHON3: yes
+      requirements:
+        PROJECT: requirements
+        PROJECT_REPO: http://172.17.0.1/git/openstack/requirements
+        FROM: base:ubuntu_bionic
+        PYTHON3: yes
+  - name: ubuntu_xenial
     image: ubuntu:xenial
+    release: ocata
     buildargs:
       base:
         UBUNTU_URL: http://{{ zuul_site_mirror_fqdn }}/ubuntu/
@@ -60,14 +74,18 @@ distros:
       project:
         PROJECT: "{{ project }}"
         PROJECT_REPO: http://172.17.0.1/git/openstack/{{ project }}
-        PROJECT_REF: "{{ project_reference }}"
-        WHEELS: 172.17.0.1:5000/loci/requirements:{{ branch }}-ubuntu
-        FROM: base:ubuntu
+        PROJECT_REF: "stable/ocata"
+        PROJECT_RELEASE: "ocata"
+        WHEELS: 172.17.0.1:5000/loci/requirements:ocata-ubuntu_xenial
+        FROM: base:ubuntu_xenial
       requirements:
         PROJECT: requirements
         PROJECT_REPO: http://172.17.0.1/git/openstack/requirements
-        FROM: base:ubuntu
+        PROJECT_REF: "stable/ocata"
+        PROJECT_RELEASE: "ocata"
+        FROM: base:ubuntu_xenial
   - name: leap15
+    release: master
     buildargs:
       base:
         PACKAGE_MIRROR: "http://{{ zuul_site_mirror_fqdn }}/opensuse/"
@@ -76,7 +94,7 @@ distros:
       project:
         PROJECT: "{{ project }}"
         PROJECT_REPO: http://172.17.0.1/git/openstack/{{ project }}
-        WHEELS: 172.17.0.1:5000/loci/requirements:{{ branch }}-leap15
+        WHEELS: 172.17.0.1:5000/loci/requirements:master-leap15
         FROM: base:leap15
         PYTHON3: yes
       requirements:

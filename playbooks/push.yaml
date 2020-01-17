@@ -8,6 +8,9 @@
           no_log: True
         - command: docker push loci/{{ project }}:{{ branch }}-{{ item.name }}
           with_items: "{{ distros }}"
+          when: &condition >
+            supported_releases is undefined or
+            item.release in supported_releases
 
     - name: Push project to quay.io
       block:
@@ -15,5 +18,7 @@
           no_log: True
         - command: docker tag loci/{{ project }}:{{ branch }}-{{ item.name }} quay.io/loci/{{ project }}:{{ branch }}-{{ item.name }}
           with_items: "{{ distros }}"
+          when: *condition
         - command: docker push quay.io/loci/{{ project }}:{{ branch }}-{{ item.name }}
           with_items: "{{ distros }}"
+          when: *condition

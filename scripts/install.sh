@@ -11,7 +11,7 @@ if [[ "${PYTHON3}" == "no" ]]; then
     python3=""
 else
     dpkg_python_packages=("python3" "python3-virtualenv" "python3-distutils")
-    rpm_python_packages=("python3" "python3-virtualenv")
+    rpm_python_packages=("python3")
     python3="python3"
 fi
 
@@ -36,12 +36,16 @@ case ${distro} in
             redhat-lsb-core \
             sudo \
             ${rpm_python_packages[@]}
+        if [[ "${PYTHON3}" != "no" ]]; then
+          pip3 install virtualenv
+        fi
         ;;
     opensuse|opensuse-leap|opensuse-tumbleweed|sles)
         if [[ "${PYTHON3}" == "no" ]]; then
            rpm_python_packages+=("python-devel" "python-setuptools")
         else
-           rpm_python_packages+=("python3-devel" "python3-setuptools")
+           rpm_python_packages+=("python3-devel" "python3-setuptools"
+                                 "python3-virtualenv")
         fi
         zypper --non-interactive --gpg-auto-import-keys refresh
         zypper --non-interactive install --no-recommends \
