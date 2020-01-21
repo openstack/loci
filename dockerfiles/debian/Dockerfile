@@ -2,7 +2,7 @@ ARG FROM=debian:stretch
 FROM ${FROM}
 
 ARG DEBIAN_URL=http://deb.debian.org/debian/
-ARG DEBIAN_SECURITY_URL=http://security.debian.org/
+ARG DEBIAN_SECURITY_URL=http://security.debian.org/debian-security/
 ARG DEBIAN_SECURITY_DISTRIBUTION=stretch/updates
 ARG CEPH_URL=http://download.ceph.com/debian-nautilus/
 ARG ALLOW_UNAUTHENTICATED=false

@@ -12,7 +12,7 @@
 - job:
     name: loci-requirements
     parent: loci-base
-    timeout: 2400
+    timeout: 3600
     vars:
       project: requirements
     required-projects:
