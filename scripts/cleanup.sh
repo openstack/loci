@@ -38,10 +38,10 @@ case ${distro} in
         ;;
 esac
 
-# Removing this file allows python to use libraries outside of the
-# virtualenv if they do not exist inside the venv. This is a requirement
+# Changing this option allows python to use libraries outside of the
+# virtualenv > 20 if they do not exist inside the venv. This is a requirement
 # for using python-rbd which is not pip installable and is only available
 # in packaged form.
-rm /var/lib/openstack/lib/python*/no-global-site-packages.txt
+sed -i 's/\(include-system-site-packages\).*/\1 = true/g' /var/lib/openstack/pyvenv.cfg
 rm -rf /tmp/* /root/.cache /etc/machine-id
 find /usr/ /var/ \( -name "*.pyc" -o -name "__pycache__" \) -delete
