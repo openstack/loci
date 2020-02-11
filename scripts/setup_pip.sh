@@ -11,7 +11,8 @@ fi
 
 # This little dance allows us to install the latest pip and setuptools
 # without get_pip.py or the python-pip package (in epel on centos)
-if (( $(${TMP_VIRTUALENV} --version | cut -d. -f1) >= 14 )); then
+VENV_VERSION=$(${TMP_VIRTUALENV} --version | cut -d. -f1)
+if (( $VENV_VERSION >= 14 && $VENV_VERSION < 20)); then
     SETUPTOOLS="--no-setuptools"
 fi
 
