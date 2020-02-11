@@ -11,8 +11,7 @@ fi
 
 # This little dance allows us to install the latest pip and setuptools
 # without get_pip.py or the python-pip package (in epel on centos)
-VENV_VERSION=$(${TMP_VIRTUALENV} --version | cut -d. -f1)
-if (( $VENV_VERSION >= 14 && $VENV_VERSION < 20)); then
+if (( $(${TMP_VIRTUALENV} --version | cut -d. -f1) >= 14 )); then
     SETUPTOOLS="--no-setuptools"
 fi
 
@@ -27,8 +26,8 @@ PIPBOOTSTRAP=/var/lib/pipbootstrap
 ${TMP_VIRTUALENV} --extra-search-dir=file:///tmp/wheels ${SETUPTOOLS} ${PIPBOOTSTRAP}
 source ${PIPBOOTSTRAP}/bin/activate
 
-# Upgrade to the latest version of virtualenv
-pip install --upgrade ${PIP_ARGS} virtualenv
+# Upgrade virtualenv, version 20 breaks with missing setuptools
+pip install --upgrade ${PIP_ARGS} 'virtualenv<20'
 # f5 packages break with pip 10
 #pip install --upgrade ${PIP_ARGS} 'virtualenv<16'
 
