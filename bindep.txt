@@ -153,6 +153,7 @@ sg3-utils                   [platform:dpkg (cinder purestorage) (nova purestorag
 sg3_utils                   [platform:rpm (cinder purestorage) (nova purestorage)]
 shellinabox                 [platform:dpkg (ironic shellinabox)]
 socat                       [platform:dpkg]
+sshpass                     [platform:dpkg (ironic shellinabox)]
 syslinux-tftpboot           [platform:rpm !platform:suse (ironic tftp)]
 systemd-devel               [platform:rpm requirements]
 targetcli                   [platform:rpm (cinder lvm)]
