@@ -88,7 +88,13 @@ def get_wheels(url):
         resp = urllib2.urlopen(r, context=ssl._create_unverified_context())
     else:
         resp = urllib2.urlopen(r)
-    return resp.read()
+    #Using urllib2.request.urlopen() from python3 will face the IncompleteRead and then system report connect refused.
+    #To avoid this problem, add an exception to ensure that all packages will be transmitted. before link down.
+    try:
+        buf = resp.read()
+    except Exception as e:
+        buf = e.partial
+    return buf
 
 def parse_image(full_image):
     slash_occurrences = len(re.findall('/',full_image))
