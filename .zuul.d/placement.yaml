@@ -1,14 +1,13 @@
 - project:
     check:
       jobs:
-        - loci-placement:
-            voting: false
-    #gate:
-    #  jobs:
-    #    - loci-placement
-    #post:
-    #  jobs:
-    #    - publish-loci-placement
+        - loci-placement
+    gate:
+      jobs:
+        - loci-placement
+    post:
+      jobs:
+        - publish-loci-placement
 
 - job:
     name: loci-placement
