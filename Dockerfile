@@ -36,4 +36,5 @@ ARG SPICE_REF=spice-html5-0.1.6
 COPY scripts /opt/loci/scripts
 ADD bindep.txt pydep.txt $EXTRA_BINDEP $EXTRA_PYDEP /opt/loci/
 
+LABEL source_repository=${PROJECT_REPO}
 RUN /opt/loci/scripts/install.sh
