@@ -1,4 +1,8 @@
 - hosts: all
+  become: yes
+  roles:
+    - ensure-pip
+
   tasks:
     - include_vars: vars.yaml
 
@@ -40,7 +44,6 @@
         - apt:
             name:
               - docker-ce
-              - python-pip
             allow_unauthenticated: True
         - pip:
             name: docker

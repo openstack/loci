@@ -74,7 +74,7 @@ distros:
       project:
         PROJECT: "{{ project }}"
         PROJECT_REPO: http://172.17.0.1/git/openstack/{{ project }}
-        PROJECT_REF: "stable/ocata"
+        PROJECT_REF: "{% if eol is defined and 'ocata' in eol %}ocata-eol{% else %}stable/ocata{% endif %}"
         PROJECT_RELEASE: "ocata"
         WHEELS: 172.17.0.1:5000/loci/requirements:ocata-ubuntu_xenial
         FROM: base:ubuntu_xenial

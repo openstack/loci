@@ -1,4 +1,4 @@
-ARG FROM=opensuse/leap:15
+ARG FROM=opensuse/leap:15.1
 FROM ${FROM}
 
 ARG PACKAGE_MIRROR=http://download.opensuse.org/
