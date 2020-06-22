@@ -2,6 +2,7 @@ ARG FROM=ubuntu:jammy
 FROM ${FROM}
 
 ENV PATH=/var/lib/openstack/bin:$PATH
+ENV LANG=C.UTF-8
 ARG PROJECT
 ARG WHEELS=loci/requirements:master-ubuntu_jammy
 ARG PROJECT_REPO=https://opendev.org/openstack/${PROJECT}
