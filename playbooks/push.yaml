@@ -6,7 +6,7 @@
       block:
         - command: docker login -u {{ loci_docker_login.user }} -p {{ loci_docker_login.password }}
           no_log: True
-        - command: docker push loci/{{ project }}:{{ branch }}-{{ item.name }}
+        - command: docker push loci/{{ project }}:{{ item.release }}-{{ item.name }}
           with_items: "{{ distros }}"
           when: &condition >
             supported_releases is undefined or
@@ -16,9 +16,9 @@
       block:
         - command: docker login -u {{ loci_docker_login.user }} -p {{ loci_docker_login.password }} quay.io
           no_log: True
-        - command: docker tag loci/{{ project }}:{{ branch }}-{{ item.name }} quay.io/loci/{{ project }}:{{ branch }}-{{ item.name }}
+        - command: docker tag loci/{{ project }}:{{ item.release }}-{{ item.name }} quay.io/loci/{{ project }}:{{ item.release }}-{{ item.name }}
           with_items: "{{ distros }}"
           when: *condition
-        - command: docker push quay.io/loci/{{ project }}:{{ branch }}-{{ item.name }}
+        - command: docker push quay.io/loci/{{ project }}:{{ item.release }}-{{ item.name }}
           with_items: "{{ distros }}"
           when: *condition
