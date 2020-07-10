@@ -53,7 +53,7 @@ $ docker build https://opendev.org/openstack/loci.git#master:dockerfiles/ubuntu 
 Then you can build the rest of the service images locally:
 ``` bash
 $ docker build https://opendev.org/openstack/loci.git \
-    --build-arg FROM=loci-base:ubuntu
+    --build-arg FROM=loci-base:ubuntu \
     --build-arg PROJECT=keystone \
     --tag loci-keystone:ubuntu
 ```
