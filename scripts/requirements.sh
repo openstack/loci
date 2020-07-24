@@ -65,7 +65,7 @@ egrep -v "(scipy|scikit-learn)" /upper-constraints.txt | split -l1
 # This allows to work around such issues as
 #   https://github.com/lxc/pylxd/issues/308
 if [ ! -z "${PIP_PACKAGES}" ]; then
-  pip install ${PIP_ARGS} -c /upper-constraints.txt ${PIP_PACKAGES}
+  pip install ${PIP_ARGS} -c /upper-constraints.txt --no-cache ${PIP_PACKAGES}
 fi
 
 # Build all dependencies in parallel. This is safe because we are
