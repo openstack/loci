@@ -46,7 +46,7 @@ are located in the dockerfiles directory.
 
 It's easy to build a base image:
 ``` bash
-$ docker build https://opendev.org/openstack/loci.git#master:dockerfiles/ubuntu \
+$ docker build https://opendev.org/openstack/loci.git#master:dockerfiles/ubuntu_bionic \
     --tag loci-base:ubuntu
 ```
 
