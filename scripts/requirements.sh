@@ -9,6 +9,9 @@ $(dirname $0)/install_packages.sh
 $(dirname $0)/clone_project.sh
 mv /tmp/requirements/{global-requirements.txt,upper-constraints.txt} /
 
+# workaround unicode issue with 44.1.1 setuptools on python2 and scandir 1.4
+[[ "${PYTHON3}" == "no" ]] && pip install -c /upper-constraints.txt scandir ||:
+
 # TODO: Make python-qpid-proton build here (possibly patch it)
 # or remove when python-qpid-proton is updated with build fix.
 #   https://issues.apache.org/jira/browse/PROTON-1381

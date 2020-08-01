@@ -14,6 +14,8 @@
     parent: loci-base
     vars:
       project: manila
+      eol:
+        - ocata
     required-projects:
       - openstack/loci
       - openstack/requirements
