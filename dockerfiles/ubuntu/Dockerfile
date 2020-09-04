@@ -15,6 +15,8 @@ ENV PIP_INDEX_URL=${PIP_INDEX_URL}
 ENV PIP_TRUSTED_HOST=${PIP_TRUSTED_HOST}
 ARG OPENSTACK_RELEASE=rocky
 
+LABEL source_repository="https://github.com/sapcc/loci"
+
 COPY sources.list /etc/apt/
 COPY cloud-archive.gpg ceph.gpg /etc/apt/trusted.gpg.d/
 RUN bash -c '[[ "$OPENSTACK_RELEASE" == "mitaka" ]] && sed -i -e /%%CLOUD_ARCHIVE_URL%%/d /etc/apt/sources.list; exit 0'
