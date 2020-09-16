@@ -2,6 +2,8 @@
 
 set -eux
 
+export LC_ALL="C.UTF-8"
+
 $(dirname $0)/setup_pip.sh
 pip install ${PIP_ARGS} bindep
 
