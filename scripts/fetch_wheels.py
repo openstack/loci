@@ -2,6 +2,7 @@
 
 import json
 import os
+import platform
 import re
 import ssl
 from distutils.util import strtobool
@@ -13,6 +14,14 @@ except ImportError:
     from urllib import request as urllib2
 
 DOCKER_REGISTRY='registry.hub.docker.com'
+
+MANIFEST_V2 = 'application/vnd.docker.distribution.manifest.v2+json'
+MANIFEST_V2_LIST = 'application/vnd.docker.distribution.manifest.list.v2+json'
+
+ARCH_MAP = {
+    'x86_64': 'amd64',
+    'aarch64': 'arm64',
+}
 
 def get_token(protocol, registry, repo):
     if registry == DOCKER_REGISTRY:
@@ -37,9 +46,12 @@ def get_token(protocol, registry, repo):
             return None
 
 def get_sha(repo, tag, registry, protocol, token):
+    headers = {
+        'Accept': ', '.join([MANIFEST_V2_LIST, MANIFEST_V2])
+    }
     url = "{}://{}/v2/{}/manifests/{}".format(protocol, registry, repo, tag)
     print(url)
-    r = urllib2.Request(url=url)
+    r = urllib2.Request(url=url, headers=headers)
     if token:
         r.add_header('Authorization', 'Bearer {}'.format(token))
     if strtobool(os.environ.get('REGISTRY_INSECURE', "False")):
@@ -47,7 +59,37 @@ def get_sha(repo, tag, registry, protocol, token):
     else:
         resp = urllib2.urlopen(r)
     resp_text = resp.read().decode('utf-8').strip()
-    return json.loads(resp_text)['fsLayers'][0]['blobSum']
+    manifest = json.loads(resp_text)
+    if manifest['schemaVersion'] == 1:
+        return manifest['fsLayers'][0]['blobSum']
+    elif manifest['schemaVersion'] == 2:
+        if manifest['mediaType'] == MANIFEST_V2_LIST:
+            arch = platform.processor()
+
+            if arch not in ARCH_MAP:
+                raise SystemError("Unknown architecture: %s" % arch)
+
+            for m in manifest['manifests']:
+                # NOTE(mnaser): At this point, we've found the digest for the
+                #               manifest we want, we go back and run this code
+                #               again but getting that arch-specific manifest.
+                if m['platform']['architecture'] == ARCH_MAP[arch]:
+                    tag =  m['digest']
+                    return get_sha(repo, tag, registry, protocol, token)
+
+            # NOTE(mnaser): If we're here, we've gone over all the manifests
+            #               and we didn't find one that matches our requested
+            #               architecture.
+            raise SystemError("Manifest does not include arch: %s" %
+                              ARCH_MAP[arch])
+        else:
+            # NOTE(mnaser): This is the cause if the registry returns a manifest
+            #               which isn't a list (single arch cases or getting
+            #               a specific arch from a manifest list).  The V2
+            #               manifest orders layers from base to end (as opposed
+            #               to V1) so we need to get the last digest.
+            return manifest['layers'][-1]['digest']
+    raise SystemError("Unable to find correct manifest schema version")
 
 
 def get_blob(repo, tag, protocol, registry=DOCKER_REGISTRY, token=None):
