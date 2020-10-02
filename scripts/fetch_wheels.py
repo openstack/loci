@@ -43,7 +43,7 @@ def get_sha(repo, tag, registry, protocol, token):
     resp = urllib2.urlopen(r)
     resp_text = resp.read().decode('utf-8').strip()
     if registry.startswith('keppel'):
-        return json.loads(resp_text)['layers'][0]['digest']
+        return json.loads(resp_text)['layers'][-1]['digest']
     return json.loads(resp_text)['fsLayers'][0]['blobSum']
 
 
