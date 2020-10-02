@@ -42,6 +42,8 @@ def get_sha(repo, tag, registry, protocol, token):
         r.add_header('Authorization', 'Bearer {}'.format(token))
     resp = urllib2.urlopen(r)
     resp_text = resp.read().decode('utf-8').strip()
+    if registry.startswith('keppel'):
+        return json.loads(resp_text)['layers'][0]['digest']
     return json.loads(resp_text)['fsLayers'][0]['blobSum']
 
 
@@ -51,7 +53,7 @@ def get_blob(repo, tag, protocol, registry=DOCKER_REGISTRY, token=None):
     print(url)
     r = urllib2.Request(url=url)
     if token:
-        r.add_header('Authorization', 'Bearer {}'.format(token))
+        r.add_unredirected_header('Authorization', 'Bearer {}'.format(token))
     resp = urllib2.urlopen(r)
     return resp.read()
 
