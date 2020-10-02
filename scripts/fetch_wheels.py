@@ -14,12 +14,15 @@ DOCKER_REGISTRY='registry.hub.docker.com'
 
 def get_token(protocol, registry, repo):
     if registry == DOCKER_REGISTRY:
-      authserver = 'auth.docker.io'
+      authserver = 'auth.docker.io/token'
       service = 'registry.docker.io'
+    elif registry.startswith('keppel'):
+      authserver = '{}/keppel/v1/auth'.format(registry)
+      service = registry.split(':')[0]
     else:
-      authserver = "{}/v2".format(registry)
-      service =  registry.split(':')[0]
-    url = "{}://{}/token?service={}&" \
+      authserver = "{}/v2/token".format(registry)
+      service = registry.split(':')[0]
+    url = "{}://{}?service={}&" \
             "scope=repository:{}:pull".format(protocol, authserver, service, repo)
     print(url)
     try:
