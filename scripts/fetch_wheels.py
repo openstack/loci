@@ -60,7 +60,7 @@ def protocol_detection(registry, protocol='https'):
         r = urllib2.Request(url)
         resp = urllib2.urlopen(r)
     except (urllib2.URLError,urllib2.HTTPError) as err:
-        if err.reason == 'Forbidden':
+        if err.reason in ('Forbidden', 'Not Found'):
             return protocol
         elif index < len(PROTOCOLS) - 1:
             return protocol_detection(registry, PROTOCOLS[index + 1])
