@@ -74,10 +74,6 @@ esac
 if [[ "${PROJECT}" == "requirements" ]]; then
     $(dirname $0)/requirements.sh
     exit 0
-else
-    # grab kubernetes-entrypoint
-    curl -sLo /usr/local/bin/kubernetes-entrypoint https://github.wdf.sap.corp/d062284/k8s-entrypoint-build/releases/download/6d8d33d/kubernetes-entrypoint && \
-    chmod +x /usr/local/bin/kubernetes-entrypoint
 fi
 
 $(dirname $0)/fetch_wheels.sh
