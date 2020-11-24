@@ -1,0 +1,6 @@
+deb %%UBUNTU_URL%% focal main universe
+deb %%UBUNTU_URL%% focal-updates main universe
+deb %%UBUNTU_URL%% focal-backports main universe
+deb %%UBUNTU_URL%% focal-security main universe
+deb %%CEPH_URL%% focal main
+deb %%CLOUD_ARCHIVE_URL%% focal-updates/victoria main
