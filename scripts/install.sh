@@ -19,6 +19,7 @@ fi
 
 case ${distro} in
     debian|ubuntu)
+        export LC_CTYPE=C.UTF-8
         apt-get update
         apt-get upgrade -y
         apt-get install -y --no-install-recommends \
@@ -34,6 +35,7 @@ case ${distro} in
                                          print(sys.version_info.minor);')
         ;;
     centos)
+        export LC_CTYPE=en_US.UTF-8
         yum upgrade -y
         yum install -y --setopt=skip_missing_names_on_install=False \
             git \

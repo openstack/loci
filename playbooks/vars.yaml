@@ -67,7 +67,6 @@ distros:
       base:
         UBUNTU_URL: http://{{ zuul_site_mirror_fqdn }}/ubuntu/
         CLOUD_ARCHIVE_URL: http://{{ zuul_site_mirror_fqdn }}/ubuntu-cloud-archive/
-        CEPH_URL: http://{{ zuul_site_mirror_fqdn }}/ceph-deb-luminous/
         ALLOW_UNAUTHENTICATED: "true"
         PIP_INDEX_URL: http://{{ zuul_site_mirror_fqdn }}/pypi/simple
         PIP_TRUSTED_HOST: "{{ zuul_site_mirror_fqdn }}"
