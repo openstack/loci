@@ -75,9 +75,13 @@ if [[ "${PROJECT}" == "requirements" ]]; then
     exit 0
 fi
 
+if [ "${KEEP_ALL_WHEELS}" != "False" ]; then
+    NO_INDEX=--no-index
+fi
+
 $(dirname $0)/fetch_wheels.sh
 if [[ "${PROJECT}" == "infra" ]]; then
-   $(dirname $0)/setup_pip.sh
+    $(dirname $0)/setup_pip.sh
     $(dirname $0)/pip_install.sh bindep ${PIP_PACKAGES}
     $(dirname $0)/install_packages.sh
     $(dirname $0)/cleanup.sh
@@ -98,6 +102,6 @@ if [[ ${PROJECT} == 'nova' ]]; then
 fi
 $(dirname $0)/clone_project.sh
 $(dirname $0)/install_packages.sh
-$(dirname $0)/pip_install.sh /tmp/${PROJECT} ${PIP_PACKAGES}
+$(dirname $0)/pip_install.sh ${NO_INDEX} /tmp/${PROJECT} ${PIP_PACKAGES}
 $(dirname $0)/collect_info.sh
 $(dirname $0)/cleanup.sh
