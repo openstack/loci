@@ -1,0 +1,27 @@
+- project:
+    check:
+      jobs:
+        - loci-monasca-api
+    gate:
+      jobs:
+        - loci-monasca-api
+    post:
+      jobs:
+        - publish-loci-monasca-api
+
+- job:
+    name: loci-monasca-api
+    parent: loci-base
+    vars:
+      project: monasca-api
+    required-projects:
+      - openstack/loci
+      - openstack/requirements
+      - openstack/monasca-api
+
+- job:
+    name: publish-loci-monasca-api
+    parent: loci-monasca-api
+    post-run: playbooks/push.yaml
+    secrets:
+      - loci_docker_login
