@@ -27,9 +27,7 @@ ${TMP_VIRTUALENV} --extra-search-dir=file:///tmp/wheels ${SETUPTOOLS} ${PIPBOOTS
 source ${PIPBOOTSTRAP}/bin/activate
 
 # Upgrade virtualenv, version 20 breaks with missing setuptools
-pip install --upgrade ${PIP_ARGS} 'virtualenv<20'
-# f5 packages break with pip 10
-#pip install --upgrade ${PIP_ARGS} 'virtualenv<16'
+pip install --upgrade ${PIP_ARGS} 'virtualenv<20' 'pip<20.3'
 
 # Forget the cached locations of python binaries
 hash -r
@@ -40,9 +38,4 @@ virtualenv --extra-search-dir=file:///tmp/wheels /var/lib/openstack
 # Deactivate the old bootstrap virtualenv and switch to the new one
 deactivate
 source /var/lib/openstack/bin/activate
-#pip install --force-reinstall pip==9.0.3
 
-if echo $WHEELS | grep -q mitaka-; then
-    # for mitaka the f5-sdk version needs to import pip.req (hackfix)
-    ln -s /var/lib/openstack/lib/python2.7/site-packages/pip/_internal/req/ /var/lib/openstack/lib/python2.7/site-packages/pip/req
-fi
