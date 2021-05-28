@@ -39,6 +39,5 @@ virtualenv --extra-search-dir=file:///tmp/wheels /var/lib/openstack
 deactivate
 source /var/lib/openstack/bin/activate
 
-# Constraint pip to 20.3: https://bugs.launchpad.net/devstack/+bug/1906322
-pip install --upgrade ${PIP_ARGS} 'pip<20.3'
+pip install --upgrade ${PIP_ARGS} 'pip'
 
