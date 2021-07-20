@@ -8,14 +8,11 @@ PACKAGES_INFO="${INFO_DIR}/packages.txt"
 PIP_INFO="${INFO_DIR}/pip.txt"
 
 case ${distro} in
-    debian|ubuntu)
+    ubuntu)
         dpkg -l > $PACKAGES_INFO
         ;;
     centos)
         yum list installed > $PACKAGES_INFO
-        ;;
-    opensuse|opensuse-leap|opensuse-tumbleweed|sles)
-        zypper se --installed-only > $PACKAGES_INFO
         ;;
     *)
         echo "Unknown distro: ${distro}"

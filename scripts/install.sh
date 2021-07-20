@@ -18,7 +18,7 @@ else
 fi
 
 case ${distro} in
-    debian|ubuntu)
+    ubuntu)
         export LC_CTYPE=C.UTF-8
         apt-get update
         if [[ ! -z "$(apt-cache search ^${python3}-distutils$)" ]]; then
@@ -49,23 +49,6 @@ case ${distro} in
         if [[ "${PYTHON3}" != "no" ]]; then
           pip3 install virtualenv
         fi
-        ;;
-    opensuse|opensuse-leap|opensuse-tumbleweed|sles)
-        if [[ "${PYTHON3}" == "no" ]]; then
-           rpm_python_packages+=("python-devel" "python-setuptools")
-        else
-           rpm_python_packages+=("python3-devel" "python3-setuptools"
-                                 "python3-virtualenv")
-        fi
-        zypper --non-interactive --gpg-auto-import-keys refresh
-        zypper --non-interactive install --no-recommends \
-            ca-certificates \
-            git-core \
-            lsb-release \
-            patch \
-            sudo \
-            tar \
-            ${rpm_python_packages[@]}
         ;;
     *)
         echo "Unknown distro: ${distro}"

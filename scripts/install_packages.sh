@@ -12,7 +12,7 @@ done
 
 if [[ ! -z ${PACKAGES} ]]; then
     case ${distro} in
-        debian|ubuntu)
+        ubuntu)
             export DEBIAN_FRONTEND=noninteractive
             apt-get install -y --no-install-recommends ${PACKAGES[@]} ${DIST_PACKAGES}
 
@@ -30,9 +30,6 @@ if [[ ! -z ${PACKAGES} ]]; then
             ;;
         centos)
             yum -y --setopt=skip_missing_names_on_install=False install ${PACKAGES[@]} ${DIST_PACKAGES}
-            ;;
-       opensuse|opensuse-leap|opensuse-tumbleweed|sles)
-            zypper --non-interactive install --no-recommends ${PACKAGES[@]} ${DIST_PACKAGES}
             ;;
         *)
             echo "Unknown distro: ${distro}"
