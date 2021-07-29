@@ -82,29 +82,6 @@ distros:
         PROJECT_REPO: http://172.17.0.1/git/openstack/requirements
         FROM: base:ubuntu_bionic
         PYTHON3: yes
-  - name: ubuntu_xenial
-    image: ubuntu:xenial
-    release: ocata
-    buildargs:
-      base:
-        UBUNTU_URL: http://{{ zuul_site_mirror_fqdn }}/ubuntu/
-        CLOUD_ARCHIVE_URL: http://{{ zuul_site_mirror_fqdn }}/ubuntu-cloud-archive/
-        ALLOW_UNAUTHENTICATED: "true"
-        PIP_INDEX_URL: http://{{ zuul_site_mirror_fqdn }}/pypi/simple
-        PIP_TRUSTED_HOST: "{{ zuul_site_mirror_fqdn }}"
-      project:
-        PROJECT: "{{ project }}"
-        PROJECT_REPO: http://172.17.0.1/git/openstack/{{ project }}
-        PROJECT_REF: "{% if eol is defined and 'ocata' in eol %}ocata-eol{% else %}stable/ocata{% endif %}"
-        PROJECT_RELEASE: "ocata"
-        WHEELS: 172.17.0.1:5000/loci/requirements:ocata-ubuntu_xenial
-        FROM: base:ubuntu_xenial
-      requirements:
-        PROJECT: requirements
-        PROJECT_REPO: http://172.17.0.1/git/openstack/requirements
-        PROJECT_REF: "stable/ocata"
-        PROJECT_RELEASE: "ocata"
-        FROM: base:ubuntu_xenial
   - name: leap15
     release: master
     buildargs:

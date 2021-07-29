@@ -11,10 +11,10 @@ fi
 
 # This little dance allows us to install the latest pip
 # without get_pip.py or the python-pip package (in epel on centos)
-if (( $(${TMP_VIRTUALENV} --version | cut -d. -f1) >= 14 )); then
+if (( $(${TMP_VIRTUALENV} --version | grep -Po '[0-9]+\.[0-9]+\.[0-9]+' | cut -d. -f1) >= 14 )); then
     SETUPTOOLS="--no-setuptools"
 fi
-if (( $(${TMP_VIRTUALENV} --version | cut -d. -f1) >= 20 )); then
+if (( $(${TMP_VIRTUALENV} --version | grep -Po '[0-9]+\.[0-9]+\.[0-9]+' | cut -d. -f1) >= 20 )); then
     SETUPTOOLS="--seed pip --download"
 fi
 
@@ -26,7 +26,7 @@ fi
 PIPBOOTSTRAP=/var/lib/pipbootstrap
 
 # Create the boostrap environment so we can get pip from virtualenv
-${TMP_VIRTUALENV} --extra-search-dir=/tmp/wheels ${SETUPTOOLS} ${PIPBOOTSTRAP}
+${TMP_VIRTUALENV} ${SETUPTOOLS} ${PIPBOOTSTRAP}
 source ${PIPBOOTSTRAP}/bin/activate
 
 # Install setuptools explicitly required for virtualenv > 20 installation

@@ -83,6 +83,8 @@ if [ ! -z "${PIP_PACKAGES}" ]; then
   pip install ${PIP_ARGS} -c /upper-constraints.txt --no-cache ${PIP_PACKAGES}
 fi
 
+export UWSGI_PROFILE_OVERRIDE=ssl=true
+
 # Build all dependencies in parallel. This is safe because we are
 # constrained on the version and we are building with --no-deps
 echo uwsgi enum-compat ${PIP_PACKAGES} | xargs -n1 | split -l1 -a3
