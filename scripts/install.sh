@@ -97,8 +97,8 @@ $(dirname $0)/clone_project.sh
 if [[ "${EXTENSIONS}" == "no" ]]; then
     if [[ ${PROJECT} == 'nova' ]]; then
         $(dirname $0)/install_nova_console.sh
-    elif [[ ${PROJECT} == 'neutron' && "${PYTHON3}" == "no" ]]; then
-        $(dirname $0)/install_apic.sh
+    elif [[ ${PROJECT} == 'neutron' ]]; then
+        uwsgi --build-plugin https://github.com/Datadog/uwsgi-dogstatsd
     fi
     $(dirname $0)/install_packages.sh
     $(dirname $0)/pip_install.sh /tmp/${PROJECT} ${PIP_PACKAGES}
