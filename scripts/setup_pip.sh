@@ -33,7 +33,7 @@ source ${PIPBOOTSTRAP}/bin/activate
 pip install --upgrade setuptools
 
 # Upgrade to the latest version of virtualenv
-pip install --upgrade ${PIP_ARGS} virtualenv
+pip install --upgrade ${PIP_ARGS} virtualenv==20.7.2
 
 # Forget the cached locations of python binaries
 hash -r
