@@ -32,7 +32,6 @@ distros:
         PROJECT_REPO: http://172.17.0.1/git/openstack/{{ project }}
         WHEELS: 172.17.0.1:5000/loci/requirements:master-centos
         FROM: base:centos
-        PYTHON3: yes
       requirements:
         PROJECT: requirements
         PROJECT_REPO: http://172.17.0.1/git/openstack/requirements
@@ -54,12 +53,10 @@ distros:
         PROJECT_REPO: http://172.17.0.1/git/openstack/{{ project }}
         WHEELS: 172.17.0.1:5000/loci/requirements:master-ubuntu_focal
         FROM: base:ubuntu_focal
-        PYTHON3: yes
       requirements:
         PROJECT: requirements
         PROJECT_REPO: http://172.17.0.1/git/openstack/requirements
         FROM: base:ubuntu_focal
-        PYTHON3: yes
   - name: ubuntu_bionic
     image: ubuntu:bionic
     release: ussuri
@@ -76,12 +73,10 @@ distros:
         PROJECT_REPO: http://172.17.0.1/git/openstack/{{ project }}
         WHEELS: 172.17.0.1:5000/loci/requirements:ussuri-ubuntu_bionic
         FROM: base:ubuntu_bionic
-        PYTHON3: yes
       requirements:
         PROJECT: requirements
         PROJECT_REPO: http://172.17.0.1/git/openstack/requirements
         FROM: base:ubuntu_bionic
-        PYTHON3: yes
   - name: leap15
     release: master
     buildargs:
@@ -99,7 +94,6 @@ distros:
         PROJECT: requirements
         PROJECT_REPO: http://172.17.0.1/git/openstack/requirements
         FROM: base:leap15
-        PYTHON3: yes
   - name: debian
     image: debian:stretch
     release: train
@@ -119,11 +113,9 @@ distros:
         PROJECT_RELEASE: "train"
         WHEELS: 172.17.0.1:5000/loci/requirements:train-debian
         FROM: base:debian
-        PYTHON3: yes
       requirements:
         PROJECT: requirements
         PROJECT_REPO: http://172.17.0.1/git/openstack/requirements
         PROJECT_REF: "stable/train"
         PROJECT_RELEASE: "train"
         FROM: base:debian
-        PYTHON3: yes
