@@ -23,6 +23,11 @@ fi
 # anymore
 sed -i '/python-qpid-proton===0.14.0/d' /upper-constraints.txt
 
+# Setuptools from constraints is not compatible with other constrainted packages
+[[ "${PROJECT_REF}" == "master" ]] && sed -i '/setuptools/d' /upper-constraints.txt
+# https://review.opendev.org/c/openstack/requirements/+/813693
+[[ "${PYTHON3}" != "no" ]] && sed -i '/^futures===/d' /upper-constraints.txt
+
 # Remove trollius 2.1 because of multiple problems:
 # - It is not published on pypi anymore (only 2.1.post2 is)
 # - Trollius is a py2 only software, and the current requirement from

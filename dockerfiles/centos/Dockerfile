@@ -1,4 +1,4 @@
-ARG FROM=centos:7
+ARG FROM=centos:8
 FROM ${FROM}
 
 ARG PACKAGE_MIRROR=mirror.centos.org
@@ -11,5 +11,6 @@ RUN rm -rf /etc/yum.repos.d/*
 COPY CentOS.repo /etc/yum.repos.d/
 COPY RPM-GPG-KEY-CentOS-SIG-Cloud /etc/pki/rpm-gpg/
 RUN sed -i "s|%%PACKAGE_MIRROR%%|${PACKAGE_MIRROR}|g" /etc/yum.repos.d/CentOS.repo \
-  && yum install -y centos-release-qemu-ev \
   && yum update -y
+# NOTE(aostapenko) repositories are restored on yum update, deleting them again
+RUN find /etc/yum.repos.d/ -type f ! -name 'CentOS.repo' -delete

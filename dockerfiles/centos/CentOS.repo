@@ -1,23 +1,29 @@
-[base]
-name=CentOS-$releasever - Base
-baseurl=http://%%PACKAGE_MIRROR%%/centos/$releasever/os/$basearch/
+[appstream]
+name=CentOS Linux $releasever - AppStream
+baseurl=http://%%PACKAGE_MIRROR%%/$contentdir/$releasever/AppStream/$basearch/os/
 gpgcheck=1
-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial
 
-[updates]
-name=CentOS-$releasever - Updates
-baseurl=http://%%PACKAGE_MIRROR%%/centos/$releasever/updates/$basearch/
+[baseos]
+name=CentOS Linux $releasever - BaseOS
+baseurl=http://%%PACKAGE_MIRROR%%/$contentdir/$releasever/BaseOS/$basearch/os/
 gpgcheck=1
-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial
 
 [extras]
-name=CentOS-$releasever - Extras
-baseurl=http://%%PACKAGE_MIRROR%%/centos/$releasever/extras/$basearch/
+name=CentOS Linux $releasever - Extras
+baseurl=http://%%PACKAGE_MIRROR%%/$contentdir/$releasever/extras/$basearch/os/
 gpgcheck=1
-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial
+
+[powertools]
+name=CentOS Linux $releasever - PowerTools
+baseurl=http://%%PACKAGE_MIRROR%%/$contentdir/$releasever/PowerTools/$basearch/os/
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial
 
 [openstack]
 name=CentOS-$releasever - OpenStack
-baseurl=http://%%PACKAGE_MIRROR%%/centos/\$releasever/cloud/$basearch/openstack-stein/
+baseurl=http://%%PACKAGE_MIRROR%%/centos/$releasever/cloud/$basearch/openstack-victoria/
 gpgcheck=1
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-Cloud
