@@ -27,3 +27,10 @@ name=CentOS-$releasever - OpenStack
 baseurl=http://%%PACKAGE_MIRROR%%/centos/$releasever/cloud/$basearch/openstack-victoria/
 gpgcheck=1
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-Cloud
+
+[centos-8-stream-appstream]
+includepkgs=nss*
+name=CentOS Linux $releasever stream - AppStream
+baseurl=http://%%PACKAGE_MIRROR%%/$contentdir/$releasever-stream/AppStream/$basearch/os/
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial
