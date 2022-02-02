@@ -19,23 +19,23 @@ reuse_requirements: False
 loci_src_dir: "src/opendev.org/openstack/loci"
 
 distros:
-  - name: centos
-    image: centos:8
-    release: master
-    buildargs:
-      base:
-        PACKAGE_MIRROR: "{{ zuul_site_mirror_fqdn }}"
-        PIP_INDEX_URL: http://{{ zuul_site_mirror_fqdn }}/pypi/simple
-        PIP_TRUSTED_HOST: "{{ zuul_site_mirror_fqdn }}"
-      project:
-        PROJECT: "{{ project }}"
-        PROJECT_REPO: http://172.17.0.1/git/openstack/{{ project }}
-        WHEELS: 172.17.0.1:5000/loci/requirements:master-centos
-        FROM: base:centos
-      requirements:
-        PROJECT: requirements
-        PROJECT_REPO: http://172.17.0.1/git/openstack/requirements
-        FROM: base:centos
+  # - name: centos
+  #   image: centos:8
+  #   release: master
+  #   buildargs:
+  #     base:
+  #       PACKAGE_MIRROR: "{{ zuul_site_mirror_fqdn }}"
+  #       PIP_INDEX_URL: http://{{ zuul_site_mirror_fqdn }}/pypi/simple
+  #       PIP_TRUSTED_HOST: "{{ zuul_site_mirror_fqdn }}"
+  #     project:
+  #       PROJECT: "{{ project }}"
+  #       PROJECT_REPO: http://172.17.0.1/git/openstack/{{ project }}
+  #       WHEELS: 172.17.0.1:5000/loci/requirements:master-centos
+  #       FROM: base:centos
+  #     requirements:
+  #       PROJECT: requirements
+  #       PROJECT_REPO: http://172.17.0.1/git/openstack/requirements
+  #       FROM: base:centos
   - name: ubuntu_focal
     image: ubuntu:focal
     release: master
