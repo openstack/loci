@@ -89,6 +89,7 @@ if [ ! -z "${PIP_PACKAGES}" ]; then
 fi
 
 export UWSGI_PROFILE_OVERRIDE=ssl=true
+export CPUCOUNT=1
 
 # Build all dependencies in parallel. This is safe because we are
 # constrained on the version and we are building with --no-deps
