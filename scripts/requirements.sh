@@ -48,6 +48,13 @@ if [[ "${PYTHON3}" == "no" ]]; then
     sed -i '/M2Crypto/d' /upper-constraints.txt
 fi
 
+# NOTE(mnaser): confluent-kafka fails to build under aarch64 because the version
+#               of libfdkafka-dev in the distributions is too old (x86_64 relies
+#               on the wheel inside PyPI).
+if [[ "$(uname -p)" == "aarch64" ]]; then
+    sed -i '/confluent-kafka/d' /upper-constraints.txt
+fi
+
 # Remove any pylxd before 2.2.7 as the old versions cannot be built in CI.
 lxd_constraint=$(grep pylxd /upper-constraints.txt)
 # This removes (##) everything (*) from the lxd_constraint until the last =,
