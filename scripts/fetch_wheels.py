@@ -23,41 +23,46 @@ ARCH_MAP = {
     'aarch64': 'arm64',
 }
 
-def get_token(protocol, registry, repo):
-    if registry == DOCKER_REGISTRY:
-        authserver = 'auth.docker.io'
-        service = 'registry.docker.io'
+def registry_urlopen(r):
+    if strtobool(os.environ.get('REGISTRY_INSECURE', "False")):
+        resp = urllib2.urlopen(r, context=ssl._create_unverified_context())
     else:
-        authserver = "{}/v2".format(registry)
-        service =  registry.split(':')[0]
-    url = "{}://{}/token?service={}&" \
-            "scope=repository:{}:pull".format(protocol, authserver, service, repo)
-    print(url)
-    try:
-        r = urllib2.Request(url=url)
-        if strtobool(os.environ.get('REGISTRY_INSECURE', "False")):
-            resp = urllib2.urlopen(r, context=ssl._create_unverified_context())
-        else:
-            resp = urllib2.urlopen(r)
-        resp_text = resp.read().decode('utf-8').strip()
-        return json.loads(resp_text)['token']
-    except urllib2.HTTPError as err:
-        if err.reason == 'Not Found':
-            return None
+        resp = urllib2.urlopen(r)
+    return resp
 
-def get_sha(repo, tag, registry, protocol, token):
+def registry_request(r, token=None):
+    try:
+        if token:
+            r.add_header('Authorization', 'Bearer {}'.format(token))
+        return registry_urlopen(r)
+    except urllib2.HTTPError as err:
+        if err.reason == 'Unauthorized' and token is None:
+            value = err.headers['www-authenticate'].split(' ', 2)
+            items = urllib2.parse_http_list(value[1])
+            opts = urllib2.parse_keqv_list(items)
+
+            url = "{}?service={}&scope={}".format(
+                opts['realm'],
+                opts['service'],
+                opts['scope']
+            )
+
+            auth_request = urllib2.Request(url=url)
+            resp = registry_urlopen(auth_request)
+            resp_text = resp.read().decode('utf-8').strip()
+            token = json.loads(resp_text)['token']
+
+            return registry_request(r, token)
+        raise
+
+def get_sha(repo, tag, registry, protocol):
     headers = {
         'Accept': ', '.join([MANIFEST_V2_LIST, MANIFEST_V2])
     }
     url = "{}://{}/v2/{}/manifests/{}".format(protocol, registry, repo, tag)
     print(url)
     r = urllib2.Request(url=url, headers=headers)
-    if token:
-        r.add_header('Authorization', 'Bearer {}'.format(token))
-    if strtobool(os.environ.get('REGISTRY_INSECURE', "False")):
-        resp = urllib2.urlopen(r, context=ssl._create_unverified_context())
-    else:
-        resp = urllib2.urlopen(r)
+    resp = registry_request(r)
     resp_text = resp.read().decode('utf-8').strip()
     manifest = json.loads(resp_text)
     if manifest['schemaVersion'] == 1:
@@ -75,7 +80,7 @@ def get_sha(repo, tag, registry, protocol, token):
                 #               again but getting that arch-specific manifest.
                 if m['platform']['architecture'] == ARCH_MAP[arch]:
                     tag =  m['digest']
-                    return get_sha(repo, tag, registry, protocol, token)
+                    return get_sha(repo, tag, registry, protocol)
 
             # NOTE(mnaser): If we're here, we've gone over all the manifests
             #               and we didn't find one that matches our requested
@@ -92,17 +97,12 @@ def get_sha(repo, tag, registry, protocol, token):
     raise SystemError("Unable to find correct manifest schema version")
 
 
-def get_blob(repo, tag, protocol, registry=DOCKER_REGISTRY, token=None):
-    sha = get_sha(repo, tag, registry, protocol, token)
+def get_blob(repo, tag, protocol, registry=DOCKER_REGISTRY):
+    sha = get_sha(repo, tag, registry, protocol)
     url = "{}://{}/v2/{}/blobs/{} ".format(protocol, registry, repo, sha)
     print(url)
     r = urllib2.Request(url=url)
-    if token:
-        r.add_header('Authorization', 'Bearer {}'.format(token))
-    if strtobool(os.environ.get('REGISTRY_INSECURE', "False")):
-        resp = urllib2.urlopen(r, context=ssl._create_unverified_context())
-    else:
-        resp = urllib2.urlopen(r)
+    resp = registry_request(r)
     return resp.read()
 
 def protocol_detection(registry, protocol='http'):
@@ -126,10 +126,7 @@ def protocol_detection(registry, protocol='http'):
 
 def get_wheels(url):
     r = urllib2.Request(url=url)
-    if strtobool(os.environ.get('REGISTRY_INSECURE', "False")):
-        resp = urllib2.urlopen(r, context=ssl._create_unverified_context())
-    else:
-        resp = urllib2.urlopen(r)
+    resp = registry_request(r)
     #Using urllib2.request.urlopen() from python3 will face the IncompleteRead and then system report connect refused.
     #To avoid this problem, add an exception to ensure that all packages will be transmitted. before link down.
     try:
@@ -180,7 +177,6 @@ def main():
         kwargs = dict()
         if registry:
             kwargs.update({'registry': registry})
-        kwargs.update({'token': get_token(protocol, registry, image)})
         data = get_blob(image, tag, protocol, **kwargs)
 
     if 'WHEELS_DEST' in os.environ:
