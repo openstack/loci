@@ -92,31 +92,3 @@ distros:
   #       PROJECT: requirements
   #       PROJECT_REPO: http://172.17.0.1/git/openstack/requirements
   #       FROM: base:leap15
-  - name: debian
-    image: debian:stretch
-    release: train
-    buildargs:
-      base:
-        # Apparently nobody configured the debian mirror yet, commenting
-        #DEBIAN_URL: http://{{ zuul_site_mirror_fqdn }}/debian/
-        #DEBIAN_SECURITY_URL: http://{{ zuul_site_mirror_fqdn }}/debian-security/
-        #DEBIAN_SECURITY_DISTRIBUTION: stretch/updates
-        #CEPH_URL: http://{{ zuul_site_mirror_fqdn }}/ceph-deb-nautilus/
-        ALLOW_UNAUTHENTICATED: "true"
-        PIP_INDEX_URL: http://{{ zuul_site_mirror_fqdn }}/pypi/simple
-        PIP_TRUSTED_HOST: "{{ zuul_site_mirror_fqdn }}"
-      project:
-        PROJECT: "{{ project }}"
-        PROJECT_REPO: http://172.17.0.1/git/openstack/{{ project }}
-        PROJECT_REF: "stable/train"
-        PROJECT_RELEASE: "train"
-        WHEELS: 172.17.0.1:5000/loci/requirements:train-debian
-        FROM: base:debian
-        PYTHON3: no
-      requirements:
-        PROJECT: requirements
-        PROJECT_REPO: http://172.17.0.1/git/openstack/requirements
-        PROJECT_REF: "stable/train"
-        PROJECT_RELEASE: "train"
-        FROM: base:debian
-        PYTHON3: no
