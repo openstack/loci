@@ -72,10 +72,14 @@ distros:
         PROJECT_REPO: http://172.17.0.1/git/openstack/{{ project }}
         WHEELS: 172.17.0.1:5000/loci/requirements:ussuri-ubuntu_bionic
         FROM: base:ubuntu_bionic
+        PROJECT_REF: "stable/ussuri"
+        PROJECT_RELEASE: "ussuri"
       requirements:
         PROJECT: requirements
         PROJECT_REPO: http://172.17.0.1/git/openstack/requirements
         FROM: base:ubuntu_bionic
+        PROJECT_REF: "stable/ussuri"
+        PROJECT_RELEASE: "ussuri"
   # - name: leap15
   #   release: master
   #   buildargs:
