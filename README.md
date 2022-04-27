@@ -86,11 +86,9 @@ $ docker build https://opendev.org/openstack/loci.git \
 ```
 
 For more advanced building you can use docker build arguments to define:
-  * `FROM` The base Docker image to build from. Currently supported are
-    `ubuntu:bionic`, `ubuntu:xenial`, `centos:7`, `opensuse/leap:15`,
-    `debian:stretch`, or a base image derived from one of those distributions.
-    Dockerfiles to bootstrap the base images can be found in the `dockerfiles`
-    directory, and are a good starting point for customizing a base image.
+  * `FROM` The base Docker image to build from. Dockerfiles to bootstrap
+     the base images can be found in the `dockerfiles` directory, and are
+     a good starting point for customizing a base image.
   * `PROJECT` The name of the project to install.
   * `PROJECT_REPO` The git repo containing the OpenStack project the container
     should contain
