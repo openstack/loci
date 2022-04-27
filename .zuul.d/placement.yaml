@@ -14,7 +14,6 @@
     parent: loci-base
     vars:
       project: placement
-      supported_releases: ["stein", "train", "master"]
     required-projects:
       - openstack/loci
       - openstack/requirements
