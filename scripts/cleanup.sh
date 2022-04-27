@@ -21,15 +21,10 @@ case ${distro} in
         yum clean all
         ;;
     opensuse|opensuse-leap|opensuse-tumbleweed|sles)
-        if [[ "${PYTHON3}" == "no" ]]; then
-            virtualenv_package="python-virtualenv"
-        else
-            virtualenv_package="python3-virtualenv"
-        fi
         zypper remove -y --clean-deps \
             git-core \
             patch \
-            "${virtualenv_package}"
+            python3-virtualenv
         zypper clean -a
         ;;
     *)
