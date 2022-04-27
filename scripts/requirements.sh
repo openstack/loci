@@ -9,9 +9,6 @@ $(dirname $0)/install_packages.sh
 $(dirname $0)/clone_project.sh
 mv /tmp/requirements/{global-requirements.txt,upper-constraints.txt} /
 
-# workaround unicode issue with 44.1.1 setuptools on python2 and scandir 1.4
-[[ "${PYTHON3}" == "no" ]] && pip install -c /upper-constraints.txt scandir ||:
-
 # TODO: Make python-qpid-proton build here (possibly patch it)
 # or remove when python-qpid-proton is updated with build fix.
 #   https://issues.apache.org/jira/browse/PROTON-1381
@@ -26,18 +23,7 @@ sed -i '/python-qpid-proton===0.14.0/d' /upper-constraints.txt
 # Setuptools from constraints is not compatible with other constrainted packages
 [[ "${PROJECT_REF}" == "master" ]] && sed -i '/setuptools/d' /upper-constraints.txt
 # https://review.opendev.org/c/openstack/requirements/+/813693
-[[ "${PYTHON3}" != "no" ]] && sed -i '/^futures===/d' /upper-constraints.txt
-
-# Ensure M2Crypto doesn't need to be built because it can't be built with
-# the default openssl devel distro packages for ubuntu/centos. (This is
-# because those libraries are not compatible with M2Crypto (outdated).
-# M2Crypto is built due to pywbem requirements
-# https://github.com/pywbem/pywbem/blob/20b2835e26cef1d2469e9a8fb6b2e8c66cf5a128/requirements.txt#L13
-# so removing pywbem is enough for most cases on python2.
-if [[ "${PYTHON3}" == "no" ]]; then
-    sed -i '/pywbem/d' /upper-constraints.txt
-    sed -i '/M2Crypto/d' /upper-constraints.txt
-fi
+sed -i '/^futures===/d' /upper-constraints.txt
 
 # NOTE(mnaser): confluent-kafka fails to build under aarch64 because the version
 #               of libfdkafka-dev in the distributions is too old (x86_64 relies
