@@ -6,12 +6,7 @@ import platform
 import re
 import ssl
 from distutils.util import strtobool
-
-try:
-    import urllib2
-except ImportError:
-    # python3
-    from urllib import request as urllib2
+from urllib import request as urllib2
 
 DOCKER_REGISTRY='registry.hub.docker.com'
 
