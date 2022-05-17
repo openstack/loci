@@ -99,9 +99,6 @@ if [[ "${EXTENSIONS}" == "no" ]]; then
         $(dirname $0)/install_nova_console.sh
     fi
     $(dirname $0)/install_packages.sh
-    if [[ ${PROJECT} == 'neutron' ]]; then
-        uwsgi --build-plugin https://github.com/Datadog/uwsgi-dogstatsd
-    fi
     $(dirname $0)/pip_install.sh /tmp/${PROJECT} ${PIP_PACKAGES}
 else
     # install custom requirements
