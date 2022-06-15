@@ -3,7 +3,7 @@
 set -ex
 
 case ${distro} in
-    debian|ubuntu)
+    ubuntu)
         apt-get purge -y --auto-remove \
             git \
             patch \
@@ -19,13 +19,6 @@ case ${distro} in
             python-virtualenv \
             python3-virtualenv
         yum clean all
-        ;;
-    opensuse|opensuse-leap|opensuse-tumbleweed|sles)
-        zypper remove -y --clean-deps \
-            git-core \
-            patch \
-            python3-virtualenv
-        zypper clean -a
         ;;
     *)
         echo "Unknown distro: ${distro}"
