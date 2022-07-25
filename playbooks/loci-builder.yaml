@@ -28,10 +28,12 @@
       block:
         - name: "Build base image for {{ item.name }}"
           docker_image:
-            path: "{{ loci_src_dir }}/dockerfiles/{{ item.name }}"
             name: base
             tag: "{{ item.name }}"
-            buildargs: "{{ item.buildargs.base }}"
+            source: build
+            build:
+              args: "{{ item.buildargs.base }}"
+              path: "{{ loci_src_dir }}/dockerfiles/{{ item.name }}"
           with_items: "{{ distros }}"
           when: *condition
 
@@ -39,13 +41,15 @@
       block:
         - name: "Build requirements image for {{ item.name }}"
           docker_image:
-            path: "{{ loci_src_dir }}"
             name: loci/requirements
             tag: "{{ item.release }}-{{ item.name }}"
             repository: 172.17.0.1:5000/loci/requirements
             push: yes
-            pull: False
-            buildargs: "{{ item.buildargs.requirements }}"
+            source: build
+            build:
+              args: "{{ item.buildargs.requirements }}"
+              path: "{{ loci_src_dir }}"
+              pull: no
           with_items: "{{ distros }}"
           when: *condition
 
@@ -57,10 +61,12 @@
       block:
         - name: "Build {{ project }} image for {{ item.name }}"
           docker_image:
-            path: "{{ loci_src_dir }}"
             name: loci/{{ project }}
             tag: "{{ item.release }}-{{ item.name }}"
-            pull: False
-            buildargs: "{{ item.buildargs.project }}"
+            source: build
+            build:
+              args: "{{ item.buildargs.project }}"
+              path: "{{ loci_src_dir }}"
+              pull: no
           with_items: "{{ distros }}"
           when: *condition
