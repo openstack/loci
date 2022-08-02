@@ -20,7 +20,7 @@ loci_src_dir: "src/opendev.org/openstack/loci"
 
 distros:
   # - name: centos
-  #   image: centos:8
+  #   image: centos:9-stream
   #   release: master
   #   buildargs:
   #     base:

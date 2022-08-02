@@ -106,7 +106,7 @@ multipath-tools                      [platform:dpkg platform:suse (cinder purest
 mysql                                [platform:rpm placement]
 mysql-client                         [platform:dpkg placement]
 nginx                                [nginx]
-# latest nss-devel breaks python-nss on centos:8
+# latest nss-devel breaks python-nss on centos:9
 nss-devel-3.53.1-17.el8_3            [platform:rpm !platform:suse requirements]
 nss-util                             [platform:rpm !platform:suse requirements]
 open-iscsi                           [platform:dpkg platform:suse (cinder purestorage) (nova purestorage)]

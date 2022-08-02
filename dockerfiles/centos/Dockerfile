@@ -1,4 +1,4 @@
-ARG FROM=centos:8
+ARG FROM=centos:9-stream
 FROM ${FROM}
 
 ARG PACKAGE_MIRROR=mirror.centos.org
