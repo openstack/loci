@@ -5,11 +5,11 @@ import os
 import platform
 import re
 import ssl
-from distutils.util import strtobool
 from urllib import request as urllib2
 
 DOCKER_REGISTRY='registry.hub.docker.com'
 
+MANIFEST_V1 = 'application/vnd.oci.image.manifest.v1+json'
 MANIFEST_V2 = 'application/vnd.docker.distribution.manifest.v2+json'
 MANIFEST_V2_LIST = 'application/vnd.docker.distribution.manifest.list.v2+json'
 
@@ -17,6 +17,10 @@ ARCH_MAP = {
     'x86_64': 'amd64',
     'aarch64': 'arm64',
 }
+
+# Clone from the now-deprecated distutils
+def strtobool(v):
+    return str(v).lower() in ("yes", "true", "t", "1")
 
 def registry_urlopen(r):
     if strtobool(os.environ.get('REGISTRY_INSECURE', "False")):
@@ -52,7 +56,7 @@ def registry_request(r, token=None):
 
 def get_sha(repo, tag, registry, protocol):
     headers = {
-        'Accept': ', '.join([MANIFEST_V2_LIST, MANIFEST_V2])
+        'Accept': ', '.join([MANIFEST_V2_LIST, MANIFEST_V2, MANIFEST_V1])
     }
     url = "{}://{}/v2/{}/manifests/{}".format(protocol, registry, repo, tag)
     print(url)
