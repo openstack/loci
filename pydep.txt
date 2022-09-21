@@ -9,4 +9,4 @@ pyldap          [(newton keystone ldap) (ocata keystone ldap) (pike keystone lda
 pymysql         []
 python-ldap     [(!newton !ocata !pike !queens keystone ldap)]
 python-memcached []
-uwsgi           []
+uwsgi           [barbican]
