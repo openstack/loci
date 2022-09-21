@@ -21,6 +21,10 @@ ARG REGISTRY_PROTOCOL="detect"
 ARG REGISTRY_INSECURE="False"
 ARG KEEP_ALL_WHEELS="False"
 
+# NOTE: This option is only applicable to apt/dpkg systems. The value is noop
+# for rpm based systems. This will not show up in the final image regardless.
+ARG DEBIAN_FRONTEND=noninteractive
+
 ARG UID=42424
 ARG GID=42424
 
