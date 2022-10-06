@@ -80,4 +80,3 @@ distros:
         FROM: base:ubuntu_bionic
         PROJECT_REF: "stable/ussuri"
         PROJECT_RELEASE: "ussuri"
-        PYTHON3: yes

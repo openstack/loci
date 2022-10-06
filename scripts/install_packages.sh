@@ -2,12 +2,8 @@
 
 set -ex
 
-if [[ "${PYTHON3}" != "no" ]]; then
-    python3=python3
-fi
-
 for file in /opt/loci/bindep*; do
-    PACKAGES+=($(bindep -f $file -b -l newline ${PROJECT} ${PROFILES} ${python3} || :))
+    PACKAGES+=($(bindep -f $file -b -l newline ${PROJECT} ${PROFILES} || :))
 done
 
 if [[ ! -z ${PACKAGES} ]]; then

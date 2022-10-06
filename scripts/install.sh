@@ -5,23 +5,14 @@ set -ex
 distro=$(awk -F= '/^ID=/ {gsub(/\"/, "", $2); print $2}' /etc/*release)
 export distro=${DISTRO:=$distro}
 
-if [[ "${PYTHON3}" == "no" ]]; then
-    dpkg_python_packages=("python" "virtualenv")
-    rpm_python_packages=("python" "python-virtualenv")
-    python3=""
-    python_version=2
-else
-    dpkg_python_packages=("python3" "python3-virtualenv")
-    rpm_python_packages=("python3")
-    python3="python3"
-    python_version=3
-fi
+dpkg_python_packages=("python3" "python3-virtualenv")
+rpm_python_packages=("python3")
 
 case ${distro} in
     ubuntu)
         export LC_CTYPE=C.UTF-8
         apt-get update
-        if [[ ! -z "$(apt-cache search ^${python3}-distutils$)" ]]; then
+        if [[ ! -z "$(apt-cache search ^python3-distutils$)" ]]; then
             dpkg_python_packages+=("python3-distutils")
         fi
         apt-get upgrade -y
@@ -34,8 +25,7 @@ case ${distro} in
             sudo \
             ${dpkg_python_packages[@]}
         apt-get install -y --no-install-recommends \
-            libpython${python_version}.$(python${python_version} -c 'import sys;\
-                                         print(sys.version_info.minor);')
+            libpython3.$(python3 -c 'import sys; print(sys.version_info.minor);')
         ;;
     centos)
         export LC_CTYPE=en_US.UTF-8
@@ -78,7 +68,7 @@ if [[ "${PLUGIN}" == "no" ]]; then
     $(dirname $0)/setup_pip.sh
     $(dirname $0)/pip_install.sh bindep
     for file in /opt/loci/pydep*; do
-        PYDEP_PACKAGES+=($(bindep -f $file -b -l newline ${PROJECT} ${PROJECT_RELEASE} ${PROFILES} ${python3} || :))
+        PYDEP_PACKAGES+=($(bindep -f $file -b -l newline ${PROJECT} ${PROJECT_RELEASE} ${PROFILES} || :))
     done
     $(dirname $0)/pip_install.sh ${PYDEP_PACKAGES[@]}
 fi
