@@ -7,7 +7,6 @@ ARG DISTRO=ubuntu
 ARG DISTRO_RELEASE=xenial
 ARG UBUNTU_URL=http://archive.ubuntu.com/ubuntu/
 ARG CLOUD_ARCHIVE_URL=http://ubuntu-cloud.archive.canonical.com/ubuntu/
-ARG CEPH_URL=http://download.ceph.com/debian-luminous/
 ARG ALLOW_UNAUTHENTICATED=false
 ARG PIP_INDEX_URL=https://pypi.python.org/simple/
 ARG PIP_TRUSTED_HOST=pypi.python.org
@@ -24,7 +23,6 @@ RUN sed -i \
         -e "s|%%UBUNTU_URL%%|${UBUNTU_URL}|g" \
         -e "s|%%UBUNTU_RELEASE%%|${DISTRO_RELEASE}|g" \
         -e "s|%%CLOUD_ARCHIVE_URL%%|${CLOUD_ARCHIVE_URL}|g" \
-        -e "s|%%CEPH_URL%%|${CEPH_URL}|g" \
         -e "s|%%OPENSTACK_RELEASE%%|${OPENSTACK_RELEASE}|g" \
         /etc/apt/sources.list
 RUN echo "APT::Get::AllowUnauthenticated \"${ALLOW_UNAUTHENTICATED}\";" > /etc/apt/apt.conf.d/allow-unathenticated
