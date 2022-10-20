@@ -42,4 +42,4 @@ source /var/lib/openstack/bin/activate
 pip install --upgrade ${PIP_ARGS} 'pip'
 
 # Restrict setuptools, version 58 breaks for use_2to3
-pip install --upgrade ${PIP_ARGS} 'setuptools<58'
+pip install --upgrade ${PIP_ARGS} "setuptools${SETUPTOOLS_VERSION_REQUIREMENT}"
