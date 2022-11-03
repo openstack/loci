@@ -18,3 +18,9 @@ fi
 
 mkdir /usr/share/spice-html5
 git clone -b ${SPICE_REF} --depth 1 ${SPICE_REPO} /usr/share/spice-html5
+
+# mksproxy
+mkdir /usr/share/noVNC-mks
+# TODO(jkulik): remove after Nova is rolled out with Xena
+ln -s /usr/share/noVNC-mks /usr/local/noVNC-mks
+git clone -b ${MKS_REF} --depth 1 ${MKS_REPO} /usr/share/noVNC-mks

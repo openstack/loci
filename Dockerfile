@@ -31,6 +31,8 @@ ARG NOVNC_REPO=https://github.com/novnc/novnc
 ARG NOVNC_REF=v1.0.0
 ARG SPICE_REPO=https://gitlab.freedesktop.org/spice/spice-html5.git
 ARG SPICE_REF=spice-html5-0.1.6
+ARG MKS_REPO=https://github.com/rgerganov/noVNC.git
+ARG MKS_REF=master
 
 COPY scripts /opt/loci/scripts
 ADD bindep.txt pydep.txt $EXTRA_BINDEP $EXTRA_PYDEP /opt/loci/
