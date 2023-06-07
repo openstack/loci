@@ -21,6 +21,10 @@ else
     python_version=3
 fi
 
+if [[ "${EXTENSIONS}" == "no" ]] && [[ ${PROJECT} == 'nova' ]] && [[ "${DISTRO_RELEASE}" == "focal" ]]; then
+    sed -i 's#deb http://ubuntu-cloud.archive.canonical.com/ubuntu/ focal-updates/xena main#deb http://ubuntu-cloud.archive.canonical.com/ubuntu/ focal-updates/yoga main#' /etc/apt/sources.list
+fi
+
 case ${distro} in
     debian|ubuntu)
         apt-get update
@@ -96,10 +100,6 @@ fi
 $(dirname $0)/clone_project.sh
 if [[ "${EXTENSIONS}" == "no" ]]; then
     if [[ ${PROJECT} == 'nova' ]]; then
-        if [[ "${DISTRO_RELEASE}" == "focal" ]]; then
-            sed -i 's#deb http://ubuntu-cloud.archive.canonical.com/ubuntu/ focal-updates/xena main#deb http://ubuntu-cloud.archive.canonical.com/ubuntu/ focal-updates/yoga main#' /etc/apt/sources.list
-            apt-get update
-        fi
         $(dirname $0)/install_nova_console.sh
     fi
     $(dirname $0)/install_packages.sh
