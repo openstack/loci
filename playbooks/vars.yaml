@@ -1,11 +1,6 @@
-docker_daemon:
-  group: zuul
-  registry-mirrors:
-    - "http://{{ zuul_site_mirror_fqdn }}:8082/"
-  storage-driver: overlay2
-  debug: True
-  insecure-registries:
-    - 172.17.0.1:5000
+docker_insecure_registries:
+  - 172.17.0.1:5000
+
 
 # Setting reuse_requirements to True will use the most recent
 # requirements build from the gate registry. This can save bandwidth
@@ -56,27 +51,27 @@ distros:
         PROJECT: requirements
         PROJECT_REPO: http://172.17.0.1/git/openstack/requirements
         FROM: base:ubuntu_focal
-  - name: ubuntu_bionic
-    image: ubuntu:bionic
-    release: ussuri
-    buildargs:
-      base:
-        UBUNTU_URL: http://{{ zuul_site_mirror_fqdn }}/ubuntu/
-        CLOUD_ARCHIVE_URL: http://{{ zuul_site_mirror_fqdn }}/ubuntu-cloud-archive/
-        CEPH_URL: http://{{ zuul_site_mirror_fqdn }}/ceph-deb-nautilus/
-        ALLOW_UNAUTHENTICATED: "true"
-        PIP_INDEX_URL: http://{{ zuul_site_mirror_fqdn }}/pypi/simple
-        PIP_TRUSTED_HOST: "{{ zuul_site_mirror_fqdn }}"
-      project:
-        PROJECT: "{{ project }}"
-        PROJECT_REPO: http://172.17.0.1/git/openstack/{{ project }}
-        WHEELS: 172.17.0.1:5000/loci/requirements:ussuri-ubuntu_bionic
-        FROM: base:ubuntu_bionic
-        PROJECT_REF: "stable/ussuri"
-        PROJECT_RELEASE: "ussuri"
-      requirements:
-        PROJECT: requirements
-        PROJECT_REPO: http://172.17.0.1/git/openstack/requirements
-        FROM: base:ubuntu_bionic
-        PROJECT_REF: "stable/ussuri"
-        PROJECT_RELEASE: "ussuri"
+  # - name: ubuntu_bionic
+  #   image: ubuntu:bionic
+  #   release: ussuri
+  #   buildargs:
+  #     base:
+  #       UBUNTU_URL: http://{{ zuul_site_mirror_fqdn }}/ubuntu/
+  #       CLOUD_ARCHIVE_URL: http://{{ zuul_site_mirror_fqdn }}/ubuntu-cloud-archive/
+  #       CEPH_URL: http://{{ zuul_site_mirror_fqdn }}/ceph-deb-nautilus/
+  #       ALLOW_UNAUTHENTICATED: "true"
+  #       PIP_INDEX_URL: http://{{ zuul_site_mirror_fqdn }}/pypi/simple
+  #       PIP_TRUSTED_HOST: "{{ zuul_site_mirror_fqdn }}"
+  #     project:
+  #       PROJECT: "{{ project }}"
+  #       PROJECT_REPO: http://172.17.0.1/git/openstack/{{ project }}
+  #       WHEELS: 172.17.0.1:5000/loci/requirements:ussuri-ubuntu_bionic
+  #       FROM: base:ubuntu_bionic
+  #       PROJECT_REF: "stable/ussuri"
+  #       PROJECT_RELEASE: "ussuri"
+  #     requirements:
+  #       PROJECT: requirements
+  #       PROJECT_REPO: http://172.17.0.1/git/openstack/requirements
+  #       FROM: base:ubuntu_bionic
+  #       PROJECT_REF: "stable/ussuri"
+  #       PROJECT_RELEASE: "ussuri"
