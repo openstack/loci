@@ -24,7 +24,6 @@ def get_token(protocol, registry, repo):
       service = registry.split(':')[0]
     url = "{}://{}?service={}&" \
             "scope=repository:{}:pull".format(protocol, authserver, service, repo)
-    print(url)
     try:
         r = urllib2.Request(url=url)
         resp = urllib2.urlopen(r)
@@ -36,26 +35,24 @@ def get_token(protocol, registry, repo):
 
 def get_sha(repo, tag, registry, protocol, token):
     url = "{}://{}/v2/{}/manifests/{}".format(protocol, registry, repo, tag)
-    print(url)
     r = urllib2.Request(url=url)
+    r.add_header("Accept", "application/vnd.docker.distribution.manifest.v2+json")
     if token:
         r.add_header('Authorization', 'Bearer {}'.format(token))
     resp = urllib2.urlopen(r)
     resp_text = resp.read().decode('utf-8').strip()
-    if registry.startswith('keppel'):
-        return json.loads(resp_text)['layers'][-1]['digest']
-    return json.loads(resp_text)['fsLayers'][0]['blobSum']
+    return json.loads(resp_text)['layers'][-1]['digest']
 
 
 def get_blob(repo, tag, protocol, registry=DOCKER_REGISTRY, token=None):
     sha = get_sha(repo, tag, registry, protocol, token)
-    url = "{}://{}/v2/{}/blobs/{} ".format(protocol, registry, repo, sha)
-    print(url)
+    url = "{}://{}/v2/{}/blobs/{}".format(protocol, registry, repo, sha)
     r = urllib2.Request(url=url)
     if token:
         r.add_unredirected_header('Authorization', 'Bearer {}'.format(token))
     resp = urllib2.urlopen(r)
     return resp.read()
+
 
 def protocol_detection(registry, protocol='https'):
     PROTOCOLS = ('https','http')
