@@ -19,7 +19,7 @@ fi
 PIPBOOTSTRAP=/var/lib/pipbootstrap
 
 # Create the boostrap environment so we can get pip from virtualenv
-${TMP_VIRTUALENV} --extra-search-dir=file:///tmp/wheels ${SETUPTOOLS} ${PIPBOOTSTRAP}
+${TMP_VIRTUALENV} --extra-search-dir=file:///${WHEELS_DEST} ${SETUPTOOLS} ${PIPBOOTSTRAP}
 source ${PIPBOOTSTRAP}/bin/activate
 
 # Upgrade virtualenv, version 20 breaks with missing setuptools
@@ -29,7 +29,7 @@ pip install --upgrade ${PIP_ARGS} 'virtualenv<20'
 hash -r
 
 # Create the virtualenv with the updated toolchain for openstack service
-virtualenv --extra-search-dir=file:///tmp/wheels /var/lib/openstack
+virtualenv --extra-search-dir=file://${WHEELS_DEST} /var/lib/openstack
 
 # Deactivate the old bootstrap virtualenv and switch to the new one
 deactivate

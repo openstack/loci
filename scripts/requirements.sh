@@ -9,7 +9,7 @@ pip install ${PIP_ARGS} bindep
 
 $(dirname $0)/install_packages.sh
 $(dirname $0)/clone_project.sh
-mv /tmp/requirements/{global-requirements.txt,upper-constraints.txt} /
+mv ${PROJECT_DEST}/{global-requirements.txt,upper-constraints.txt} /
 
 # TODO: Make python-qpid-proton build here (possibly patch it)
 # or remove when python-qpid-proton is updated with build fix.

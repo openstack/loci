@@ -37,4 +37,14 @@ COPY scripts /opt/loci/scripts
 ADD bindep.txt pydep.txt $EXTRA_BINDEP $EXTRA_PYDEP /opt/loci/
 
 LABEL source_repository=${PROJECT_REPO}
-RUN /opt/loci/scripts/install.sh
+ARG PIP_CACHE_DIR=/var/cache/pip
+ARG FETCH_WHEELS_CACHE_DIR=/var/cache/fetch_wheels
+ARG WHEELS_DEST=/tmp/wheels
+ARG PROJECT_DEST=/tmp/${PROJECT}
+ARG CACHEBUST=0 # In order to force a rebuild of any layer following this line
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    --mount=type=cache,target=${PIP_CACHE_DIR},sharing=locked \
+    --mount=type=cache,target=${FETCH_WHEELS_CACHE_DIR},sharing=locked \
+    --mount=type=cache,target=/root/.cache,sharing=locked \
+    /opt/loci/scripts/install.sh
