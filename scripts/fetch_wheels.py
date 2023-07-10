@@ -1,14 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import json
 import os
 import re
 
-try:
-    import urllib2
-except ImportError:
-    # python3
-    from urllib import request as urllib2
+from urllib import request as urllib2
 
 DOCKER_REGISTRY='registry.hub.docker.com'
 

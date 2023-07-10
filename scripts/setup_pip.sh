@@ -3,11 +3,7 @@
 set -ex
 
 
-if [[ "${PYTHON3}" == "no" ]]; then
-    TMP_VIRTUALENV="virtualenv"
-else
-    TMP_VIRTUALENV="python3 -m virtualenv --python=python3"
-fi
+TMP_VIRTUALENV="python3 -m virtualenv --python=python3"
 
 # This little dance allows us to install the latest pip and setuptools
 # without get_pip.py or the python-pip package (in epel on centos)

@@ -31,17 +31,6 @@ sed -i '/python-qpid-proton===0.14.0/d' /upper-constraints.txt
 # https://review.opendev.org/#/c/673414/
 sed -i '/trollius===2.1/d' /upper-constraints.txt
 
-# Ensure M2Crypto doesn't need to be built because it can't be built with
-# the default openssl devel distro packages for ubuntu/centos. (This is
-# because those libraries are not compatible with M2Crypto (outdated).
-# M2Crypto is built due to pywbem requirements
-# https://github.com/pywbem/pywbem/blob/20b2835e26cef1d2469e9a8fb6b2e8c66cf5a128/requirements.txt#L13
-# so removing pywbem is enough for most cases on python2.
-if [[ "${PYTHON3}" == "no" ]]; then
-    sed -i '/pywbem/d' /upper-constraints.txt
-    sed -i '/M2Crypto/d' /upper-constraints.txt
-fi
-
 # Remove any pylxd before 2.2.7 as the old versions cannot be built in CI.
 lxd_constraint=$(grep pylxd /upper-constraints.txt)
 # This removes (##) everything (*) from the lxd_constraint until the last =,

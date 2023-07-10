@@ -2,13 +2,7 @@
 
 set -ex
 
-if [[ "${PYTHON3}" == "no" ]]; then
-    python=python2
-else
-    python=python3
-fi
-
-${python} $(dirname $0)/fetch_wheels.py
+python3 $(dirname $0)/fetch_wheels.py
 
 mkdir -p /tmp/wheels/
 # Exclude all files starting with '.' as these can be control files for

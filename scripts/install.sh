@@ -5,21 +5,10 @@ set -ex
 distro=$(awk -F= '/^ID=/ {gsub(/\"/, "", $2); print $2}' /etc/*release)
 export distro=${DISTRO:=$distro}
 
-if [[ "${PYTHON3}" == "no" ]]; then
-    if [[ "${DISTRO_RELEASE}" == "trusty" ]]; then
-        dpkg_python_packages=("python" "python-virtualenv")
-    else
-        dpkg_python_packages=("python" "virtualenv")
-    fi
-    rpm_python_packages=("python" "python-virtualenv")
-    python3=""
-    python_version=2
-else
-    dpkg_python_packages=("python3" "python3-virtualenv" "python3-distutils")
-    rpm_python_packages=("python3" "python3-virtualenv")
-    python3="python3"
-    python_version=3
-fi
+dpkg_python_packages=("python3" "python3-virtualenv" "python3-distutils")
+rpm_python_packages=("python3" "python3-virtualenv")
+python3="python3"
+python_version=3
 
 if [[ "${EXTENSIONS}" == "no" ]] && [[ ${PROJECT} == 'nova' ]] && [[ "${DISTRO_RELEASE}" == "focal" ]]; then
     sed -i 's#deb http://ubuntu-cloud.archive.canonical.com/ubuntu/ focal-updates/xena main#deb http://ubuntu-cloud.archive.canonical.com/ubuntu/ focal-updates/yoga main#' /etc/apt/sources.list
@@ -53,11 +42,7 @@ case ${distro} in
             ${rpm_python_packages[@]}
         ;;
     opensuse|opensuse-leap|opensuse-tumbleweed|sles)
-        if [[ "${PYTHON3}" == "no" ]]; then
-           rpm_python_packages+=("python-devel" "python-setuptools")
-        else
-           rpm_python_packages+=("python3-devel" "python3-setuptools")
-        fi
+        rpm_python_packages+=("python3-devel" "python3-setuptools")
         zypper --non-interactive --gpg-auto-import-keys refresh
         zypper --non-interactive install --no-recommends \
             ca-certificates \
