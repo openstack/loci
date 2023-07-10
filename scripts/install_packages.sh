@@ -3,7 +3,7 @@
 set -ex
 
 for file in /opt/loci/bindep*; do
-    PACKAGES+=($(bindep -f $file -b -l newline ${PROJECT} ${PROFILES} || :))
+    PACKAGES+=($(bindep -f $file -b -l newline ${PROJECT} ${PROFILES} ${distro_version} || :))
 done
 
 if [[ ! -z ${PACKAGES} ]]; then

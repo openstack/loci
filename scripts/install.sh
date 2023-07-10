@@ -5,6 +5,11 @@ set -ex
 distro=$(awk -F= '/^ID=/ {gsub(/\"/, "", $2); print $2}' /etc/*release)
 export distro=${DISTRO:=$distro}
 
+if [[ ${distro} == "ubuntu" ]]; then
+    distro_version=$(awk -F= '/^UBUNTU_CODENAME=/ {gsub(/\"/, "", $2); print $2}' /etc/*release)
+fi
+export distro_version=${DISTRO_VERSION:=$distro_version}
+
 dpkg_python_packages=("python3" "python3-virtualenv")
 rpm_python_packages=("python3")
 

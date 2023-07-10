@@ -14,23 +14,6 @@ reuse_requirements: False
 loci_src_dir: "src/opendev.org/openstack/loci"
 
 distros:
-  # - name: centos
-  #   image: centos:9-stream
-  #   release: master
-  #   buildargs:
-  #     base:
-  #       PACKAGE_MIRROR: "{{ zuul_site_mirror_fqdn }}"
-  #       PIP_INDEX_URL: http://{{ zuul_site_mirror_fqdn }}/pypi/simple
-  #       PIP_TRUSTED_HOST: "{{ zuul_site_mirror_fqdn }}"
-  #     project:
-  #       PROJECT: "{{ project }}"
-  #       PROJECT_REPO: http://172.17.0.1/git/openstack/{{ project }}
-  #       WHEELS: 172.17.0.1:5000/loci/requirements:master-centos
-  #       FROM: base:centos
-  #     requirements:
-  #       PROJECT: requirements
-  #       PROJECT_REPO: http://172.17.0.1/git/openstack/requirements
-  #       FROM: base:centos
   - name: ubuntu_focal
     image: ubuntu:focal
     release: master
@@ -38,7 +21,7 @@ distros:
       base:
         UBUNTU_URL: http://{{ zuul_site_mirror_fqdn }}/ubuntu/
         CLOUD_ARCHIVE_URL: http://{{ zuul_site_mirror_fqdn }}/ubuntu-cloud-archive/
-        CEPH_URL: http://{{ zuul_site_mirror_fqdn }}/ceph-deb-octopus/
+        CEPH_URL: http://{{ zuul_site_mirror_fqdn }}/ceph-deb-quincy/
         ALLOW_UNAUTHENTICATED: "true"
         PIP_INDEX_URL: http://{{ zuul_site_mirror_fqdn }}/pypi/simple
         PIP_TRUSTED_HOST: "{{ zuul_site_mirror_fqdn }}"
@@ -51,27 +34,23 @@ distros:
         PROJECT: requirements
         PROJECT_REPO: http://172.17.0.1/git/openstack/requirements
         FROM: base:ubuntu_focal
-  # - name: ubuntu_bionic
-  #   image: ubuntu:bionic
-  #   release: ussuri
-  #   buildargs:
-  #     base:
-  #       UBUNTU_URL: http://{{ zuul_site_mirror_fqdn }}/ubuntu/
-  #       CLOUD_ARCHIVE_URL: http://{{ zuul_site_mirror_fqdn }}/ubuntu-cloud-archive/
-  #       CEPH_URL: http://{{ zuul_site_mirror_fqdn }}/ceph-deb-nautilus/
-  #       ALLOW_UNAUTHENTICATED: "true"
-  #       PIP_INDEX_URL: http://{{ zuul_site_mirror_fqdn }}/pypi/simple
-  #       PIP_TRUSTED_HOST: "{{ zuul_site_mirror_fqdn }}"
-  #     project:
-  #       PROJECT: "{{ project }}"
-  #       PROJECT_REPO: http://172.17.0.1/git/openstack/{{ project }}
-  #       WHEELS: 172.17.0.1:5000/loci/requirements:ussuri-ubuntu_bionic
-  #       FROM: base:ubuntu_bionic
-  #       PROJECT_REF: "stable/ussuri"
-  #       PROJECT_RELEASE: "ussuri"
-  #     requirements:
-  #       PROJECT: requirements
-  #       PROJECT_REPO: http://172.17.0.1/git/openstack/requirements
-  #       FROM: base:ubuntu_bionic
-  #       PROJECT_REF: "stable/ussuri"
-  #       PROJECT_RELEASE: "ussuri"
+  - name: ubuntu_jammy
+    image: ubuntu:jammy
+    release: master
+    buildargs:
+      base:
+        UBUNTU_URL: http://{{ zuul_site_mirror_fqdn }}/ubuntu/
+        CLOUD_ARCHIVE_URL: http://{{ zuul_site_mirror_fqdn }}/ubuntu-cloud-archive/
+        ALLOW_UNAUTHENTICATED: "true"
+        PIP_INDEX_URL: http://{{ zuul_site_mirror_fqdn }}/pypi/simple
+        PIP_TRUSTED_HOST: "{{ zuul_site_mirror_fqdn }}"
+      project:
+        PROJECT: "{{ project }}"
+        PROJECT_REPO: http://172.17.0.1/git/openstack/{{ project }}
+        WHEELS: 172.17.0.1:5000/loci/requirements:master-ubuntu_jammy
+        FROM: base:ubuntu_jammy
+      requirements:
+        PROJECT: requirements
+        PROJECT_REPO: http://172.17.0.1/git/openstack/requirements
+        FROM: base:ubuntu_jammy
+
