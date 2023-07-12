@@ -56,6 +56,22 @@ pushd $(mktemp -d)
 
 export CASS_DRIVER_BUILD_CONCURRENCY=8
 
+# The libnss3 headers in Ubuntu Jammy are compatible
+# with python-nss===1.0.1. Ubuntu Jammy itself
+# provides the binary package python3-nss and
+# they apply the patch that renames RSAPublicKey/DSAPublicKey
+# types into PyRSAPublicKey/PyDSAPublicKey.
+# Here we do the same.
+if [[ ${distro} == "ubuntu" ]] && [[ ${distro_version} == "jammy" ]] && grep -q "python-nss===1.0.1" /upper-constraints.txt; then
+    sed -i '/python-nss/d' /upper-constraints.txt
+    pip download python-nss===1.0.1
+    tar jxf python-nss-1.0.1.tar.bz2 && rm -f python-nss-1.0.1.tar.bz2
+    pushd python-nss-1.0.1
+    patch -p1 < $(dirname $0)/python-nss-1.0.1-fix-ftbfs.diff
+    pip wheel ${PIP_WHEEL_ARGS} --find-links /source-wheels -c /upper-constraints.txt . && mv *.whl / || echo "python-nss===1.0.1" >> /failure
+    popd && rm -r python-nss-1.0.1
+fi
+
 # Drop python packages requested by monasca_analytics. Their
 # build time is huge and on !x86 we do not get binaries from Pypi.
 egrep -v "(scipy|scikit-learn)" /upper-constraints.txt | split -l1

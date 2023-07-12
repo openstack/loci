@@ -1,0 +1,549 @@
+From 079d4f65a743fb9e952ab109c1a24997c15398a7 Mon Sep 17 00:00:00 2001
+From: Alexander Scheel <ascheel@redhat.com>
+Date: Thu, 3 Dec 2020 10:03:50 -0500
+Subject: [PATCH] Rename {DSA,RSA}PublicKey to Py{DSA,RSA}PublicKey
+
+These two structs have also been added to NSS as of v3.58. Because we
+duplicate the name with different members, we should prefix the
+python-nss classes with "Py" in the C code to distinguish them.
+
+Signed-off-by: Alexander Scheel <ascheel@redhat.com>
+---
+ src/py_nss.c | 180 +++++++++++++++++++++++++--------------------------
+ src/py_nss.h |   8 +--
+ 2 files changed, 94 insertions(+), 94 deletions(-)
+
+diff --git a/src/py_nss.c b/src/py_nss.c
+index 3e8ccdb..d033ac2 100644
+--- a/src/py_nss.c
++++ b/src/py_nss.c
+@@ -7091,7 +7091,7 @@ KEYPQGParams_new_from_SECKEYPQGParams(const SECKEYPQGParams *params)
+ }
+ 
+ /* ========================================================================== */
+-/* =========================== RSAPublicKey Class =========================== */
++/* ========================== PyRSAPublicKey Class ========================== */
+ /* ========================================================================== */
+ 
+ /* ============================ Attribute Access ============================ */
+@@ -7100,7 +7100,7 @@ KEYPQGParams_new_from_SECKEYPQGParams(const SECKEYPQGParams *params)
+ // via integer_secitem_to_pylong()
+ 
+ static PyObject *
+-RSAPublicKey_get_modulus(RSAPublicKey *self, void *closure)
++PyRSAPublicKey_get_modulus(PyRSAPublicKey *self, void *closure)
+ {
+     TraceMethodEnter(self);
+ 
+@@ -7109,7 +7109,7 @@ RSAPublicKey_get_modulus(RSAPublicKey *self, void *closure)
+ }
+ 
+ static PyObject *
+-RSAPublicKey_get_exponent(RSAPublicKey *self, void *closure)
++PyRSAPublicKey_get_exponent(PyRSAPublicKey *self, void *closure)
+ {
+     TraceMethodEnter(self);
+ 
+@@ -7118,20 +7118,20 @@ RSAPublicKey_get_exponent(RSAPublicKey *self, void *closure)
+ }
+ 
+ static
+-PyGetSetDef RSAPublicKey_getseters[] = {
+-    {"modulus",  (getter)RSAPublicKey_get_modulus,  (setter)NULL, "RSA modulus", NULL},
+-    {"exponent", (getter)RSAPublicKey_get_exponent, (setter)NULL, "RSA exponent", NULL},
++PyGetSetDef PyRSAPublicKey_getseters[] = {
++    {"modulus",  (getter)PyRSAPublicKey_get_modulus,  (setter)NULL, "RSA modulus", NULL},
++    {"exponent", (getter)PyRSAPublicKey_get_exponent, (setter)NULL, "RSA exponent", NULL},
+     {NULL}  /* Sentinel */
+ };
+ 
+-static PyMemberDef RSAPublicKey_members[] = {
++static PyMemberDef PyRSAPublicKey_members[] = {
+     {NULL}  /* Sentinel */
+ };
+ 
+ /* ============================== Class Methods ============================= */
+ 
+ static PyObject *
+-RSAPublicKey_format_lines(RSAPublicKey *self, PyObject *args, PyObject *kwds)
++PyRSAPublicKey_format_lines(PyRSAPublicKey *self, PyObject *args, PyObject *kwds)
+ {
+     static char *kwlist[] = {"level", NULL};
+     int level = 0;
+@@ -7147,12 +7147,12 @@ RSAPublicKey_format_lines(RSAPublicKey *self, PyObject *args, PyObject *kwds)
+         return NULL;
+     }
+ 
+-    if ((obj = RSAPublicKey_get_modulus(self, NULL)) == NULL) {
++    if ((obj = PyRSAPublicKey_get_modulus(self, NULL)) == NULL) {
+         goto fail;
+     }
+     FMT_SEC_INT_OBJ_APPEND_AND_CLEAR(lines, _("Modulus"), obj, level, fail);
+ 
+-    if ((obj = RSAPublicKey_get_exponent(self, NULL)) == NULL) {
++    if ((obj = PyRSAPublicKey_get_exponent(self, NULL)) == NULL) {
+         goto fail;
+     }
+     FMT_SEC_INT_OBJ_APPEND_AND_CLEAR(lines, _("Exponent"), obj, level, fail);
+@@ -7165,41 +7165,41 @@ RSAPublicKey_format_lines(RSAPublicKey *self, PyObject *args, PyObject *kwds)
+ }
+ 
+ static PyObject *
+-RSAPublicKey_format(RSAPublicKey *self, PyObject *args, PyObject *kwds)
++PyRSAPublicKey_format(PyRSAPublicKey *self, PyObject *args, PyObject *kwds)
+ {
+     TraceMethodEnter(self);
+ 
+-    return format_from_lines((format_lines_func)RSAPublicKey_format_lines, (PyObject *)self, args, kwds);
++    return format_from_lines((format_lines_func)PyRSAPublicKey_format_lines, (PyObject *)self, args, kwds);
+ }
+ 
+ static PyObject *
+-RSAPublicKey_str(RSAPublicKey *self)
++PyRSAPublicKey_str(PyRSAPublicKey *self)
+ {
+     PyObject *py_formatted_result = NULL;
+ 
+     TraceMethodEnter(self);
+ 
+-    py_formatted_result =  RSAPublicKey_format(self, empty_tuple, NULL);
++    py_formatted_result =  PyRSAPublicKey_format(self, empty_tuple, NULL);
+     return py_formatted_result;
+ 
+ }
+ 
+-static PyMethodDef RSAPublicKey_methods[] = {
+-    {"format_lines", (PyCFunction)RSAPublicKey_format_lines,   METH_VARARGS|METH_KEYWORDS, generic_format_lines_doc},
+-    {"format",       (PyCFunction)RSAPublicKey_format,         METH_VARARGS|METH_KEYWORDS, generic_format_doc},
++static PyMethodDef PyRSAPublicKey_methods[] = {
++    {"format_lines", (PyCFunction)PyRSAPublicKey_format_lines,   METH_VARARGS|METH_KEYWORDS, generic_format_lines_doc},
++    {"format",       (PyCFunction)PyRSAPublicKey_format,         METH_VARARGS|METH_KEYWORDS, generic_format_doc},
+     {NULL, NULL}  /* Sentinel */
+ };
+ 
+ /* =========================== Class Construction =========================== */
+ 
+ static PyObject *
+-RSAPublicKey_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
++PyRSAPublicKey_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+ {
+-    RSAPublicKey *self;
++    PyRSAPublicKey *self;
+ 
+     TraceObjNewEnter(type);
+ 
+-    if ((self = (RSAPublicKey *)type->tp_alloc(type, 0)) == NULL) {
++    if ((self = (PyRSAPublicKey *)type->tp_alloc(type, 0)) == NULL) {
+         return NULL;
+     }
+ 
+@@ -7211,7 +7211,7 @@ RSAPublicKey_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+ }
+ 
+ static int
+-RSAPublicKey_traverse(RSAPublicKey *self, visitproc visit, void *arg)
++PyRSAPublicKey_traverse(PyRSAPublicKey *self, visitproc visit, void *arg)
+ {
+     TraceMethodEnter(self);
+ 
+@@ -7221,7 +7221,7 @@ RSAPublicKey_traverse(RSAPublicKey *self, visitproc visit, void *arg)
+ }
+ 
+ static int
+-RSAPublicKey_clear(RSAPublicKey* self)
++PyRSAPublicKey_clear(PyRSAPublicKey* self)
+ {
+     TraceMethodEnter(self);
+ 
+@@ -7231,31 +7231,31 @@ RSAPublicKey_clear(RSAPublicKey* self)
+ }
+ 
+ static void
+-RSAPublicKey_dealloc(RSAPublicKey* self)
++PyRSAPublicKey_dealloc(PyRSAPublicKey* self)
+ {
+     TraceMethodEnter(self);
+ 
+-    RSAPublicKey_clear(self);
++    PyRSAPublicKey_clear(self);
+     Py_TYPE(self)->tp_free((PyObject*)self);
+ }
+ 
+-PyDoc_STRVAR(RSAPublicKey_doc,
++PyDoc_STRVAR(PyRSAPublicKey_doc,
+ "An object representing an RSA Public Key");
+ 
+ static int
+-RSAPublicKey_init(RSAPublicKey *self, PyObject *args, PyObject *kwds)
++PyRSAPublicKey_init(PyRSAPublicKey *self, PyObject *args, PyObject *kwds)
+ {
+     TraceMethodEnter(self);
+ 
+     return 0;
+ }
+ 
+-static PyTypeObject RSAPublicKeyType = {
++static PyTypeObject PyRSAPublicKeyType = {
+     PyVarObject_HEAD_INIT(NULL, 0)
+-    "nss.nss.RSAPublicKey",			/* tp_name */
+-    sizeof(RSAPublicKey),			/* tp_basicsize */
++    "nss.nss.PyRSAPublicKey",			/* tp_name */
++    sizeof(PyRSAPublicKey),			/* tp_basicsize */
+     0,						/* tp_itemsize */
+-    (destructor)RSAPublicKey_dealloc,		/* tp_dealloc */
++    (destructor)PyRSAPublicKey_dealloc,		/* tp_dealloc */
+     0,						/* tp_print */
+     0,						/* tp_getattr */
+     0,						/* tp_setattr */
+@@ -7266,39 +7266,39 @@ static PyTypeObject RSAPublicKeyType = {
+     0,						/* tp_as_mapping */
+     0,						/* tp_hash */
+     0,						/* tp_call */
+-    (reprfunc)RSAPublicKey_str,			/* tp_str */
++    (reprfunc)PyRSAPublicKey_str,			/* tp_str */
+     0,						/* tp_getattro */
+     0,						/* tp_setattro */
+     0,						/* tp_as_buffer */
+     Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC,	/* tp_flags */
+-    RSAPublicKey_doc,				/* tp_doc */
+-    (traverseproc)RSAPublicKey_traverse,	/* tp_traverse */
+-    (inquiry)RSAPublicKey_clear,		/* tp_clear */
++    PyRSAPublicKey_doc,				/* tp_doc */
++    (traverseproc)PyRSAPublicKey_traverse,	/* tp_traverse */
++    (inquiry)PyRSAPublicKey_clear,		/* tp_clear */
+     0,						/* tp_richcompare */
+     0,						/* tp_weaklistoffset */
+     0,						/* tp_iter */
+     0,						/* tp_iternext */
+-    RSAPublicKey_methods,			/* tp_methods */
+-    RSAPublicKey_members,			/* tp_members */
+-    RSAPublicKey_getseters,			/* tp_getset */
++    PyRSAPublicKey_methods,			/* tp_methods */
++    PyRSAPublicKey_members,			/* tp_members */
++    PyRSAPublicKey_getseters,			/* tp_getset */
+     0,						/* tp_base */
+     0,						/* tp_dict */
+     0,						/* tp_descr_get */
+     0,						/* tp_descr_set */
+     0,						/* tp_dictoffset */
+-    (initproc)RSAPublicKey_init,		/* tp_init */
++    (initproc)PyRSAPublicKey_init,		/* tp_init */
+     0,						/* tp_alloc */
+-    RSAPublicKey_new,				/* tp_new */
++    PyRSAPublicKey_new,				/* tp_new */
+ };
+ 
+ PyObject *
+-RSAPublicKey_new_from_SECKEYRSAPublicKey(SECKEYRSAPublicKey *rsa)
++PyRSAPublicKey_new_from_SECKEYRSAPublicKey(SECKEYRSAPublicKey *rsa)
+ {
+-    RSAPublicKey *self = NULL;
++    PyRSAPublicKey *self = NULL;
+ 
+     TraceObjNewEnter(NULL);
+ 
+-    if ((self = (RSAPublicKey *) RSAPublicKeyType.tp_new(&RSAPublicKeyType, NULL, NULL)) == NULL) {
++    if ((self = (PyRSAPublicKey *) PyRSAPublicKeyType.tp_new(&PyRSAPublicKeyType, NULL, NULL)) == NULL) {
+         return NULL;
+     }
+ 
+@@ -7317,13 +7317,13 @@ RSAPublicKey_new_from_SECKEYRSAPublicKey(SECKEYRSAPublicKey *rsa)
+ }
+ 
+ /* ========================================================================== */
+-/* =========================== DSAPublicKey Class =========================== */
++/* ========================== PyDSAPublicKey Class ========================== */
+ /* ========================================================================== */
+ 
+ /* ============================ Attribute Access ============================ */
+ 
+ static PyObject *
+-DSAPublicKey_get_pqg_params(DSAPublicKey *self, void *closure)
++PyDSAPublicKey_get_pqg_params(PyDSAPublicKey *self, void *closure)
+ {
+     TraceMethodEnter(self);
+ 
+@@ -7332,7 +7332,7 @@ DSAPublicKey_get_pqg_params(DSAPublicKey *self, void *closure)
+ }
+ 
+ static PyObject *
+-DSAPublicKey_get_public_value(DSAPublicKey *self, void *closure)
++PyDSAPublicKey_get_public_value(PyDSAPublicKey *self, void *closure)
+ {
+     TraceMethodEnter(self);
+ 
+@@ -7341,20 +7341,20 @@ DSAPublicKey_get_public_value(DSAPublicKey *self, void *closure)
+ }
+ 
+ static
+-PyGetSetDef DSAPublicKey_getseters[] = {
+-    {"pqg_params",   (getter)DSAPublicKey_get_pqg_params,   (setter)NULL, "DSA P,Q,G params as a KEYPQGParams object", NULL},
+-    {"public_value", (getter)DSAPublicKey_get_public_value, (setter)NULL, "DSA public_value", NULL},
++PyGetSetDef PyDSAPublicKey_getseters[] = {
++    {"pqg_params",   (getter)PyDSAPublicKey_get_pqg_params,   (setter)NULL, "DSA P,Q,G params as a KEYPQGParams object", NULL},
++    {"public_value", (getter)PyDSAPublicKey_get_public_value, (setter)NULL, "DSA public_value", NULL},
+     {NULL}  /* Sentinel */
+ };
+ 
+-static PyMemberDef DSAPublicKey_members[] = {
++static PyMemberDef PyDSAPublicKey_members[] = {
+     {NULL}  /* Sentinel */
+ };
+ 
+ /* ============================== Class Methods ============================= */
+ 
+ static PyObject *
+-DSAPublicKey_format_lines(DSAPublicKey *self, PyObject *args, PyObject *kwds)
++PyDSAPublicKey_format_lines(PyDSAPublicKey *self, PyObject *args, PyObject *kwds)
+ {
+     static char *kwlist[] = {"level", NULL};
+     int level = 0;
+@@ -7371,13 +7371,13 @@ DSAPublicKey_format_lines(DSAPublicKey *self, PyObject *args, PyObject *kwds)
+         return NULL;
+     }
+ 
+-    if ((obj = DSAPublicKey_get_pqg_params(self, NULL)) == NULL) {
++    if ((obj = PyDSAPublicKey_get_pqg_params(self, NULL)) == NULL) {
+         goto fail;
+     }
+     CALL_FORMAT_LINES_AND_APPEND(lines, obj, level, fail);
+     Py_CLEAR(obj);
+ 
+-    if ((obj = DSAPublicKey_get_public_value(self, NULL)) == NULL) {
++    if ((obj = PyDSAPublicKey_get_public_value(self, NULL)) == NULL) {
+         goto fail;
+     }
+     FMT_SEC_INT_OBJ_APPEND_AND_CLEAR(lines, _("Public Value"), obj, level, fail);
+@@ -7390,41 +7390,41 @@ DSAPublicKey_format_lines(DSAPublicKey *self, PyObject *args, PyObject *kwds)
+ }
+ 
+ static PyObject *
+-DSAPublicKey_format(DSAPublicKey *self, PyObject *args, PyObject *kwds)
++PyDSAPublicKey_format(PyDSAPublicKey *self, PyObject *args, PyObject *kwds)
+ {
+     TraceMethodEnter(self);
+ 
+-    return format_from_lines((format_lines_func)DSAPublicKey_format_lines, (PyObject *)self, args, kwds);
++    return format_from_lines((format_lines_func)PyDSAPublicKey_format_lines, (PyObject *)self, args, kwds);
+ }
+ 
+ static PyObject *
+-DSAPublicKey_str(DSAPublicKey *self)
++PyDSAPublicKey_str(PyDSAPublicKey *self)
+ {
+     PyObject *py_formatted_result = NULL;
+ 
+     TraceMethodEnter(self);
+ 
+-    py_formatted_result =  DSAPublicKey_format(self, empty_tuple, NULL);
++    py_formatted_result =  PyDSAPublicKey_format(self, empty_tuple, NULL);
+     return py_formatted_result;
+ 
+ }
+ 
+-static PyMethodDef DSAPublicKey_methods[] = {
+-    {"format_lines", (PyCFunction)DSAPublicKey_format_lines,   METH_VARARGS|METH_KEYWORDS, generic_format_lines_doc},
+-    {"format",       (PyCFunction)DSAPublicKey_format,         METH_VARARGS|METH_KEYWORDS, generic_format_doc},
++static PyMethodDef PyDSAPublicKey_methods[] = {
++    {"format_lines", (PyCFunction)PyDSAPublicKey_format_lines,   METH_VARARGS|METH_KEYWORDS, generic_format_lines_doc},
++    {"format",       (PyCFunction)PyDSAPublicKey_format,         METH_VARARGS|METH_KEYWORDS, generic_format_doc},
+     {NULL, NULL}  /* Sentinel */
+ };
+ 
+ /* =========================== Class Construction =========================== */
+ 
+ static PyObject *
+-DSAPublicKey_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
++PyDSAPublicKey_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+ {
+-    DSAPublicKey *self;
++    PyDSAPublicKey *self;
+ 
+     TraceObjNewEnter(type);
+ 
+-    if ((self = (DSAPublicKey *)type->tp_alloc(type, 0)) == NULL) {
++    if ((self = (PyDSAPublicKey *)type->tp_alloc(type, 0)) == NULL) {
+         return NULL;
+     }
+ 
+@@ -7436,7 +7436,7 @@ DSAPublicKey_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+ }
+ 
+ static int
+-DSAPublicKey_traverse(DSAPublicKey *self, visitproc visit, void *arg)
++PyDSAPublicKey_traverse(PyDSAPublicKey *self, visitproc visit, void *arg)
+ {
+     TraceMethodEnter(self);
+ 
+@@ -7446,7 +7446,7 @@ DSAPublicKey_traverse(DSAPublicKey *self, visitproc visit, void *arg)
+ }
+ 
+ static int
+-DSAPublicKey_clear(DSAPublicKey* self)
++PyDSAPublicKey_clear(PyDSAPublicKey* self)
+ {
+     TraceMethodEnter(self);
+ 
+@@ -7456,31 +7456,31 @@ DSAPublicKey_clear(DSAPublicKey* self)
+ }
+ 
+ static void
+-DSAPublicKey_dealloc(DSAPublicKey* self)
++PyDSAPublicKey_dealloc(PyDSAPublicKey* self)
+ {
+     TraceMethodEnter(self);
+ 
+-    DSAPublicKey_clear(self);
++    PyDSAPublicKey_clear(self);
+     Py_TYPE(self)->tp_free((PyObject*)self);
+ }
+ 
+-PyDoc_STRVAR(DSAPublicKey_doc,
++PyDoc_STRVAR(PyDSAPublicKey_doc,
+ "A object representing a DSA Public Key");
+ 
+ static int
+-DSAPublicKey_init(DSAPublicKey *self, PyObject *args, PyObject *kwds)
++PyDSAPublicKey_init(PyDSAPublicKey *self, PyObject *args, PyObject *kwds)
+ {
+     TraceMethodEnter(self);
+ 
+     return 0;
+ }
+ 
+-static PyTypeObject DSAPublicKeyType = {
++static PyTypeObject PyDSAPublicKeyType = {
+     PyVarObject_HEAD_INIT(NULL, 0)
+-    "nss.nss.DSAPublicKey",			/* tp_name */
+-    sizeof(DSAPublicKey),			/* tp_basicsize */
++    "nss.nss.PyDSAPublicKey",			/* tp_name */
++    sizeof(PyDSAPublicKey),			/* tp_basicsize */
+     0,						/* tp_itemsize */
+-    (destructor)DSAPublicKey_dealloc,		/* tp_dealloc */
++    (destructor)PyDSAPublicKey_dealloc,		/* tp_dealloc */
+     0,						/* tp_print */
+     0,						/* tp_getattr */
+     0,						/* tp_setattr */
+@@ -7491,39 +7491,39 @@ static PyTypeObject DSAPublicKeyType = {
+     0,						/* tp_as_mapping */
+     0,						/* tp_hash */
+     0,						/* tp_call */
+-    (reprfunc)DSAPublicKey_str,			/* tp_str */
++    (reprfunc)PyDSAPublicKey_str,			/* tp_str */
+     0,						/* tp_getattro */
+     0,						/* tp_setattro */
+     0,						/* tp_as_buffer */
+     Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC,	/* tp_flags */
+-    DSAPublicKey_doc,				/* tp_doc */
+-    (traverseproc)DSAPublicKey_traverse,	/* tp_traverse */
+-    (inquiry)DSAPublicKey_clear,		/* tp_clear */
++    PyDSAPublicKey_doc,				/* tp_doc */
++    (traverseproc)PyDSAPublicKey_traverse,	/* tp_traverse */
++    (inquiry)PyDSAPublicKey_clear,		/* tp_clear */
+     0,						/* tp_richcompare */
+     0,						/* tp_weaklistoffset */
+     0,						/* tp_iter */
+     0,						/* tp_iternext */
+-    DSAPublicKey_methods,			/* tp_methods */
+-    DSAPublicKey_members,			/* tp_members */
+-    DSAPublicKey_getseters,			/* tp_getset */
++    PyDSAPublicKey_methods,			/* tp_methods */
++    PyDSAPublicKey_members,			/* tp_members */
++    PyDSAPublicKey_getseters,			/* tp_getset */
+     0,						/* tp_base */
+     0,						/* tp_dict */
+     0,						/* tp_descr_get */
+     0,						/* tp_descr_set */
+     0,						/* tp_dictoffset */
+-    (initproc)DSAPublicKey_init,		/* tp_init */
++    (initproc)PyDSAPublicKey_init,		/* tp_init */
+     0,						/* tp_alloc */
+-    DSAPublicKey_new,				/* tp_new */
++    PyDSAPublicKey_new,				/* tp_new */
+ };
+ 
+ PyObject *
+-DSAPublicKey_new_from_SECKEYDSAPublicKey(SECKEYDSAPublicKey *dsa)
++PyDSAPublicKey_new_from_SECKEYDSAPublicKey(SECKEYDSAPublicKey *dsa)
+ {
+-    DSAPublicKey *self = NULL;
++    PyDSAPublicKey *self = NULL;
+ 
+     TraceObjNewEnter(NULL);
+ 
+-    if ((self = (DSAPublicKey *) DSAPublicKeyType.tp_new(&DSAPublicKeyType, NULL, NULL)) == NULL) {
++    if ((self = (PyDSAPublicKey *) PyDSAPublicKeyType.tp_new(&PyDSAPublicKeyType, NULL, NULL)) == NULL) {
+         return NULL;
+     }
+ 
+@@ -7882,8 +7882,8 @@ static
+ PyGetSetDef PublicKey_getseters[] = {
+     {"key_type",     (getter)PublicKey_get_key_type,     (setter)NULL, "key type (e.g. rsaKey, dsaKey, etc.) as an int", NULL},
+     {"key_type_str", (getter)PublicKey_get_key_type_str, (setter)NULL, "key type as a string", NULL},
+-    {"rsa",          (getter)PublicKey_get_rsa,          (setter)NULL, "RSA key as a RSAPublicKey object", NULL},
+-    {"dsa",          (getter)PublicKey_get_dsa,          (setter)NULL, "RSA key as a RSAPublicKey object", NULL},
++    {"rsa",          (getter)PublicKey_get_rsa,          (setter)NULL, "RSA key as a PyRSAPublicKey object", NULL},
++    {"dsa",          (getter)PublicKey_get_dsa,          (setter)NULL, "RSA key as a PyRSAPublicKey object", NULL},
+     {NULL}  /* Sentinel */
+ };
+ 
+@@ -8087,13 +8087,13 @@ PublicKey_new_from_SECKEYPublicKey(SECKEYPublicKey *pk)
+ 
+     switch(pk->keyType) {       /* FIXME: handle the other cases */
+     case rsaKey:
+-        if ((self->py_rsa_key = RSAPublicKey_new_from_SECKEYRSAPublicKey(&pk->u.rsa)) == NULL) {
++        if ((self->py_rsa_key = PyRSAPublicKey_new_from_SECKEYRSAPublicKey(&pk->u.rsa)) == NULL) {
+             Py_CLEAR(self);
+             return NULL;
+         }
+         break;
+     case dsaKey:
+-        if ((self->py_dsa_key = DSAPublicKey_new_from_SECKEYDSAPublicKey(&pk->u.dsa)) == NULL) {
++        if ((self->py_dsa_key = PyDSAPublicKey_new_from_SECKEYDSAPublicKey(&pk->u.dsa)) == NULL) {
+             Py_CLEAR(self);
+             return NULL;
+         }
+@@ -25310,8 +25310,8 @@ MOD_INIT(nss)
+     TYPE_READY(AlgorithmIDType);
+     TYPE_READY(RSAGenParamsType);
+     TYPE_READY(KEYPQGParamsType);
+-    TYPE_READY(RSAPublicKeyType);
+-    TYPE_READY(DSAPublicKeyType);
++    TYPE_READY(PyRSAPublicKeyType);
++    TYPE_READY(PyDSAPublicKeyType);
+     TYPE_READY(SignedDataType);
+     TYPE_READY(PublicKeyType);
+     TYPE_READY(SubjectPublicKeyInfoType);
+diff --git a/src/py_nss.h b/src/py_nss.h
+index c93b3a2..4bc94e6 100644
+--- a/src/py_nss.h
++++ b/src/py_nss.h
+@@ -116,24 +116,24 @@ typedef struct {
+ } SignedCRL;
+ 
+ /* ========================================================================== */
+-/* ============================ RSAPublicKey Class ========================== */
++/* =========================== PyRSAPublicKey Class ========================= */
+ /* ========================================================================== */
+ 
+ typedef struct {
+     PyObject_HEAD
+     PyObject *py_modulus;
+     PyObject *py_exponent;
+-} RSAPublicKey;
++} PyRSAPublicKey;
+ 
+ /* ========================================================================== */
+-/* ============================ DSAPublicKey Class ========================== */
++/* =========================== PyDSAPublicKey Class ========================= */
+ /* ========================================================================== */
+ 
+ typedef struct {
+     PyObject_HEAD
+     PyObject *py_pqg_params;
+     PyObject *py_public_value;
+-} DSAPublicKey;
++} PyDSAPublicKey;
+ 
+ /* ========================================================================== */
+ /* ============================ RSAGenParams Class ========================== */
