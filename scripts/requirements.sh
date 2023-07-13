@@ -56,7 +56,7 @@ pushd $(mktemp -d)
 
 export CASS_DRIVER_BUILD_CONCURRENCY=8
 
-# The libnss3 headers in Ubuntu Jammy are compatible
+# The libnss3 headers in Ubuntu Jammy are not compatible
 # with python-nss===1.0.1. Ubuntu Jammy itself
 # provides the binary package python3-nss and
 # they apply the patch that renames RSAPublicKey/DSAPublicKey
@@ -92,14 +92,14 @@ fi
 # constrained on the version and we are building with --no-deps
 echo ${PIP_PACKAGES} | xargs -n1 | split -l1 -a3
 if [[ "$KEEP_ALL_WHEELS" == "False" ]]; then
-  ls -1 | xargs -n1 -P20 -t bash -c 'pip wheel ${PIP_WHEEL_ARGS} --find-links /source-wheels --no-deps --wheel-dir / -c /upper-constraints.txt -r $1 || cat $1 >> /failure' _ | tee /tmp/wheels.txt
+  ls -1 | xargs -n1 -P20 -t bash -c 'pip wheel ${PIP_WHEEL_ARGS} --find-links /source-wheels --find-links / --no-deps --wheel-dir / -c /upper-constraints.txt -r $1 || cat $1 >> /failure' _ | tee /tmp/wheels.txt
   # Remove native-binary wheels, we only want to keep wheels that we
   # compiled ourselves.
   awk -F'[ ,]+' '/^Skipping/ {gsub("-","_");print $2}' /tmp/wheels.txt | xargs -r -n1 bash -c 'ls /$1-*' _ | sort -u | xargs -t -r rm
   # Wheels built from unnamed constraints were removed with previous command. Move them back after deletion.
   [ ! -z "$(ls -A /source-wheels)" ] && mv /source-wheels/*.whl /
 else
-  ls -1 | xargs -n1 -P20 -t bash -c 'mkdir $1-wheels; pip wheel ${PIP_WHEEL_ARGS} --find-links /source-wheels --wheel-dir /$(pwd)/$1-wheels -c /upper-constraints.txt -r $1 || cat $1 >> /failure' _
+  ls -1 | xargs -n1 -P20 -t bash -c 'mkdir $1-wheels; pip wheel ${PIP_WHEEL_ARGS} --find-links /source-wheels --find-links / --wheel-dir /$(pwd)/$1-wheels -c /upper-constraints.txt -r $1 || cat $1 >> /failure' _
   for dir in *-wheels/; do [ ! -z "$(ls -A ${dir})" ] && mv ${dir}*.whl /; done
 fi
 
