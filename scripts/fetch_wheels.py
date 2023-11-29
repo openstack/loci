@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 import json
 import os
 import platform
@@ -7,7 +6,7 @@ import re
 import ssl
 from urllib import request as urllib2
 
-DOCKER_REGISTRY='registry.hub.docker.com'
+DOCKER_REGISTRY = 'registry.hub.docker.com'
 
 MANIFEST_V1 = 'application/vnd.oci.image.manifest.v1+json'
 MANIFEST_V2 = 'application/vnd.docker.distribution.manifest.v2+json'
@@ -18,9 +17,11 @@ ARCH_MAP = {
     'aarch64': 'arm64',
 }
 
-# Clone from the now-deprecated distutils
+
 def strtobool(v):
+    # Clone from the now-deprecated distutils
     return str(v).lower() in ("yes", "true", "t", "1")
+
 
 def registry_urlopen(r):
     if strtobool(os.environ.get('REGISTRY_INSECURE', "False")):
@@ -28,6 +29,7 @@ def registry_urlopen(r):
     else:
         resp = urllib2.urlopen(r)
     return resp
+
 
 def registry_request(r, token=None):
     try:
@@ -54,6 +56,7 @@ def registry_request(r, token=None):
             return registry_request(r, token)
         raise
 
+
 def get_sha(repo, tag, registry, protocol):
     headers = {
         'Accept': ', '.join([MANIFEST_V2_LIST, MANIFEST_V2, MANIFEST_V1])
@@ -78,7 +81,7 @@ def get_sha(repo, tag, registry, protocol):
                 #               manifest we want, we go back and run this code
                 #               again but getting that arch-specific manifest.
                 if m['platform']['architecture'] == ARCH_MAP[arch]:
-                    tag =  m['digest']
+                    tag = m['digest']
                     return get_sha(repo, tag, registry, protocol)
 
             # NOTE(mnaser): If we're here, we've gone over all the manifests
@@ -104,38 +107,39 @@ def get_blob(repo, tag, protocol, registry=DOCKER_REGISTRY):
     resp = registry_request(r)
     return resp.read()
 
+
 def protocol_detection(registry, protocol='http'):
-    PROTOCOLS = ('http','https')
+    PROTOCOLS = ('http', 'https')
     index = PROTOCOLS.index(protocol)
     try:
         url = "{}://{}".format(protocol, registry)
         r = urllib2.Request(url)
-        resp = urllib2.urlopen(r)
-    except (urllib2.URLError,urllib2.HTTPError) as err:
+        urllib2.urlopen(r)
+    except (urllib2.URLError, urllib2.HTTPError) as err:
         if err.reason == 'Forbidden':
             return protocol
         elif index < len(PROTOCOLS) - 1:
             return protocol_detection(registry, PROTOCOLS[index + 1])
         else:
-            raise Exception("Cannot detect protocol for registry: {} due to error: {}".format(registry,err))
-    except:
-        raise
+            raise Exception("Cannot detect protocol for registry: {} due to error: {}".format(registry, err))
     else:
         return protocol
+
 
 def get_wheels(url):
     r = urllib2.Request(url=url)
     resp = registry_request(r)
-    #Using urllib2.request.urlopen() from python3 will face the IncompleteRead and then system report connect refused.
-    #To avoid this problem, add an exception to ensure that all packages will be transmitted. before link down.
+    # Using urllib2.request.urlopen() from python3 will face the IncompleteRead and then system report connect refused.
+    # To avoid this problem, add an exception to ensure that all packages will be transmitted. before link down.
     try:
         buf = resp.read()
     except Exception as e:
         buf = e.partial
     return buf
 
+
 def parse_image(full_image):
-    slash_occurrences = len(re.findall('/',full_image))
+    slash_occurrences = len(re.findall('/', full_image))
     repo = None
     registry = DOCKER_REGISTRY
     if slash_occurrences > 1:
@@ -151,7 +155,8 @@ def parse_image(full_image):
         image, tag = image.split(':')
     else:
         tag = 'latest'
-    return registry, repo+'/'+image if repo else image, tag
+    return registry, repo + '/' + image if repo else image, tag
+
 
 def main():
     if 'WHEELS' in os.environ:
@@ -167,7 +172,7 @@ def main():
         data = get_wheels(wheels)
     else:
         registry, image, tag = parse_image(wheels)
-        if os.environ.get('REGISTRY_PROTOCOL') in ['http','https']:
+        if os.environ.get('REGISTRY_PROTOCOL') in ['http', 'https']:
             protocol = os.environ.get('REGISTRY_PROTOCOL')
         elif os.environ.get('REGISTRY_PROTOCOL') == 'detect':
             protocol = protocol_detection(registry)
@@ -190,4 +195,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
