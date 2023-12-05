@@ -1,4 +1,5 @@
 - job:
+    nodeset: loci-1node-ubuntu_jammy
     name: loci-base
     pre-run: playbooks/setup-gate.yaml
     run: playbooks/loci-builder.yaml

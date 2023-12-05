@@ -8,24 +8,8 @@
   tasks:
     - include_vars: vars.yaml
 
-    - name: Setup swap
-      block:
-        - command: fallocate -l20g /swap
-        - file:
-            path: /swap
-            mode: 0600
-        - command: mkswap /swap
-        - command: swapon /swap
-      become: True
-
     - name: Install Docker
       block:
-        - mount:
-            path: /var/lib/docker/
-            src: tmpfs
-            fstype: tmpfs
-            opts: size=25g
-            state: mounted
         - include_role:
             name: ensure-docker
         - pip:

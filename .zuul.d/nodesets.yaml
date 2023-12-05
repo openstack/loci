@@ -1,0 +1,9 @@
+- nodeset:
+    name: loci-1node-ubuntu_jammy
+    nodes:
+      - name: primary
+        label: ubuntu-jammy
+    groups:
+      - name: primary
+        nodes:
+          - primary
