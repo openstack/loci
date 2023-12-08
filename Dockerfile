@@ -29,10 +29,18 @@ ARG DEBIAN_FRONTEND=noninteractive
 ARG UID=42424
 ARG GID=42424
 
+# Nova arguments
+# User/group that swtpm binary runs as.
+ARG NOVA_TSS_USER=tss
+ARG NOVA_TSS_UID=42434
+ARG NOVA_TSS_GID=42434
+
 ARG NOVNC_REPO=${NOVNC_REPO:-https://github.com/novnc/novnc}
 ARG NOVNC_REF=${NOVNC_REF:-v1.0.0}
 ARG SPICE_REPO=${SPICE_REPO:-https://gitlab.freedesktop.org/spice/spice-html5.git}
 ARG SPICE_REF=${SPICE_REF:-spice-html5-0.1.6}
+
+# End Nova arguments
 
 ADD data /tmp/
 COPY scripts /opt/loci/scripts
