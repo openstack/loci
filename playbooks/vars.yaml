@@ -16,7 +16,7 @@ loci_src_dir: "src/opendev.org/openstack/loci"
 distros:
   - name: ubuntu_focal
     image: ubuntu:focal
-    release: master
+    release: "2023.1"
     buildargs:
       base:
         UBUNTU_URL: http://{{ zuul_site_mirror_fqdn }}/ubuntu/
@@ -28,11 +28,13 @@ distros:
       project:
         PROJECT: "{{ project }}"
         PROJECT_REPO: http://172.17.0.1/git/openstack/{{ project }}
-        WHEELS: 172.17.0.1:5000/loci/requirements:master-ubuntu_focal
+        PROJECT_REF: "stable/2023.1"
+        WHEELS: 172.17.0.1:5000/loci/requirements:2023.1-ubuntu_focal
         FROM: base:ubuntu_focal
       requirements:
         PROJECT: requirements
         PROJECT_REPO: http://172.17.0.1/git/openstack/requirements
+        PROJECT_REF: "stable/2023.1"
         FROM: base:ubuntu_focal
   - name: ubuntu_jammy
     image: ubuntu:jammy
