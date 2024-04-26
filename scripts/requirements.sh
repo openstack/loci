@@ -62,7 +62,7 @@ export CASS_DRIVER_BUILD_CONCURRENCY=8
 # they apply the patch that renames RSAPublicKey/DSAPublicKey
 # types into PyRSAPublicKey/PyDSAPublicKey.
 # Here we do the same.
-if [[ ${distro} == "ubuntu" ]] && [[ ${distro_version} == "jammy" ]] && grep -q "python-nss===1.0.1" /upper-constraints.txt; then
+if [[ ${distro} == "ubuntu" ]] && [[ ${distro_version} =~ (focal|jammy) ]] && grep -q "python-nss===1.0.1" /upper-constraints.txt; then
     sed -i '/python-nss/d' /upper-constraints.txt
     pip download python-nss===1.0.1
     tar jxf python-nss-1.0.1.tar.bz2 && rm -f python-nss-1.0.1.tar.bz2
