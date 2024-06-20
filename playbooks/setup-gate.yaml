@@ -12,16 +12,8 @@
       block:
         - include_role:
             name: ensure-docker
-        - pip:
-            name:
-            - docker
-        - docker_container:
-            name: registry
-            image: registry:2
-            state: started
-            restart_policy: "always"
-            published_ports:
-              - 172.17.0.1:5000:5000
+        - shell: |
+            docker run -d --name registry --restart always -p 172.17.0.1:5000:5000 docker.io/registry:2
       become: True
 
     - name: Setup http server for git repos
@@ -49,4 +41,5 @@
             name:
               - apache2
               - gitweb
+              - python3-requests
       become: True

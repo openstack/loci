@@ -33,11 +33,12 @@ if [[ "$(uname -p)" == "aarch64" ]]; then
 fi
 
 # Remove any pylxd before 2.2.7 as the old versions cannot be built in CI.
-lxd_constraint=$(grep pylxd /upper-constraints.txt)
-# This removes (##) everything (*) from the lxd_constraint until the last =,
-# and removes all '.' to look like a number.
-if (( $(echo ${lxd_constraint##*=} | sed 's#\.##g') < 227 )); then
-    sed -i '/pylxd/d' /upper-constraints.txt
+if lxd_constraint=$(grep pylxd /upper-constraints.txt); then
+    # This removes (##) everything (*) from the lxd_constraint until the last =,
+    # and removes all '.' to look like a number.
+    if (( $(echo ${lxd_constraint##*=} | sed 's#\.##g') < 227 )); then
+        sed -i '/pylxd/d' /upper-constraints.txt
+    fi
 fi
 
 mkdir /source-wheels
