@@ -79,12 +79,13 @@ if [[ "${PLUGIN}" == "no" ]]; then
     $(dirname $0)/pip_install.sh ${PYDEP_PACKAGES[@]}
 fi
 
-if [[ ${PROJECT} == 'nova' ]]; then
-    $(dirname $0)/install_nova_console.sh
-fi
 $(dirname $0)/clone_project.sh
 $(dirname $0)/install_packages.sh
 $(dirname $0)/pip_install.sh ${NO_INDEX} /tmp/${PROJECT} ${PIP_PACKAGES}
+for project_script in $(ls $(dirname $0)/project_specific/${PROJECT}); do
+    echo "Running $PROJECT specific script $project_script"
+    $(dirname $0)/project_specific/${PROJECT}/$project_script
+done
 $(dirname $0)/configure_packages.sh
 $(dirname $0)/collect_info.sh
 $(dirname $0)/cleanup.sh
