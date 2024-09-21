@@ -28,6 +28,7 @@ case ${distro} in
             lsb-release \
             patch \
             sudo \
+            bind9-host \
             ${dpkg_python_packages[@]}
         apt-get install -y --no-install-recommends \
             libpython3.$(python3 -c 'import sys; print(sys.version_info.minor);')
@@ -40,6 +41,7 @@ case ${distro} in
             patch \
             redhat-lsb-core \
             sudo \
+            bind-utils \
             ${rpm_python_packages[@]}
         if [[ "${PYTHON3}" != "no" ]]; then
           pip3 install virtualenv
@@ -50,6 +52,17 @@ case ${distro} in
         exit 1
         ;;
 esac
+
+# cat /etc/hosts
+# cat /etc/resolv.conf
+
+# echo ${BUILDSET_REGISTRY_IP} ${BUILDSET_REGISTRY_ALIAS} >> /etc/hosts
+
+# cat /etc/hosts
+
+# if [[ ${PROJECT} == "keystone" ]]; then
+#     sleep 7200
+# fi
 
 if [[ "${PROJECT}" == "requirements" ]]; then
     $(dirname $0)/requirements.sh

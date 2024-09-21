@@ -1,7 +1,0 @@
-- hosts: all
-  tasks:
-    - name: Copy logs
-      synchronize:
-        src: /logs
-        dest: "{{ zuul.executor.log_root }}/{{ inventory_hostname }}"
-        mode: pull

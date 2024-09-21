@@ -5,6 +5,8 @@ import platform
 import re
 import ssl
 from urllib import request as urllib2
+import logging
+import sys
 
 DOCKER_REGISTRY = 'registry.hub.docker.com'
 
@@ -16,6 +18,10 @@ ARCH_MAP = {
     'x86_64': 'amd64',
     'aarch64': 'arm64',
 }
+
+
+logging.basicConfig(level=logging.INFO, stream=sys.stdout)
+log = logging.getLogger(__name__)
 
 
 def strtobool(v):
@@ -100,6 +106,7 @@ def get_sha(repo, tag, registry, protocol):
 
 
 def get_blob(repo, tag, protocol, registry=DOCKER_REGISTRY):
+    log.info("Fetching blob from %s://%s/%s:%s", protocol, registry, repo, tag)
     sha = get_sha(repo, tag, registry, protocol)
     url = "{}://{}/v2/{}/blobs/{} ".format(protocol, registry, repo, sha)
     print(url)
@@ -113,16 +120,20 @@ def protocol_detection(registry, protocol='http'):
     index = PROTOCOLS.index(protocol)
     try:
         url = "{}://{}".format(protocol, registry)
+        log.info("Trying to connect to: %s", url)
         r = urllib2.Request(url)
         urllib2.urlopen(r)
     except (urllib2.URLError, urllib2.HTTPError) as err:
+        log.info("Failed to connect to %s://%s", protocol, registry)
         if err.reason == 'Forbidden':
+            log.info("Forbidden. Protocol detected: %s", protocol)
             return protocol
         elif index < len(PROTOCOLS) - 1:
             return protocol_detection(registry, PROTOCOLS[index + 1])
         else:
             raise Exception("Cannot detect protocol for registry: {} due to error: {}".format(registry, err))
     else:
+        log.info("Protocol detected: %s", protocol)
         return protocol
 
 
@@ -172,6 +183,8 @@ def main():
         data = get_wheels(wheels)
     else:
         registry, image, tag = parse_image(wheels)
+        log.info("Image parsed: wheels=%s registry=%s image=%s tag=%s",
+                 wheels, registry, image, tag)
         if os.environ.get('REGISTRY_PROTOCOL') in ['http', 'https']:
             protocol = os.environ.get('REGISTRY_PROTOCOL')
         elif os.environ.get('REGISTRY_PROTOCOL') == 'detect':

@@ -1,0 +1,41 @@
+- job:
+    name: loci-build-master-ubuntu_jammy
+    timeout: 10800
+    dependencies:
+      - name: loci-buildset-registry
+    pre-run:
+      - playbooks/inject-keys.yaml
+      - playbooks/pre-build.yaml
+    run:
+      - playbooks/build.yaml
+    vars: &vars
+      vars_files:
+        - vars_master.yaml
+
+- job:
+    name: loci-upload-master-ubuntu_jammy
+    timeout: 10800
+    dependencies:
+      - name: loci-buildset-registry
+    pre-run:
+      - playbooks/inject-keys.yaml
+      - playbooks/pre-build.yaml
+    run:
+      - playbooks/build.yaml
+    post-run:
+      - playbooks/upload.yaml
+    vars: *vars
+    secrets:
+      name: docker_credentials
+      secret: loci_docker_login
+
+- job:
+    name: loci-promote-master-ubuntu_jammy
+    run:
+      - playbooks/promote.yaml
+    vars: *vars
+    secrets:
+      name: docker_credentials
+      secret: loci_docker_login
+    nodeset:
+      nodes: []

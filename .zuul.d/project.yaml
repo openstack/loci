@@ -1,0 +1,21 @@
+- project:
+    check:
+      jobs:
+        - loci-buildset-registry
+        - loci-build-2023-1-ubuntu_focal
+        - loci-build-2024-1-ubuntu_jammy
+        - loci-build-2024-2-ubuntu_jammy
+        - loci-build-master-ubuntu_jammy
+    gate:
+      jobs:
+        - loci-buildset-registry
+        - loci-upload-2023-1-ubuntu_focal
+        - loci-upload-2024-1-ubuntu_jammy
+        - loci-upload-2024-2-ubuntu_jammy
+        - loci-upload-master-ubuntu_jammy
+    promote:
+      jobs:
+        - loci-promote-2023-1-ubuntu_focal
+        - loci-promote-2024-1-ubuntu_jammy
+        - loci-promote-2024-2-ubuntu_jammy
+        - loci-promote-master-ubuntu_jammy

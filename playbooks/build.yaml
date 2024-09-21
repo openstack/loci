@@ -1,0 +1,70 @@
+---
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- hosts: all[0]
+  gather_facts: true
+  roles:
+    - use-buildset-registry
+
+  tasks:
+    - name: Vars
+      include_vars:
+        file: "vars.yaml"
+
+    - name: Job vars
+      include_vars:
+        file: "{{ item }}"
+      loop: "{{ vars_files }}"
+
+    - name: Ensure dep files are sorted
+      shell: "grep -v '^#' ./{{ item }} | sort --check"
+      loop:
+        - "bindep.txt"
+        - "pydep.txt"
+      environment:
+        LC_ALL: C
+
+    - name: Build base image
+      include_role:
+        name: build-docker-image
+      vars:
+        docker_images:
+          - "{{ base_image }}"
+
+    - name: Build requirements image
+      include_role:
+        name: build-docker-image
+      vars:
+        docker_images:
+          - "{{ requirements_image }}"
+
+    - name: Tag requirements image for local registry
+      command: "docker tag {{ requirements_image.repository }}:{{ item }} {{ local_registry }}/{{ requirements_image.repository }}:{{ item }}"
+      loop: "{{ requirements_image.tags }}"
+
+    - name: Push requirements image to local registry
+      command: "docker push {{ local_registry }}/{{ requirements_image.repository }}:{{ item }}"
+      loop: "{{ requirements_image.tags }}"
+
+    - name: Build project images
+      include_role:
+        name: build-docker-image
+      vars:
+        docker_images: "{{ openstack_images }}"
+
+    - name: Return images to zuul
+      include_tasks: _return-image.yml
+      loop:
+        - "{{ keystone_image }}"
+      loop_control:
+        loop_var: zj_image

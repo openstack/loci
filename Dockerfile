@@ -1,9 +1,9 @@
-ARG FROM=ubuntu:focal
+ARG FROM=ubuntu:jammy
 FROM ${FROM}
 
 ENV PATH=/var/lib/openstack/bin:$PATH
 ARG PROJECT
-ARG WHEELS=loci/requirements:master-ubuntu
+ARG WHEELS=loci/requirements:master-ubuntu_jammy
 ARG PROJECT_REPO=https://opendev.org/openstack/${PROJECT}
 ARG PROJECT_REF=master
 ARG PROJECT_RELEASE=master

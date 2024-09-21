@@ -1,7 +1,5 @@
 - job:
-    nodeset: loci-1node-ubuntu_jammy
-    name: loci-base
-    pre-run: playbooks/setup-gate.yaml
-    run: playbooks/loci-builder.yaml
-    post-run: playbooks/post.yaml
-    timeout: 5400
+    name: loci-buildset-registry
+    parent: opendev-buildset-registry
+    timeout: 10800
+    voting: false

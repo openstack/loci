@@ -3,33 +3,12 @@
 OpenStack LOCI is a project designed to quickly build Lightweight OCI
 compatible images of OpenStack services.
 
-Currently we build and gate images for the following OpenStack projects:
-
-  * [Cinder](https://github.com/openstack/cinder)
-  * [Glance](https://github.com/openstack/glance)
-  * [Heat](https://github.com/openstack/heat)
-  * [Horizon](https://github.com/openstack/horizon)
-  * [Ironic](https://github.com/openstack/ironic)
-  * [Keystone](https://github.com/openstack/keystone)
-  * [Neutron](https://github.com/openstack/neutron)
-  * [Nova](https://github.com/openstack/nova)
-  * [Octavia](https://github.com/openstack/octavia)
-  * [Manila](https://github.com/openstack/manila)
-
 Additionally, we produce a "wheels" image for
 [requirements](https://github.com/openstack/requirements) containing all of the
 packages listed in upper-constraints.txt.
 
 The instructions below can be used for any OpenStack service currently targeted
 by LOCI. For simplicity, we will continue to use Keystone as an example.
-
-
-### Keystone Image Layer Info
-CentOS: [![](https://images.microbadger.com/badges/version/loci/keystone:master-centos.svg)](https://microbadger.com/images/loci/keystone:master-centos "loci/keystone:master-centos") [![](https://images.microbadger.com/badges/image/loci/keystone:master-centos.svg)](https://microbadger.com/images/loci/keystone:master-centos "loci/keystone:master-centos")
-
-Ubuntu: [![](https://images.microbadger.com/badges/version/loci/keystone:master-ubuntu.svg)](https://microbadger.com/images/loci/keystone:master-ubuntu "loci/keystone:master-ubuntu") [![](https://images.microbadger.com/badges/image/loci/keystone:master-ubuntu.svg)](https://microbadger.com/images/loci/keystone:master-ubuntu "loci/keystone:master-ubuntu")
-
-
 
 ### Building locally
 
@@ -42,29 +21,30 @@ are located in the dockerfiles directory.
 
 It's easy to build a base image:
 ``` bash
-$ docker build https://opendev.org/openstack/loci.git#master:dockerfiles/ubuntu_bionic \
-    --tag loci-base:ubuntu
+$ docker build dockerfiles/ubuntu \
+    --build-arg FROM=ubuntu:jammy \
+    --build-arg CEPH_REPO='deb https://download.ceph.com/debian-reef/ jammy main' \
+    --tag loci-base:ubuntu_jammy
 ```
 
 Then you can build the rest of the service images locally:
 ``` bash
-$ docker build https://opendev.org/openstack/loci.git \
-    --build-arg FROM=loci-base:ubuntu \
+$ docker build . \
+    --build-arg FROM=loci-base:ubuntu_jammy \
     --build-arg PROJECT=keystone \
-    --tag loci-keystone:ubuntu
+    --tag loci-keystone:master-ubuntu_jammy
 ```
 
-The default base distro is Ubuntu, however, you can use the following form to build from a distro of
-your choice, in this case, CentOS:
+The default base distro is Ubuntu Jammy, however, you can use the following form to build from a distro of your choice, in this case, CentOS:
 ``` bash
-$ docker build https://opendev.org/openstack/loci.git#master:dockerfiles/centos \
+$ docker build dockerfiles/centos \
     --tag loci-base:centos
 
-$ docker build https://opendev.org/openstack/loci.git \
+$ docker build . \
     --build-arg PROJECT=keystone \
     --build-arg WHEELS="loci/requirements:master-centos" \
     --build-arg FROM=loci-base:centos \
-    --tag loci-keystone:centos
+    --tag loci-keystone:master-centos
 ```
 
 Loci will detect which base OS you're using, so if you need to add additional
@@ -73,12 +53,12 @@ features to your base image the Loci build will still run.
 If building behind a proxy, remember to use build arguments to pass these
 through to the build:
 ``` bash
-$ docker build https://opendev.org/openstack/loci.git \
+$ docker build . \
     --build-arg http_proxy=$http_proxy \
     --build-arg https_proxy=$https_proxy \
     --build-arg no_proxy=$no_proxy \
     --build-arg PROJECT=keystone \
-    --tag keystone:ubuntu
+    --tag loci-keystone:master-ubuntu_jammy
 ```
 
 For more advanced building you can use docker build arguments to define:
@@ -128,28 +108,29 @@ For more advanced building you can use docker build arguments to define:
 
 This makes it really easy to integrate LOCI images into your development or
 CI/CD workflow, for example, if you wanted to build an image from [this
-PS](https://review.opendev.org/#/c/418167/) you could run:
+PS](https://review.opendev.org/c/openstack/keystone/+/923324/) you could run:
 ``` bash
-$ docker build https://opendev.org/openstack/loci.git \
+$ docker build . \
     --build-arg PROJECT=keystone \
-    --tag mydockernamespace/keystone-testing:418167-1 \
-    --build-arg PROJECT_REF=refs/changes/67/418167/1
+    --build-arg PROJECT_REPO=https://review.opendev.org/openstack/keystone \
+    --build-arg PROJECT_REF=refs/changes/24/923324/10 \
+    --tag loci-keystone:923324-10
 ```
 
 To build with the wheels from a private Docker registry rather than Docker Hub run:
 ``` bash
-$ docker build https://opendev.org/openstack/loci.git \
+$ docker build . \
     --build-arg PROJECT=keystone \
-    --build-arg WHEELS=172.17.0.1:5000/mydockernamespace/keystone:ubuntu
+    --build-arg WHEELS=172.17.0.1:5000/mydockernamespace/requirements:master-ubuntu_jammy \
+    --tag loci-keystone:master-ubuntu_jammy
 ```
 
 To build cinder with lvm and ceph support you would run:
 ``` bash
-$ docker build https://opendev.org/openstack/loci.git \
+$ docker build . \
     --build-arg PROJECT=cinder \
     --build-arg PROFILES="lvm ceph"
 ```
-
 
 ### Customizing
 The images should contain all the required assets for running the service. But
@@ -159,7 +140,7 @@ do this we recommend that you perform any required customization in a child
 image using a pattern similar to:
 
 ``` Dockerfile
-FROM loci/keystone:master-ubuntu
+FROM loci/keystone:master-ubuntu_jammy
 MAINTAINER you@example.com
 
 RUN set -x \

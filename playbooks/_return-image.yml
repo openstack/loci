@@ -1,0 +1,14 @@
+- name: Return artifact to Zuul
+  zuul_return:
+    data:
+      zuul:
+        artifacts:
+          - name: "{{ zj_image.repository }}:{{ zj_image_tag }}"
+            url: "docker://zuul-jobs.buildset-registry:{{ buildset_registry.port }}/{{ zj_image.repository }}:{{ zj_image_tag }}"
+            metadata:
+              type: container_image
+              repository: "{{ zj_image.repository }}"
+              tag: "{{ zj_image_tag }}"
+  loop: "{{ zj_image.tags | default(['latest']) }}"
+  loop_control:
+    loop_var: zj_image_tag

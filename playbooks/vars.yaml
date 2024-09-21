@@ -1,58 +1,254 @@
-docker_insecure_registries:
-  - 172.17.0.1:5000
+currentdate: "{{ now(utc=True,fmt='%Y%m%d') }}"
+local_registry: "172.17.0.1:5000"
 
+base_image:
+  context: "."
+  dockerfile: "dockerfiles/ubuntu/Dockerfile"
+  repository: "loci/base"
+  tags: &tags
+    - "{{ image_tag }}"
+    - "{{ image_tag }}-{{ currentdate }}"
+  build_args:
+    - "FROM='{{ distro_image }}'"
+    - "CEPH_REPO='{{ ceph_repo }}'"
+    - "CEPH_KEY='http://download.ceph.com/keys/release.asc'"
 
-# Setting reuse_requirements to True will use the most recent
-# requirements build from the gate registry. This can save bandwidth
-# and time. However, it introduces a gate race condition if a change
-# is posted that updates requirements. We set to false to prefer
-# correctness to speed.
-reuse_requirements: False
+requirements_image:
+  context: "."
+  dockerfile: "Dockerfile"
+  repository: "loci/requirements"
+  tags: *tags
+  build_args:
+    - "FROM='loci/base:{{ image_tag }}'"
+    - "PROJECT='requirements'"
+    - "PROJECT_REF={{ openstack_release }}"
+    - "KEEP_ALL_WHEELS=yes"
 
-# Override Zuul inference of source directory from project name to always
-# use "loci".
-loci_src_dir: "src/opendev.org/openstack/loci"
+barbican_image:
+  context: "."
+  dockerfile: "Dockerfile"
+  repository: loci/barbican
+  tags: *tags
+  build_args:
+    - "FROM='loci/base:{{ image_tag }}'"
+    - "PROJECT='barbican'"
+    - "PROJECT_REF={{ openstack_release }}"
+    - "PROFILES='fluent'"
+    - "WHEELS='{{ local_registry }}/loci/requirements:{{ image_tag }}'"
+    - "KEEP_ALL_WHEELS=yes"
+    - "DIST_PACKAGES='python3-dev gcc'"
+    - "PIP_ARGS='--only-binary :none:'"
 
-distros:
-  - name: ubuntu_focal
-    image: ubuntu:focal
-    release: "2023.1"
-    buildargs:
-      base:
-        UBUNTU_URL: http://{{ zuul_site_mirror_fqdn }}/ubuntu/
-        CLOUD_ARCHIVE_URL: http://{{ zuul_site_mirror_fqdn }}/ubuntu-cloud-archive/
-        CEPH_URL: http://{{ zuul_site_mirror_fqdn }}/ceph-deb-quincy/
-        ALLOW_UNAUTHENTICATED: "true"
-        PIP_INDEX_URL: http://{{ zuul_site_mirror_fqdn }}/pypi/simple
-        PIP_TRUSTED_HOST: "{{ zuul_site_mirror_fqdn }}"
-      project:
-        PROJECT: "{{ project }}"
-        PROJECT_REPO: http://172.17.0.1/git/openstack/{{ project }}
-        PROJECT_REF: "stable/2023.1"
-        WHEELS: 172.17.0.1:5000/loci/requirements:2023.1-ubuntu_focal
-        FROM: base:ubuntu_focal
-      requirements:
-        PROJECT: requirements
-        PROJECT_REPO: http://172.17.0.1/git/openstack/requirements
-        PROJECT_REF: "stable/2023.1"
-        FROM: base:ubuntu_focal
-  - name: ubuntu_jammy
-    image: ubuntu:jammy
-    release: master
-    buildargs:
-      base:
-        UBUNTU_URL: http://{{ zuul_site_mirror_fqdn }}/ubuntu/
-        CLOUD_ARCHIVE_URL: http://{{ zuul_site_mirror_fqdn }}/ubuntu-cloud-archive/
-        ALLOW_UNAUTHENTICATED: "true"
-        PIP_INDEX_URL: http://{{ zuul_site_mirror_fqdn }}/pypi/simple
-        PIP_TRUSTED_HOST: "{{ zuul_site_mirror_fqdn }}"
-      project:
-        PROJECT: "{{ project }}"
-        PROJECT_REPO: http://172.17.0.1/git/openstack/{{ project }}
-        WHEELS: 172.17.0.1:5000/loci/requirements:master-ubuntu_jammy
-        FROM: base:ubuntu_jammy
-      requirements:
-        PROJECT: requirements
-        PROJECT_REPO: http://172.17.0.1/git/openstack/requirements
-        FROM: base:ubuntu_jammy
+cinder_image:
+  context: "."
+  dockerfile: "Dockerfile"
+  repository: loci/cinder
+  tags: *tags
+  build_args:
+    - "FROM='loci/base:{{ image_tag }}'"
+    - "PROJECT='cinder'"
+    - "PROJECT_REF={{ openstack_release }}"
+    - "PROFILES='fluent lvm ceph qemu apache'"
+    - "PIP_PACKAGES='python-swiftclient'"
+    - "WHEELS='{{ local_registry }}/loci/requirements:{{ image_tag }}'"
+    - "KEEP_ALL_WHEELS=yes"
 
+cyborg_image:
+  context: "."
+  dockerfile: "Dockerfile"
+  repository: loci/cyborg
+  tags: *tags
+  build_args:
+    - "FROM='loci/base:{{ image_tag }}'"
+    - "PROJECT='cyborg'"
+    - "PROJECT_REF={{ openstack_release }}"
+    - "DIST_PACKAGES='pciutils'"
+    - "WHEELS='{{ local_registry }}/loci/requirements:{{ image_tag }}'"
+    - "KEEP_ALL_WHEELS=yes"
+
+designate_image:
+  context: "."
+  dockerfile: "Dockerfile"
+  repository: loci/designate
+  tags: *tags
+  build_args:
+    - "FROM='loci/base:{{ image_tag }}'"
+    - "PROJECT='designate'"
+    - "PROJECT_REF={{ openstack_release }}"
+    - "PROFILES='fluent'"
+    - "WHEELS='{{ local_registry }}/loci/requirements:{{ image_tag }}'"
+    - "KEEP_ALL_WHEELS=yes"
+
+glance_image:
+  context: "."
+  dockerfile: "Dockerfile"
+  repository: loci/glance
+  tags: *tags
+  build_args:
+    - "FROM='loci/base:{{ image_tag }}'"
+    - "PROJECT='glance'"
+    - "PROJECT_REF={{ openstack_release }}"
+    - "PROFILES='fluent ceph'"
+    - "PIP_PACKAGES='python-swiftclient os-brick'"
+    - "WHEELS='{{ local_registry }}/loci/requirements:{{ image_tag }}'"
+    - "KEEP_ALL_WHEELS=yes"
+
+heat_image:
+  context: "."
+  dockerfile: "Dockerfile"
+  repository: loci/heat
+  tags: *tags
+  build_args:
+    - "FROM='loci/base:{{ image_tag }}'"
+    - "PROJECT='heat'"
+    - "PROJECT_REF={{ openstack_release }}"
+    - "PROFILES='fluent apache'"
+    - "WHEELS='{{ local_registry }}/loci/requirements:{{ image_tag }}'"
+    - "KEEP_ALL_WHEELS=yes"
+    - "DIST_PACKAGES='curl'"
+
+horizon_image:
+  context: "."
+  dockerfile: "Dockerfile"
+  repository: loci/horizon
+  tags: *tags
+  build_args:
+    - "FROM='loci/base:{{ image_tag }}'"
+    - "PROJECT='horizon'"
+    - "PROJECT_REF={{ openstack_release }}"
+    - "PROFILES='fluent apache'"
+    - "WHEELS='{{ local_registry }}/loci/requirements:{{ image_tag }}'"
+    - "KEEP_ALL_WHEELS=yes"
+    - "PIP_PACKAGES='pymemcache'"
+
+ironic_image:
+  context: "."
+  dockerfile: "Dockerfile"
+  repository: loci/ironic
+  tags: *tags
+  build_args:
+    - "FROM='loci/base:{{ image_tag }}'"
+    - "PROJECT='ironic'"
+    - "PROJECT_REF={{ openstack_release }}"
+    - "PROFILES='fluent ipxe ipmi qemu tftp'"
+    - "DIST_PACKAGES='ethtool lshw iproute2'"
+    - "WHEELS='{{ local_registry }}/loci/requirements:{{ image_tag }}'"
+    - "KEEP_ALL_WHEELS=yes"
+
+keystone_image:
+  context: "."
+  dockerfile: "Dockerfile"
+  repository: "loci/keystone"
+  tags: *tags
+  build_args:
+    - "FROM='loci/base:{{ image_tag }}'"
+    - "PROJECT='keystone'"
+    - "PROJECT_REF={{ openstack_release }}"
+    - "PROFILES='fluent apache ldap {{ openstack_release }}'"
+    - "PIP_PACKAGES='python-openstackclient'"
+    - "WHEELS='{{ local_registry }}/loci/requirements:{{ image_tag }}'"
+    - "KEEP_ALL_WHEELS=yes"
+
+manila_image:
+  context: "."
+  dockerfile: "Dockerfile"
+  repository: loci/manila
+  tags: *tags
+  build_args:
+    - "FROM='loci/base:{{ image_tag }}'"
+    - "PROJECT='manila'"
+    - "PROJECT_REF={{ openstack_release }}"
+    - "WHEELS='{{ local_registry }}/loci/requirements:{{ image_tag }}'"
+    - "KEEP_ALL_WHEELS=yes"
+
+monasca_api_image:
+  context: "."
+  dockerfile: "Dockerfile"
+  repository: loci/monasca-api
+  tags: *tags
+  build_args:
+    - "FROM='loci/base:{{ image_tag }}'"
+    - "PROJECT='monasca-api'"
+    - "PROJECT_REF={{ openstack_release }}"
+    - "PROFILES='monasca api'"
+    - "PIP_PACKAGES='influxdb cassandra-driver sqlalchemy'"
+    - "WHEELS='{{ local_registry }}/loci/requirements:{{ image_tag }}'"
+    - "KEEP_ALL_WHEELS=yes"
+
+neutron_image:
+  context: "."
+  dockerfile: "Dockerfile"
+  repository: loci/neutron
+  tags: *tags
+  build_args:
+    - "FROM='loci/base:{{ image_tag }}'"
+    - "PROJECT='neutron'"
+    - "PROJECT_REF={{ openstack_release }}"
+    - "PROFILES='fluent linuxbridge openvswitch apache vpn baremetal'"
+    - "PIP_PACKAGES='tap-as-a-service'"
+    - "DIST_PACKAGES='jq ethtool lshw'"
+    - "WHEELS='{{ local_registry }}/loci/requirements:{{ image_tag }}'"
+    - "KEEP_ALL_WHEELS=yes"
+
+nova_image:
+  context: "."
+  dockerfile: "Dockerfile"
+  repository: loci/nova
+  tags: *tags
+  build_args:
+    - "FROM='loci/base:{{ image_tag }}'"
+    - "PROJECT='nova'"
+    - "PROJECT_REF={{ openstack_release }}"
+    - "PROFILES='fluent ceph linuxbridge openvswitch configdrive qemu apache migration'"
+    - "DIST_PACKAGES='net-tools openssh-server'"
+    - "WHEELS='{{ local_registry }}/loci/requirements:{{ image_tag }}'"
+    - "KEEP_ALL_WHEELS=yes"
+
+octavia_image:
+  context: "."
+  dockerfile: "Dockerfile"
+  repository: loci/octavia
+  tags: *tags
+  build_args:
+    - "FROM='loci/base:{{ image_tag }}'"
+    - "PROJECT='octavia'"
+    - "PROJECT_REF={{ openstack_release }}"
+    - "WHEELS='{{ local_registry }}/loci/requirements:{{ image_tag }}'"
+    - "KEEP_ALL_WHEELS=yes"
+
+placement_image:
+  context: "."
+  dockerfile: "Dockerfile"
+  repository: loci/placement
+  tags: *tags
+  build_args:
+    - "FROM='loci/base:{{ image_tag }}'"
+    - "PROJECT='placement'"
+    - "PROJECT_REF={{ openstack_release }}"
+    - "PROFILES='apache'"
+    - "PIP_PACKAGES='httplib2'"
+    - "WHEELS='{{ local_registry }}/loci/requirements:{{ image_tag }}'"
+    - "KEEP_ALL_WHEELS=yes"
+
+tacker_image:
+  context: "."
+  dockerfile: "Dockerfile"
+  repository: loci/tacker
+  tags: *tags
+  build_args:
+    - "FROM='loci/base:{{ image_tag }}'"
+    - "PROJECT='tacker'"
+    - "PROJECT_REF={{ openstack_release }}"
+    - "WHEELS='{{ local_registry }}/loci/requirements:{{ image_tag }}'"
+    - "KEEP_ALL_WHEELS=yes"
+
+watcher_image:
+  context: "."
+  repository: loci/watcher
+  tags: *tags
+  build_args:
+    - "FROM='loci/base:{{ image_tag }}'"
+    - "PROJECT='watcher'"
+    - "PROJECT_REF={{ openstack_release }}"
+    - "WHEELS='{{ local_registry }}/loci/requirements:{{ image_tag }}'"
+    - "KEEP_ALL_WHEELS=yes"

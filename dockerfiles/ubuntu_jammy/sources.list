@@ -1,6 +1,0 @@
-deb %%UBUNTU_URL%% jammy main universe
-deb %%UBUNTU_URL%% jammy-updates main universe
-deb %%UBUNTU_URL%% jammy-backports main universe
-deb %%UBUNTU_URL%% jammy-security main universe
-deb %%CEPH_URL%% jammy main
-deb %%CLOUD_ARCHIVE_URL%% jammy-updates/antelope main
