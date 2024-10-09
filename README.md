@@ -106,6 +106,7 @@ For more advanced building you can use docker build arguments to define:
     running on HTTPS with self-signed certificates to ignore SSL verification.
     (defaults to False)
   * `EXTRA_PROJECTS` extra projects to install from `loci/data` directory.
+  * `HORIZON_EXTRA_PANELS` specify list of pannels to enable during horizon build.
 
 This makes it really easy to integrate LOCI images into your development or
 CI/CD workflow, for example, if you wanted to build an image from [this
