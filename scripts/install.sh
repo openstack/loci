@@ -94,7 +94,13 @@ fi
 
 $(dirname $0)/clone_project.sh
 $(dirname $0)/install_packages.sh
-$(dirname $0)/pip_install.sh ${NO_INDEX} /tmp/${PROJECT} ${PIP_PACKAGES}
+
+extra_projects_path=""
+for pr in $EXTRA_PROJECTS; do
+  extra_projects_path="$extra_projects_path /tmp/${pr}"
+done
+
+$(dirname $0)/pip_install.sh ${NO_INDEX} /tmp/${PROJECT} ${extra_projects_path} ${PIP_PACKAGES}
 for project_script in $(ls $(dirname $0)/project_specific/${PROJECT}); do
     echo "Running $PROJECT specific script $project_script"
     $(dirname $0)/project_specific/${PROJECT}/$project_script

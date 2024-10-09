@@ -7,6 +7,7 @@ ARG WHEELS=loci/requirements:master-ubuntu_jammy
 ARG PROJECT_REPO=https://opendev.org/openstack/${PROJECT}
 ARG PROJECT_REF=master
 ARG PROJECT_RELEASE=master
+ARG EXTRA_PROJECTS=""
 ARG DISTRO=""
 ARG PROFILES=""
 ARG PIP_PACKAGES=""
