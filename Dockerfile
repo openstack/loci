@@ -22,6 +22,7 @@ ARG REGISTRY_PROTOCOL="detect"
 ARG REGISTRY_INSECURE="False"
 ARG KEEP_ALL_WHEELS="False"
 ARG HORIZON_EXTRA_PANELS
+ARG PROJECT_PIP_EXTRAS
 
 # NOTE: This option is only applicable to apt/dpkg systems. The value is noop
 # for rpm based systems. This will not show up in the final image regardless.

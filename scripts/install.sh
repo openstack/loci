@@ -97,10 +97,14 @@ $(dirname $0)/install_packages.sh
 
 extra_projects_path=""
 for pr in $EXTRA_PROJECTS; do
-  extra_projects_path="$extra_projects_path /tmp/${pr}"
+    extra_projects_path="$extra_projects_path /tmp/${pr}"
 done
+project_cmd=/tmp/${PROJECT}
+if [[ -n ${PROJECT_PIP_EXTRAS} ]]; then
+    project_cmd="${project_cmd}[${PROJECT_PIP_EXTRAS}]"
+fi
 
-$(dirname $0)/pip_install.sh ${NO_INDEX} /tmp/${PROJECT} ${extra_projects_path} ${PIP_PACKAGES}
+$(dirname $0)/pip_install.sh ${NO_INDEX} ${project_cmd} ${extra_projects_path} ${PIP_PACKAGES}
 for project_script in $(ls $(dirname $0)/project_specific/${PROJECT}); do
     echo "Running $PROJECT specific script $project_script"
     $(dirname $0)/project_specific/${PROJECT}/$project_script

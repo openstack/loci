@@ -72,6 +72,7 @@ For more advanced building you can use docker build arguments to define:
     the project
   * `PROJECT_RELEASE` The project branch to determine python dependencies
     (defaults to master)
+  * `PROJECT_PIP_EXTRAS` python extras to use during project install.
   * `UID` The uid of the user that will be created (defaults to 42424).
   * `GID` The gid of the group that will be created (default to 42424).
   * `WHEELS` The location of the wheels tarball. This accepts a url to a
