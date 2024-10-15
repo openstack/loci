@@ -47,6 +47,11 @@ for entry in $(grep '^git+' /upper-constraints.txt); do
   pip wheel --no-deps --wheel-dir /source-wheels ${entry}
 done
 
+if [[ ${PROJECT_REF} == "stable/2024.2" ]]; then
+  pip wheel --no-deps --wheel-dir /source-wheels git+https://opendev.org/openstack/oslo.messaging.git@stable/2024.2
+  sed -i '/oslo.messaging/d' /upper-constraints.txt
+fi
+
 # Replace unnamed constraints with named ones
 sed -i '/^git+/d' /upper-constraints.txt
 for wheel in $(ls /source-wheels/*.whl); do
