@@ -1,5 +1,5 @@
 - job:
-    name: loci-build-2024-1-ubuntu_jammy
+    name: loci-build-2023-2-ubuntu_jammy
     timeout: 10800
     dependencies:
       - name: loci-buildset-registry
@@ -10,10 +10,10 @@
       - playbooks/build.yaml
     vars: &vars
       vars_files:
-        - vars_2024.1.yaml
+        - vars_2023.2.yaml
 
 - job:
-    name: loci-upload-2024-1-ubuntu_jammy
+    name: loci-upload-2023-2-ubuntu_jammy
     timeout: 10800
     dependencies:
       - name: loci-buildset-registry
@@ -30,7 +30,7 @@
       secret: loci_docker_login
 
 - job:
-    name: loci-promote-2024-1-ubuntu_jammy
+    name: loci-promote-2023-2-ubuntu_jammy
     run:
       - playbooks/promote.yaml
     vars: *vars
@@ -41,21 +41,21 @@
       nodes: []
 
 - job:
-    name: loci-compute-kit-2024-1-ubuntu_jammy
-    parent: openstack-helm-compute-kit-2024-1-ubuntu_jammy
+    name: loci-compute-kit-2023-2-ubuntu_jammy
+    parent: openstack-helm-compute-kit-2023-2-ubuntu_jammy
     required-projects:
       - openstack/openstack-helm
       - openstack/openstack-helm-infra
     dependencies:
-      - name: loci-build-2024-1-ubuntu_jammy
+      - name: loci-build-2023-2-ubuntu_jammy
         soft: true
 
 - job:
-    name: loci-cinder-2024-1-ubuntu_jammy
-    parent: openstack-helm-cinder-2024-1-ubuntu_jammy
+    name: loci-cinder-2023-2-ubuntu_jammy
+    parent: openstack-helm-cinder-2023-2-ubuntu_jammy
     required-projects:
       - openstack/openstack-helm
       - openstack/openstack-helm-infra
     dependencies:
-      - name: loci-build-2024-1-ubuntu_jammy
+      - name: loci-build-2023-2-ubuntu_jammy
         soft: true

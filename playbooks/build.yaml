@@ -64,7 +64,6 @@
 
     - name: Return images to zuul
       include_tasks: _return-image.yml
-      loop:
-        - "{{ keystone_image }}"
+      loop: "{{ openstack_images }}"
       loop_control:
         loop_var: zj_image
