@@ -135,6 +135,20 @@ $ docker build . \
     --build-arg PROFILES="lvm ceph"
 ```
 
+### Building from sources
+
+It may be required to install library or other dependency that is present in upper-constraints.txt
+from sources. It may be achieved by using the following approach:
+
+* Clone all projects that you want to install to the loci/data directory
+* The directory content will be copied during image build stage
+* Use KEEP_ALL_WHEELS=True build arg to preserve all built wheels
+  in requirements image. This will allow to have reproducable builds
+  when same requirements image is used.
+
+If pipy project name is different from python project name add your project into
+mapping file scripts/python-custom-name-mapping.txt
+
 ### Customizing
 The images should contain all the required assets for running the service. But
 if you wish or need to customize the `loci/keystone` image that's great! We

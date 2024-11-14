@@ -2,12 +2,70 @@
 
 set -eux
 
+
+SOURCES_DIR=/tmp
+UPPER_CONSTRAINTS=/upper-constraints.txt
+UPPER_CONSTRAINTS_BUILD=/build-upper-constraints.txt
+UPPER_CONSTRAINTS_DEV=/dev-upper-constraints.txt
+
 $(dirname $0)/setup_pip.sh
 pip install ${PIP_ARGS} bindep pkginfo
 
 $(dirname $0)/install_packages.sh
 $(dirname $0)/clone_project.sh
 mv /tmp/requirements/{global-requirements.txt,upper-constraints.txt} /
+
+function get_pkg_name {
+  local folder=$1
+  local name
+  pushd $folder > /dev/null
+  name=$(python3 setup.py --name 2>/dev/null)
+  popd > /dev/null
+  echo $name
+}
+
+function get_pkg_version {
+  local folder=$1
+  local vesion
+  pushd $folder > /dev/null
+  version=$(python3 setup.py --version 2>/dev/null)
+  popd > /dev/null
+  echo $version
+}
+
+function get_pipy_name_by_project_name {
+    local project_name=$1
+    while read _folder_name _pipy_name _pkg_name; do
+            if [[ "${_pkg_name}" == "${project_name}" ]]; then
+                echo "${_pipy_name}"
+                return
+            fi
+    done < /opt/loci/scripts/python-custom-name-mapping.txt
+    echo "$project_name"
+}
+
+function make_build_constraints {
+    cp $UPPER_CONSTRAINTS $UPPER_CONSTRAINTS_DEV
+    cp $UPPER_CONSTRAINTS $UPPER_CONSTRAINTS_BUILD
+    pushd $SOURCES_DIR
+    for repo in $(ls -1 $SOURCES_DIR); do
+        if [[ ! -f $repo/setup.cfg ]]; then
+            continue
+        fi
+        echo "Making build constraint for $repo"
+        pkg_name=$(get_pkg_name $repo)
+        pkg_version=$(get_pkg_version $repo)
+        pipy_name=$(get_pipy_name_by_project_name $pkg_name)
+        sed -i "s|^${pipy_name}===.*|file://${SOURCES_DIR}/${repo}#egg=${pkg_name}|g" $UPPER_CONSTRAINTS_BUILD
+        sed -i "s|^${pipy_name}===.*|${pipy_name}===${pkg_version}|g" $UPPER_CONSTRAINTS_DEV
+    done
+    popd
+}
+
+# Construct upper-constraints with honor of locally downloaded projects
+make_build_constraints
+rm -rf $UPPER_CONSTRAINTS
+mv $UPPER_CONSTRAINTS_DEV $UPPER_CONSTRAINTS
 
 # TODO: Make python-qpid-proton build here (possibly patch it)
 # or remove when python-qpid-proton is updated with build fix.
@@ -41,6 +99,12 @@ if lxd_constraint=$(grep pylxd /upper-constraints.txt); then
     fi
 fi
 
+# Ceilometer uses extras in requirements, which does not work for case when
+# tooz is installed from local folder
+# AssertionError: Internal issue: Candidate is not for this requirement tooz vs tooz[zake]
+# Drop ceilometer from constraints.
+sed -i '/ceilometer===.*/d' /upper-constraints.txt
+
 mkdir /source-wheels
 # Pre-build wheels for unnamed constraints
 for entry in $(grep '^git+' /upper-constraints.txt); do
@@ -60,7 +124,9 @@ done
 
 pushd $(mktemp -d)
 
+# Make UPPER_CONSTRAINTS_BUILD visible in xargs -P
 export CASS_DRIVER_BUILD_CONCURRENCY=8
+export UPPER_CONSTRAINTS_BUILD
 
 # The libnss3 headers in Ubuntu Jammy are not compatible
 # with python-nss===1.0.1. Ubuntu Jammy itself
@@ -97,18 +163,24 @@ fi
 export UWSGI_PROFILE_OVERRIDE=ssl=true
 export CPUCOUNT=1
 
+echo "DEBUG: ${UPPER_CONSTRAINTS_BUILD}"
+cat ${UPPER_CONSTRAINTS_BUILD}
+
+echo "DEBUG: ${UPPER_CONSTRAINTS}"
+cat ${UPPER_CONSTRAINTS}
+
 # Build all dependencies in parallel. This is safe because we are
 # constrained on the version and we are building with --no-deps
 echo uwsgi enum-compat ${PIP_PACKAGES} | xargs -n1 | split -l1 -a3
 if [[ "$KEEP_ALL_WHEELS" == "False" ]]; then
-  ls -1 | xargs -n1 -P20 -t bash -c 'pip wheel ${PIP_WHEEL_ARGS} --find-links /source-wheels --find-links / --no-deps --wheel-dir / -c /global-requirements.txt -c /upper-constraints.txt -r $1 || cat $1 >> /failure' _ | tee /tmp/wheels.txt
+  ls -1 | xargs -n1 -P20 -t bash -c 'pip wheel ${PIP_WHEEL_ARGS} --find-links /source-wheels --find-links / --no-deps --wheel-dir / -c /global-requirements.txt -c ${UPPER_CONSTRAINTS_BUILD}  $1 || cat $1 >> /failure' _ | tee /tmp/wheels.txt
   # Remove native-binary wheels, we only want to keep wheels that we
   # compiled ourselves.
   awk -F'[ ,]+' '/^Skipping/ {gsub("-","_");print $2}' /tmp/wheels.txt | xargs -r -n1 bash -c 'ls /$1-*' _ | sort -u | xargs -t -r rm
   # Wheels built from unnamed constraints were removed with previous command. Move them back after deletion.
   [ ! -z "$(ls -A /source-wheels)" ] && mv /source-wheels/*.whl /
 else
-  ls -1 | xargs -n1 -P20 -t bash -c 'mkdir $1-wheels; pip wheel ${PIP_WHEEL_ARGS} --find-links /source-wheels --find-links / --wheel-dir /$(pwd)/$1-wheels -c /global-requirements.txt -c /upper-constraints.txt -r $1 || cat $1 >> /failure' _
+  ls -1 | xargs -n1 -P20 -t bash -c 'mkdir $1-wheels; pip wheel ${PIP_WHEEL_ARGS} --find-links /source-wheels --find-links / --wheel-dir /$(pwd)/$1-wheels -c /global-requirements.txt -c ${UPPER_CONSTRAINTS_BUILD}  -r $1 || cat $1 >> /failure' _
   for dir in *-wheels/; do [ ! -z "$(ls -A ${dir})" ] && mv ${dir}*.whl /; done
 fi
 

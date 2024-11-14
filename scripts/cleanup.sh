@@ -33,3 +33,5 @@ esac
 sed -i 's/\(include-system-site-packages\).*/\1 = true/g' /var/lib/openstack/pyvenv.cfg
 rm -rf /tmp/* /root/.cache /etc/machine-id
 find /usr/ /var/ \( -name "*.pyc" -o -name "__pycache__" \) -delete
+# Remove sources added to image
+rm -rf /opt/loci/data/*

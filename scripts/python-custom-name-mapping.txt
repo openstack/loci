@@ -1,0 +1,9 @@
+#<folder_name> <pipy_name> <pkg_name>
+keystoneauth keystoneauth1 keystoneauth1
+python-aodhclient aodhclient aodhclient
+python-gnocchiclient gnocchiclient gnocchiclient
+python-amqp amqp amqp
+python-pymysql PyMySQL PyMySQL
+django-openstack-auth django_openstack_auth django_openstack_auth
+glance-store glance-store glance_store
+os-vif os-vif os_vif
