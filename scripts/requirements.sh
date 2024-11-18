@@ -74,7 +74,7 @@ if [[ ${distro} == "ubuntu" ]] && [[ ${distro_version} =~ (focal|jammy) ]] && gr
     tar jxf python-nss-1.0.1.tar.bz2 && rm -f python-nss-1.0.1.tar.bz2
     pushd python-nss-1.0.1
     patch -p1 < $(dirname $0)/python-nss-1.0.1-fix-ftbfs.diff
-    pip wheel ${PIP_WHEEL_ARGS} --find-links /source-wheels -c /upper-constraints.txt . && mv *.whl / || echo "python-nss===1.0.1" >> /failure
+    pip wheel ${PIP_WHEEL_ARGS} --find-links /source-wheels -c /global-requirements.txt -c /upper-constraints.txt . && mv *.whl / || echo "python-nss===1.0.1" >> /failure
     popd && rm -r python-nss-1.0.1
 fi
 
@@ -91,7 +91,7 @@ egrep -v "(scipy|scikit-learn)" /upper-constraints.txt | split -l1
 # This allows to work around such issues as
 #   https://github.com/lxc/pylxd/issues/308
 if [ ! -z "${PIP_PACKAGES}" ]; then
-  pip install ${PIP_ARGS} -c /upper-constraints.txt --no-cache ${PIP_PACKAGES}
+  pip install ${PIP_ARGS} -c /global-requirements.txt -c /upper-constraints.txt --no-cache ${PIP_PACKAGES}
 fi
 
 export UWSGI_PROFILE_OVERRIDE=ssl=true
@@ -101,14 +101,14 @@ export CPUCOUNT=1
 # constrained on the version and we are building with --no-deps
 echo uwsgi enum-compat ${PIP_PACKAGES} | xargs -n1 | split -l1 -a3
 if [[ "$KEEP_ALL_WHEELS" == "False" ]]; then
-  ls -1 | xargs -n1 -P20 -t bash -c 'pip wheel ${PIP_WHEEL_ARGS} --find-links /source-wheels --find-links / --no-deps --wheel-dir / -c /upper-constraints.txt -r $1 || cat $1 >> /failure' _ | tee /tmp/wheels.txt
+  ls -1 | xargs -n1 -P20 -t bash -c 'pip wheel ${PIP_WHEEL_ARGS} --find-links /source-wheels --find-links / --no-deps --wheel-dir / -c /global-requirements.txt -c /upper-constraints.txt -r $1 || cat $1 >> /failure' _ | tee /tmp/wheels.txt
   # Remove native-binary wheels, we only want to keep wheels that we
   # compiled ourselves.
   awk -F'[ ,]+' '/^Skipping/ {gsub("-","_");print $2}' /tmp/wheels.txt | xargs -r -n1 bash -c 'ls /$1-*' _ | sort -u | xargs -t -r rm
   # Wheels built from unnamed constraints were removed with previous command. Move them back after deletion.
   [ ! -z "$(ls -A /source-wheels)" ] && mv /source-wheels/*.whl /
 else
-  ls -1 | xargs -n1 -P20 -t bash -c 'mkdir $1-wheels; pip wheel ${PIP_WHEEL_ARGS} --find-links /source-wheels --find-links / --wheel-dir /$(pwd)/$1-wheels -c /upper-constraints.txt -r $1 || cat $1 >> /failure' _
+  ls -1 | xargs -n1 -P20 -t bash -c 'mkdir $1-wheels; pip wheel ${PIP_WHEEL_ARGS} --find-links /source-wheels --find-links / --wheel-dir /$(pwd)/$1-wheels -c /global-requirements.txt -c /upper-constraints.txt -r $1 || cat $1 >> /failure' _
   for dir in *-wheels/; do [ ! -z "$(ls -A ${dir})" ] && mv ${dir}*.whl /; done
 fi
 
