@@ -5,7 +5,7 @@ set -ex
 groupadd -g ${GID} ${PROJECT}
 if [[ "${PROJECT}" == "nova" ]];then
     # NOTE: bash needed for nova to support instance migration
-    useradd -u ${UID} -g ${PROJECT} -M -d /var/lib/${PROJECT} -s /bin/bash -c "${PROJECT} user" ${PROJECT}
+    useradd -u ${UID} -g ${PROJECT} -M -d /var/lib/${PROJECT} -s /bin/rbash -c "${PROJECT} user" ${PROJECT}
 else
     useradd -u ${UID} -g ${PROJECT} -M -d /var/lib/${PROJECT} -s /usr/sbin/nologin -c "${PROJECT} user" ${PROJECT}
 fi
