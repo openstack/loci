@@ -53,17 +53,6 @@ case ${distro} in
         ;;
 esac
 
-# cat /etc/hosts
-# cat /etc/resolv.conf
-
-# echo ${BUILDSET_REGISTRY_IP} ${BUILDSET_REGISTRY_ALIAS} >> /etc/hosts
-
-# cat /etc/hosts
-
-# if [[ ${PROJECT} == "keystone" ]]; then
-#     sleep 7200
-# fi
-
 if [[ "${PROJECT}" == "requirements" ]]; then
     $(dirname $0)/requirements.sh
     exit 0

@@ -12,6 +12,9 @@
 
     - name: Upload images
       include_role:
-        name: upload-docker-image
+        name: upload-container-image
       vars:
-        docker_images: "{{ openstack_images }}"
+        container_images: "{{ openstack_images + [requirements_image] }}"
+      loop_control:
+        loop_var: image_registry
+      loop: "{{ image_registries }}"

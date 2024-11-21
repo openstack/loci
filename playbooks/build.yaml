@@ -36,34 +36,44 @@
 
     - name: Build base image
       include_role:
-        name: build-docker-image
+        name: build-container-image
       vars:
-        docker_images:
+        container_images:
           - "{{ base_image }}"
 
     - name: Build requirements image
       include_role:
-        name: build-docker-image
+        name: build-container-image
       vars:
-        docker_images:
+        container_images:
           - "{{ requirements_image }}"
+      loop_control:
+        loop_var: image_registry
+      loop: "{{ image_registries }}"
 
-    - name: Tag requirements image for local registry
-      command: "docker tag {{ requirements_image.repository }}:{{ item }} {{ local_registry }}/{{ requirements_image.repository }}:{{ item }}"
-      loop: "{{ requirements_image.tags }}"
-
-    - name: Push requirements image to local registry
-      command: "docker push {{ local_registry }}/{{ requirements_image.repository }}:{{ item }}"
-      loop: "{{ requirements_image.tags }}"
+    - name: Tag requirements image and push to local registry
+      shell: |
+        for tag in {{ requirements_image.tags | join(" ") }}; do
+          docker tag {{ requirements_image.repository }}:$tag {{ local_registry }}/{{ requirements_image.repository }}:$tag
+          docker push {{ local_registry }}/{{ requirements_image.repository }}:$tag
+        done
+      loop_control:
+        loop_var: image_registry
+      loop: "{{ image_registries }}"
 
     - name: Build project images
       include_role:
-        name: build-docker-image
+        name: build-container-image
       vars:
-        docker_images: "{{ openstack_images }}"
+        container_images: "{{ openstack_images }}"
+      loop_control:
+        loop_var: image_registry
+      loop: "{{ image_registries }}"
 
     - name: Return images to zuul
       include_tasks: _return-image.yml
       loop: "{{ openstack_images }}"
       loop_control:
         loop_var: zj_image
+      vars:
+        image_registry: "{{ image_registries[0] }}"

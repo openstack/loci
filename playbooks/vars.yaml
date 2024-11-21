@@ -1,10 +1,18 @@
 currentdate: "{{ now(utc=True,fmt='%Y%m%d') }}"
 local_registry: "172.17.0.1:5000"
+local_registry_image: "registry:2"
+image_registries:
+  - host: "docker.io"
+    org: "loci"
+  - host: "quay.io"
+    org: "airshipit"
+container_command: docker
 
 base_image:
   context: "."
   dockerfile: "dockerfiles/ubuntu/Dockerfile"
-  repository: "loci/base"
+  container_filename: "dockerfiles/ubuntu/Dockerfile"
+  repository: "base"
   tags: &tags
     - "{{ image_tag }}"
     - "{{ image_tag }}-{{ currentdate }}"
@@ -16,10 +24,12 @@ base_image:
 requirements_image:
   context: "."
   dockerfile: "Dockerfile"
-  repository: "loci/requirements"
+  container_filename: "Dockerfile"
+  registry: "{{ image_registry.host }}"
+  repository: "{{ image_registry.host }}/{{ image_registry.org }}/requirements"
   tags: *tags
   build_args:
-    - "FROM='loci/base:{{ image_tag }}'"
+    - "FROM='base:{{ image_tag }}'"
     - "PROJECT='requirements'"
     - "PROJECT_REF={{ openstack_release }}"
     - "KEEP_ALL_WHEELS=yes"
@@ -27,14 +37,16 @@ requirements_image:
 barbican_image:
   context: "."
   dockerfile: "Dockerfile"
-  repository: loci/barbican
+  container_filename: "Dockerfile"
+  registry: "{{ image_registry.host }}"
+  repository: "{{ image_registry.host }}/{{ image_registry.org }}/barbican"
   tags: *tags
   build_args:
-    - "FROM='loci/base:{{ image_tag }}'"
+    - "FROM='base:{{ image_tag }}'"
     - "PROJECT='barbican'"
     - "PROJECT_REF={{ openstack_release }}"
     - "PROFILES='fluent'"
-    - "WHEELS='{{ local_registry }}/loci/requirements:{{ image_tag }}'"
+    - "WHEELS='{{ local_registry }}/{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
     - "KEEP_ALL_WHEELS=yes"
     - "DIST_PACKAGES='python3-dev gcc'"
     - "PIP_ARGS='--only-binary :none:'"
@@ -42,213 +54,246 @@ barbican_image:
 cinder_image:
   context: "."
   dockerfile: "Dockerfile"
-  repository: loci/cinder
+  container_filename: "Dockerfile"
+  registry: "{{ image_registry.host }}"
+  repository: "{{ image_registry.host }}/{{ image_registry.org }}/cinder"
   tags: *tags
   build_args:
-    - "FROM='loci/base:{{ image_tag }}'"
+    - "FROM='base:{{ image_tag }}'"
     - "PROJECT='cinder'"
     - "PROJECT_REF={{ openstack_release }}"
     - "PROFILES='fluent lvm ceph qemu apache'"
     - "PIP_PACKAGES='python-swiftclient'"
-    - "WHEELS='{{ local_registry }}/loci/requirements:{{ image_tag }}'"
+    - "WHEELS='{{ local_registry }}/{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
     - "KEEP_ALL_WHEELS=yes"
 
 cyborg_image:
   context: "."
   dockerfile: "Dockerfile"
-  repository: loci/cyborg
+  container_filename: "Dockerfile"
+  registry: "{{ image_registry.host }}"
+  repository: "{{ image_registry.host }}/{{ image_registry.org }}/cyborg"
   tags: *tags
   build_args:
-    - "FROM='loci/base:{{ image_tag }}'"
+    - "FROM='base:{{ image_tag }}'"
     - "PROJECT='cyborg'"
     - "PROJECT_REF={{ openstack_release }}"
     - "DIST_PACKAGES='pciutils'"
-    - "WHEELS='{{ local_registry }}/loci/requirements:{{ image_tag }}'"
+    - "WHEELS='{{ local_registry }}/{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
     - "KEEP_ALL_WHEELS=yes"
 
 designate_image:
   context: "."
   dockerfile: "Dockerfile"
-  repository: loci/designate
+  container_filename: "Dockerfile"
+  registry: "{{ image_registry.host }}"
+  repository: "{{ image_registry.host }}/{{ image_registry.org }}/designate"
   tags: *tags
   build_args:
-    - "FROM='loci/base:{{ image_tag }}'"
+    - "FROM='base:{{ image_tag }}'"
     - "PROJECT='designate'"
     - "PROJECT_REF={{ openstack_release }}"
     - "PROFILES='fluent'"
-    - "WHEELS='{{ local_registry }}/loci/requirements:{{ image_tag }}'"
+    - "WHEELS='{{ local_registry }}/{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
     - "KEEP_ALL_WHEELS=yes"
 
 glance_image:
   context: "."
   dockerfile: "Dockerfile"
-  repository: loci/glance
+  container_filename: "Dockerfile"
+  registry: "{{ image_registry.host }}"
+  repository: "{{ image_registry.host }}/{{ image_registry.org }}/glance"
   tags: *tags
   build_args:
-    - "FROM='loci/base:{{ image_tag }}'"
+    - "FROM='base:{{ image_tag }}'"
     - "PROJECT='glance'"
     - "PROJECT_REF={{ openstack_release }}"
     - "PROFILES='fluent ceph'"
     - "PIP_PACKAGES='python-swiftclient os-brick'"
-    - "WHEELS='{{ local_registry }}/loci/requirements:{{ image_tag }}'"
+    - "WHEELS='{{ local_registry }}/{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
     - "KEEP_ALL_WHEELS=yes"
 
 heat_image:
   context: "."
   dockerfile: "Dockerfile"
-  repository: loci/heat
+  container_filename: "Dockerfile"
+  registry: "{{ image_registry.host }}"
+  repository: "{{ image_registry.host }}/{{ image_registry.org }}/heat"
   tags: *tags
   build_args:
-    - "FROM='loci/base:{{ image_tag }}'"
+    - "FROM='base:{{ image_tag }}'"
     - "PROJECT='heat'"
     - "PROJECT_REF={{ openstack_release }}"
     - "PROFILES='fluent apache'"
-    - "WHEELS='{{ local_registry }}/loci/requirements:{{ image_tag }}'"
+    - "WHEELS='{{ local_registry }}/{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
     - "KEEP_ALL_WHEELS=yes"
     - "DIST_PACKAGES='curl'"
 
 horizon_image:
   context: "."
   dockerfile: "Dockerfile"
-  repository: loci/horizon
+  container_filename: "Dockerfile"
+  registry: "{{ image_registry.host }}"
+  repository: "{{ image_registry.host }}/{{ image_registry.org }}/horizon"
   tags: *tags
   build_args:
-    - "FROM='loci/base:{{ image_tag }}'"
+    - "FROM='base:{{ image_tag }}'"
     - "PROJECT='horizon'"
     - "PROJECT_REF={{ openstack_release }}"
     - "PROFILES='fluent apache'"
-    - "WHEELS='{{ local_registry }}/loci/requirements:{{ image_tag }}'"
+    - "WHEELS='{{ local_registry }}/{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
     - "KEEP_ALL_WHEELS=yes"
     - "PIP_PACKAGES='pymemcache'"
 
 ironic_image:
   context: "."
   dockerfile: "Dockerfile"
-  repository: loci/ironic
+  container_filename: "Dockerfile"
+  registry: "{{ image_registry.host }}"
+  repository: "{{ image_registry.host }}/{{ image_registry.org }}/ironic"
   tags: *tags
   build_args:
-    - "FROM='loci/base:{{ image_tag }}'"
+    - "FROM='base:{{ image_tag }}'"
     - "PROJECT='ironic'"
     - "PROJECT_REF={{ openstack_release }}"
     - "PROFILES='fluent ipxe ipmi qemu tftp'"
     - "DIST_PACKAGES='ethtool lshw iproute2'"
-    - "WHEELS='{{ local_registry }}/loci/requirements:{{ image_tag }}'"
+    - "WHEELS='{{ local_registry }}/{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
     - "KEEP_ALL_WHEELS=yes"
 
 keystone_image:
   context: "."
   dockerfile: "Dockerfile"
-  repository: "loci/keystone"
+  container_filename: "Dockerfile"
+  registry: "{{ image_registry.host }}"
+  repository: "{{ image_registry.host }}/{{ image_registry.org }}/keystone"
   tags: *tags
   build_args:
-    - "FROM='loci/base:{{ image_tag }}'"
+    - "FROM='base:{{ image_tag }}'"
     - "PROJECT='keystone'"
     - "PROJECT_REF={{ openstack_release }}"
     - "PROFILES='fluent apache ldap {{ openstack_release }}'"
     - "PIP_PACKAGES='python-openstackclient'"
-    - "WHEELS='{{ local_registry }}/loci/requirements:{{ image_tag }}'"
+    - "WHEELS='{{ local_registry }}/{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
     - "KEEP_ALL_WHEELS=yes"
 
 manila_image:
   context: "."
   dockerfile: "Dockerfile"
-  repository: loci/manila
+  container_filename: "Dockerfile"
+  registry: "{{ image_registry.host }}"
+  repository: "{{ image_registry.host }}/{{ image_registry.org }}/manila"
   tags: *tags
   build_args:
-    - "FROM='loci/base:{{ image_tag }}'"
+    - "FROM='base:{{ image_tag }}'"
     - "PROJECT='manila'"
     - "PROJECT_REF={{ openstack_release }}"
-    - "WHEELS='{{ local_registry }}/loci/requirements:{{ image_tag }}'"
+    - "WHEELS='{{ local_registry }}/{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
     - "KEEP_ALL_WHEELS=yes"
 
 monasca_api_image:
   context: "."
   dockerfile: "Dockerfile"
-  repository: loci/monasca-api
+  container_filename: "Dockerfile"
+  registry: "{{ image_registry.host }}"
+  repository: "{{ image_registry.host }}/{{ image_registry.org }}/monasca-api"
   tags: *tags
   build_args:
-    - "FROM='loci/base:{{ image_tag }}'"
+    - "FROM='base:{{ image_tag }}'"
     - "PROJECT='monasca-api'"
     - "PROJECT_REF={{ openstack_release }}"
     - "PROFILES='monasca api'"
     - "PIP_PACKAGES='influxdb cassandra-driver sqlalchemy'"
-    - "WHEELS='{{ local_registry }}/loci/requirements:{{ image_tag }}'"
+    - "WHEELS='{{ local_registry }}/{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
     - "KEEP_ALL_WHEELS=yes"
 
 neutron_image:
   context: "."
   dockerfile: "Dockerfile"
-  repository: loci/neutron
+  container_filename: "Dockerfile"
+  registry: "{{ image_registry.host }}"
+  repository: "{{ image_registry.host }}/{{ image_registry.org }}/neutron"
   tags: *tags
   build_args:
-    - "FROM='loci/base:{{ image_tag }}'"
+    - "FROM='base:{{ image_tag }}'"
     - "PROJECT='neutron'"
     - "PROJECT_REF={{ openstack_release }}"
     - "PROFILES='fluent linuxbridge openvswitch apache vpn baremetal'"
     - "PIP_PACKAGES='tap-as-a-service'"
     - "DIST_PACKAGES='jq ethtool lshw'"
-    - "WHEELS='{{ local_registry }}/loci/requirements:{{ image_tag }}'"
+    - "WHEELS='{{ local_registry }}/{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
     - "KEEP_ALL_WHEELS=yes"
 
 nova_image:
   context: "."
   dockerfile: "Dockerfile"
-  repository: loci/nova
+  container_filename: "Dockerfile"
+  registry: "{{ image_registry.host }}"
+  repository: "{{ image_registry.host }}/{{ image_registry.org }}/nova"
   tags: *tags
   build_args:
-    - "FROM='loci/base:{{ image_tag }}'"
+    - "FROM='base:{{ image_tag }}'"
     - "PROJECT='nova'"
     - "PROJECT_REF={{ openstack_release }}"
     - "PROFILES='fluent ceph linuxbridge openvswitch configdrive qemu apache migration'"
     - "DIST_PACKAGES='net-tools openssh-server'"
-    - "WHEELS='{{ local_registry }}/loci/requirements:{{ image_tag }}'"
+    - "WHEELS='{{ local_registry }}/{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
     - "KEEP_ALL_WHEELS=yes"
 
 octavia_image:
   context: "."
   dockerfile: "Dockerfile"
-  repository: loci/octavia
+  container_filename: "Dockerfile"
+  registry: "{{ image_registry.host }}"
+  repository: "{{ image_registry.host }}/{{ image_registry.org }}/octavia"
   tags: *tags
   build_args:
-    - "FROM='loci/base:{{ image_tag }}'"
+    - "FROM='base:{{ image_tag }}'"
     - "PROJECT='octavia'"
     - "PROJECT_REF={{ openstack_release }}"
-    - "WHEELS='{{ local_registry }}/loci/requirements:{{ image_tag }}'"
+    - "WHEELS='{{ local_registry }}/{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
     - "KEEP_ALL_WHEELS=yes"
 
 placement_image:
   context: "."
   dockerfile: "Dockerfile"
-  repository: loci/placement
+  container_filename: "Dockerfile"
+  registry: "{{ image_registry.host }}"
+  repository: "{{ image_registry.host }}/{{ image_registry.org }}/placement"
   tags: *tags
   build_args:
-    - "FROM='loci/base:{{ image_tag }}'"
+    - "FROM='base:{{ image_tag }}'"
     - "PROJECT='placement'"
     - "PROJECT_REF={{ openstack_release }}"
     - "PROFILES='apache'"
     - "PIP_PACKAGES='httplib2'"
-    - "WHEELS='{{ local_registry }}/loci/requirements:{{ image_tag }}'"
+    - "WHEELS='{{ local_registry }}/{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
     - "KEEP_ALL_WHEELS=yes"
 
 tacker_image:
   context: "."
   dockerfile: "Dockerfile"
-  repository: loci/tacker
+  container_filename: "Dockerfile"
+  registry: "{{ image_registry.host }}"
+  repository: "{{ image_registry.host }}/{{ image_registry.org }}/tacker"
   tags: *tags
   build_args:
-    - "FROM='loci/base:{{ image_tag }}'"
+    - "FROM='base:{{ image_tag }}'"
     - "PROJECT='tacker'"
     - "PROJECT_REF={{ openstack_release }}"
-    - "WHEELS='{{ local_registry }}/loci/requirements:{{ image_tag }}'"
+    - "WHEELS='{{ local_registry }}/{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
     - "KEEP_ALL_WHEELS=yes"
 
 watcher_image:
   context: "."
-  repository: loci/watcher
+  dockerfile: "Dockerfile"
+  container_filename: "Dockerfile"
+  registry: "{{ image_registry.host }}"
+  repository: "{{ image_registry.host }}/{{ image_registry.org }}/watcher"
   tags: *tags
   build_args:
-    - "FROM='loci/base:{{ image_tag }}'"
+    - "FROM='base:{{ image_tag }}'"
     - "PROJECT='watcher'"
     - "PROJECT_REF={{ openstack_release }}"
-    - "WHEELS='{{ local_registry }}/loci/requirements:{{ image_tag }}'"
+    - "WHEELS='{{ local_registry }}/{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
     - "KEEP_ALL_WHEELS=yes"

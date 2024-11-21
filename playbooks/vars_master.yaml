@@ -1,4 +1,4 @@
-image_tag: "master-ubunu_jammy"
+image_tag: "master-ubuntu_jammy"
 distro_image: "ubuntu:jammy"
 openstack_release: "master"
 ceph_repo: "deb https://download.ceph.com/debian-reef/ jammy main"

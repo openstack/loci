@@ -26,8 +26,8 @@
       - playbooks/upload.yaml
     vars: *vars
     secrets:
-      name: docker_credentials
-      secret: loci_docker_login
+      name: container_registry_credentials
+      secret: loci_registry_credentials
 
 - job:
     name: loci-promote-master-ubuntu_jammy
@@ -35,7 +35,7 @@
       - playbooks/promote.yaml
     vars: *vars
     secrets:
-      name: docker_credentials
-      secret: loci_docker_login
+      name: container_registry_credentials
+      secret: loci_registry_credentials
     nodeset:
       nodes: []
