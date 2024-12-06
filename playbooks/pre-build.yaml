@@ -33,4 +33,4 @@
     # This is necessary to serve requirements image to fetch wheels
     # during building project images
     - name: Start local registry
-      command: "docker run -d -p {{ local_registry }}:5000 --restart always --name registry registry:2"
+      command: "docker run -d -p {{ local_registry }}:5000 --restart always --name registry {{ local_registry_image }}"
