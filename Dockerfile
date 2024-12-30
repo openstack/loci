@@ -44,6 +44,15 @@ ARG SPICE_REF=spice-html5-0.1.6
 
 # End Nova arguments
 
+# Virtualenv arguments
+
+ARG GET_PIP_URL="https://bootstrap.pypa.io/get-pip.py"
+ARG PIP_CONSTRAINT=""
+ARG SETUPTOOL_CONSTRAINT=""
+ARG WHEEL_CONSTRAIN=""
+
+# End virtualenv argumens
+
 ADD data /tmp/
 COPY scripts /opt/loci/scripts
 ADD bindep.txt pydep.txt $EXTRA_BINDEP $EXTRA_PYDEP /opt/loci/

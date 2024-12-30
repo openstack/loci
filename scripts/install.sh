@@ -28,6 +28,7 @@ case ${distro} in
             lsb-release \
             patch \
             sudo \
+            wget \
             bind9-host \
             ${dpkg_python_packages[@]}
         apt-get install -y --no-install-recommends \
