@@ -49,6 +49,8 @@
     dependencies:
       - name: loci-build-2024-2-ubuntu_jammy
         soft: true
+      - name: loci-upload-2024-2-ubuntu_jammy
+        soft: true
 
 - job:
     name: loci-cinder-2024-2-ubuntu_jammy
@@ -58,4 +60,6 @@
       - openstack/openstack-helm-infra
     dependencies:
       - name: loci-build-2024-2-ubuntu_jammy
+        soft: true
+      - name: loci-upload-2024-2-ubuntu_jammy
         soft: true
