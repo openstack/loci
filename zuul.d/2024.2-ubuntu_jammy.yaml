@@ -40,6 +40,19 @@
     nodeset:
       nodes: []
 
+# NOTE(kozhukalov): Use loop over image registries once
+# this https://review.opendev.org/c/zuul/zuul-jobs/+/881524 is merged.
+- job:
+    name: loci-promote-2024-2-ubuntu_jammy-quay
+    run:
+      - playbooks/promote_quay.yaml
+    vars: *vars
+    secrets:
+      name: container_registry_credentials
+      secret: loci_registry_credentials
+    nodeset:
+      nodes: []
+
 - job:
     name: loci-compute-kit-2024-2-ubuntu_jammy
     parent: openstack-helm-compute-kit-2024-2-ubuntu_jammy

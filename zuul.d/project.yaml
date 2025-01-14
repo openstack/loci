@@ -29,6 +29,15 @@
         - loci-promote-2024-1-ubuntu_jammy
         - loci-promote-2024-2-ubuntu_jammy
         - loci-promote-master-ubuntu_jammy
+        # NOTE(kozhukalov): These are temporary jobs
+        # until this https://review.opendev.org/c/zuul/zuul-jobs/+/881524
+        # is merged. At the moment we can not include promote-container-image
+        # role in a loop because there is registry type variable that is set during the first
+        # loop iteration and then never redefined.
+        - loci-promote-2023-2-ubuntu_jammy-quay
+        - loci-promote-2024-1-ubuntu_jammy-quay
+        - loci-promote-2024-2-ubuntu_jammy-quay
+        - loci-promote-master-ubuntu_jammy-quay
     periodic:
       jobs:
         - loci-buildset-registry
@@ -40,11 +49,19 @@
             dependencies:
               - name: loci-compute-kit-2023-2-ubuntu_jammy
               - name: loci-cinder-2023-2-ubuntu_jammy
+        - loci-promote-2023-2-ubuntu_jammy-quay:
+            dependencies:
+              - name: loci-compute-kit-2023-2-ubuntu_jammy
+              - name: loci-cinder-2023-2-ubuntu_jammy
         # 2024.1 Ubuntu Jammy
         - loci-upload-2024-1-ubuntu_jammy
         - loci-compute-kit-2024-1-ubuntu_jammy
         - loci-cinder-2024-1-ubuntu_jammy
         - loci-promote-2024-1-ubuntu_jammy:
+            dependencies:
+              - name: loci-compute-kit-2024-1-ubuntu_jammy
+              - name: loci-cinder-2024-1-ubuntu_jammy
+        - loci-promote-2024-1-ubuntu_jammy-quay:
             dependencies:
               - name: loci-compute-kit-2024-1-ubuntu_jammy
               - name: loci-cinder-2024-1-ubuntu_jammy
@@ -56,9 +73,16 @@
             dependencies:
               - name: loci-compute-kit-2024-2-ubuntu_jammy
               - name: loci-cinder-2024-2-ubuntu_jammy
+        - loci-promote-2024-2-ubuntu_jammy-quay:
+            dependencies:
+              - name: loci-compute-kit-2024-2-ubuntu_jammy
+              - name: loci-cinder-2024-2-ubuntu_jammy
         # Master Ubuntu Jammy
         - loci-upload-master-ubuntu_jammy
         - loci-promote-master-ubuntu_jammy:
+            dependencies:
+              - name: loci-upload-master-ubuntu_jammy
+        - loci-promote-master-ubuntu_jammy-quay:
             dependencies:
               - name: loci-upload-master-ubuntu_jammy
 
