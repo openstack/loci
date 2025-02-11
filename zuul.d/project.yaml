@@ -16,6 +16,8 @@
         - loci-cinder-2024-2-ubuntu_jammy
         # Master Ubuntu Jammy
         - loci-build-master-ubuntu_jammy
+        # Master Ubuntu Noble
+        - loci-build-master-ubuntu_noble
     gate:
       jobs:
         - loci-buildset-registry
@@ -23,12 +25,14 @@
         - loci-upload-2024-1-ubuntu_jammy
         - loci-upload-2024-2-ubuntu_jammy
         - loci-upload-master-ubuntu_jammy
+        - loci-upload-master-ubuntu_noble
     promote:
       jobs:
         - loci-promote-2023-2-ubuntu_jammy
         - loci-promote-2024-1-ubuntu_jammy
         - loci-promote-2024-2-ubuntu_jammy
         - loci-promote-master-ubuntu_jammy
+        - loci-promote-master-ubuntu_noble
     periodic:
       jobs:
         - loci-buildset-registry
@@ -61,5 +65,8 @@
         - loci-promote-master-ubuntu_jammy:
             dependencies:
               - name: loci-upload-master-ubuntu_jammy
-
-
+        # Master Ubuntu Noble
+        - loci-upload-master-ubuntu_noble
+        - loci-promote-master-ubuntu_noble:
+            dependencies:
+              - name: loci-upload-master-ubuntu_noble

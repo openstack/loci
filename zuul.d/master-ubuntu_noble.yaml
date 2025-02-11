@@ -1,5 +1,5 @@
 - job:
-    name: loci-build-master-ubuntu_jammy
+    name: loci-build-master-ubuntu_noble
     timeout: 10800
     dependencies:
       - name: loci-buildset-registry
@@ -10,10 +10,10 @@
       - playbooks/build.yaml
     vars: &vars
       vars_files:
-        - vars_master_jammy.yaml
+        - vars_master_noble.yaml
 
 - job:
-    name: loci-upload-master-ubuntu_jammy
+    name: loci-upload-master-ubuntu_noble
     timeout: 10800
     dependencies:
       - name: loci-buildset-registry
@@ -30,7 +30,7 @@
       secret: loci_registry_credentials
 
 - job:
-    name: loci-promote-master-ubuntu_jammy
+    name: loci-promote-master-ubuntu_noble
     run:
       - playbooks/promote.yaml
     vars: *vars
