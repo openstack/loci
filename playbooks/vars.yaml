@@ -108,8 +108,8 @@ glance_image:
     - "FROM='base:{{ image_tag }}'"
     - "PROJECT='glance'"
     - "PROJECT_REF={{ openstack_release }}"
-    - "PROFILES='fluent ceph'"
-    - "PIP_PACKAGES='python-swiftclient os-brick'"
+    - "PROFILES='fluent ceph qemu-utils'"
+    - "PIP_PACKAGES='python-swiftclient os-brick python-cinderclient oslo-rootwrap'"
     - "WHEELS='{{ local_registry }}/{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
     - "KEEP_ALL_WHEELS=yes"
 
