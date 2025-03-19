@@ -1,7 +1,8 @@
-image_tag: "master-ubuntu_jammy"
-distro_image: "public.ecr.aws/ubuntu/ubuntu:jammy"
-openstack_release: "master"
-ceph_repo: "deb https://download.ceph.com/debian-squid/ jammy main"
+image_tag: "2025.1-ubuntu_noble"
+distro_image: "public.ecr.aws/ubuntu/ubuntu:noble"
+openstack_release: "stable/2025.1"
+# NOTE: Ubuntu Noble provides Ceph Squid packages out of the box
+ceph_repo: ""
 openstack_images:
   - "{{ barbican_image }}"
   - "{{ cinder_image }}"

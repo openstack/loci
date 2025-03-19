@@ -1,7 +1,8 @@
 image_tag: "master-ubuntu_noble"
-distro_image: "ubuntu:noble"
+distro_image: "public.ecr.aws/ubuntu/ubuntu:noble"
 openstack_release: "master"
-ceph_repo: "deb https://download.ceph.com/debian-reef/ jammy main"
+# NOTE: Ubuntu Noble provides Ceph Squid packages out of the box
+ceph_repo: ""
 openstack_images:
   - "{{ barbican_image }}"
   - "{{ cinder_image }}"

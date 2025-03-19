@@ -1,7 +1,7 @@
 ARG FROM=ubuntu:jammy
 FROM ${FROM}
 
-ARG CEPH_REPO="deb https://download.ceph.com/debian-reef/ jammy main"
+ARG CEPH_REPO
 ARG CEPH_KEY="https://download.ceph.com/keys/release.asc"
 ARG ALLOW_UNAUTHENTICATED=false
 
@@ -18,7 +18,9 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
         gnupg2 \
         wget && \
     wget -q -O- ${CEPH_KEY} | apt-key add - && \
-    echo "${CEPH_REPO}" | tee /etc/apt/sources.list.d/ceph.list && \
+    if [ -n "${CEPH_REPO}" ]; then \
+        echo "${CEPH_REPO}" | tee /etc/apt/sources.list.d/ceph.list; \
+    fi && \
     apt-get remove -y wget gnupg2 && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*

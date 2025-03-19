@@ -45,7 +45,6 @@
     parent: openstack-helm-compute-kit-2023-2-ubuntu_jammy
     required-projects:
       - openstack/openstack-helm
-      - openstack/openstack-helm-infra
     dependencies:
       - name: loci-build-2023-2-ubuntu_jammy
         soft: true
@@ -57,7 +56,6 @@
     parent: openstack-helm-cinder-2023-2-ubuntu_jammy
     required-projects:
       - openstack/openstack-helm
-      - openstack/openstack-helm-infra
     dependencies:
       - name: loci-build-2023-2-ubuntu_jammy
         soft: true

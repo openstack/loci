@@ -1,5 +1,5 @@
 image_tag: "2023.2-ubuntu_jammy"
-distro_image: "ubuntu:jammy"
+distro_image: "public.ecr.aws/ubuntu/ubuntu:jammy"
 openstack_release: "stable/2023.2"
 ceph_repo: "deb https://download.ceph.com/debian-reef/ jammy main"
 openstack_images:

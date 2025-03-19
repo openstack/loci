@@ -111,11 +111,6 @@ for entry in $(grep '^git+' /upper-constraints.txt); do
   pip wheel --no-deps --wheel-dir /source-wheels ${entry}
 done
 
-if [[ ${PROJECT_REF} == "stable/2024.2" ]]; then
-  pip wheel --no-deps --wheel-dir /source-wheels git+https://opendev.org/openstack/oslo.messaging.git@stable/2024.2
-  sed -i '/oslo.messaging/d' /upper-constraints.txt
-fi
-
 # Replace unnamed constraints with named ones
 sed -i '/^git+/d' /upper-constraints.txt
 for wheel in $(ls /source-wheels/*.whl); do
@@ -180,7 +175,7 @@ if [[ "$KEEP_ALL_WHEELS" == "False" ]]; then
   # Wheels built from unnamed constraints were removed with previous command. Move them back after deletion.
   [ ! -z "$(ls -A /source-wheels)" ] && mv /source-wheels/*.whl /
 else
-  ls -1 | xargs -n1 -P20 -t bash -c 'mkdir $1-wheels; pip wheel ${PIP_WHEEL_ARGS} --find-links /source-wheels --find-links / --wheel-dir /$(pwd)/$1-wheels -c /global-requirements.txt -c ${UPPER_CONSTRAINTS_BUILD}  -r $1 || cat $1 >> /failure' _
+  ls -1 | xargs -n1 -P20 -t bash -c 'set -x; mkdir $1-wheels; pip wheel ${PIP_WHEEL_ARGS} --find-links /source-wheels --find-links / --wheel-dir /$(pwd)/$1-wheels -c /global-requirements.txt -c ${UPPER_CONSTRAINTS_BUILD}  -r $1 || cat $1 >> /failure' _
   for dir in *-wheels/; do [ ! -z "$(ls -A ${dir})" ] && mv ${dir}*.whl /; done
 fi
 
