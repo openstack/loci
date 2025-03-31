@@ -252,6 +252,45 @@ octavia_image:
     - "WHEELS='{{ local_registry }}/{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
     - "KEEP_ALL_WHEELS=yes"
 
+openstack_client_pip_packages:
+  - cmd2
+  - python-barbicanclient
+  - python-blazarclient
+  - python-cinderclient
+  - python-designateclient
+  - python-glanceclient
+  - python-heatclient
+  - python-ironicclient
+  - python-keystoneclient
+  - python-magnumclient
+  - python-manilaclient
+  - python-mistralclient
+  - python-monascaclient
+  - python-neutronclient
+  - python-novaclient
+  - python-octaviaclient
+  - python-swiftclient
+  - python-tackerclient
+  - python-troveclient
+  - python-vitrageclient
+  - python-watcherclient
+  - python-zaqarclient
+  - python-zunclient
+openstack_client_image:
+  context: "."
+  dockerfile: "Dockerfile"
+  container_filename: "Dockerfile"
+  registry: "{{ image_registry.host }}"
+  repository: "{{ image_registry.host }}/{{ image_registry.org }}/openstack-client"
+  tags: *tags
+  build_args:
+    - "FROM='base:{{ image_tag }}'"
+    - "PROJECT='python-openstackclient'"
+    - "PROJECT_REF={{ openstack_release }}"
+    - "WHEELS='{{ local_registry }}/{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
+    - "KEEP_ALL_WHEELS=yes"
+    - "PIP_PACKAGES='{{ openstack_client_pip_packages | join(' ') }}'"
+
 placement_image:
   context: "."
   dockerfile: "Dockerfile"

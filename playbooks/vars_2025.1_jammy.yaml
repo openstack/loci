@@ -16,6 +16,7 @@ openstack_images:
   - "{{ neutron_image }}"
   - "{{ nova_image }}"
   - "{{ octavia_image }}"
+  - "{{ openstack_client_image }}"
   - "{{ placement_image }}"
   - "{{ tacker_image}}"
   - "{{ watcher_image }}"
