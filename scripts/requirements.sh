@@ -19,7 +19,7 @@ function get_pkg_name {
   local folder=$1
   local name
   pushd $folder > /dev/null
-  name=$(python3 setup.py --name 2>/dev/null)
+  name=$(python3 setup.py --name 2>/dev/null | grep -v '^\[pbr\]')
   popd > /dev/null
   echo $name
 }
@@ -28,7 +28,7 @@ function get_pkg_version {
   local folder=$1
   local vesion
   pushd $folder > /dev/null
-  version=$(python3 setup.py --version 2>/dev/null)
+  version=$(python3 setup.py --version 2>/dev/null | grep -v '^\[pbr\]')
   popd > /dev/null
   echo $version
 }
