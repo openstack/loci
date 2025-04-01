@@ -62,11 +62,6 @@ function make_build_constraints {
     popd
 }
 
-# Construct upper-constraints with honor of locally downloaded projects
-make_build_constraints
-rm -rf $UPPER_CONSTRAINTS
-mv $UPPER_CONSTRAINTS_DEV $UPPER_CONSTRAINTS
-
 # TODO: Make python-qpid-proton build here (possibly patch it)
 # or remove when python-qpid-proton is updated with build fix.
 #   https://issues.apache.org/jira/browse/PROTON-1381
@@ -105,6 +100,13 @@ fi
 # Drop ceilometer from constraints.
 sed -i '/ceilometer===.*/d' /upper-constraints.txt
 
+# NOTE: This is to install python-openstackclient from the HEAD of the stable/2025.1 branch
+#       This was merged after 7.4.0 which is pinned in the 2025.1 constraints.
+#       https://review.opendev.org/c/openstack/python-openstackclient/+/944991
+if [[ ${PROJECT_REF} == "stable/2025.1" ]]; then
+    sed -i "s|^python-openstackclient===.*|git+https://opendev.org/openstack/python-openstackclient.git@stable/2025.1#egg=python-openstackclient|g" /upper-constraints.txt
+fi
+
 mkdir /source-wheels
 # Pre-build wheels for unnamed constraints
 for entry in $(grep '^git+' /upper-constraints.txt); do
@@ -114,14 +116,10 @@ done
 # Replace unnamed constraints with named ones
 sed -i '/^git+/d' /upper-constraints.txt
 for wheel in $(ls /source-wheels/*.whl); do
-  python -c "import pkginfo; wheel = pkginfo.Wheel('${wheel}'); print('%s===%s' % (wheel.name, wheel.version))" >> /upper-constraints.txt
+    python -c "import pkginfo; wheel = pkginfo.Wheel('${wheel}'); print('%s===%s' % (wheel.name, wheel.version))" >> /upper-constraints.txt
 done
 
 pushd $(mktemp -d)
-
-# Make UPPER_CONSTRAINTS_BUILD visible in xargs -P
-export CASS_DRIVER_BUILD_CONCURRENCY=8
-export UPPER_CONSTRAINTS_BUILD
 
 # The libnss3 headers in Ubuntu Jammy are not compatible
 # with python-nss===1.0.1. Ubuntu Jammy itself
@@ -155,8 +153,16 @@ if [ ! -z "${PIP_PACKAGES}" ]; then
   pip install ${PIP_ARGS} -c /global-requirements.txt -c /upper-constraints.txt --no-cache ${PIP_PACKAGES}
 fi
 
+export CASS_DRIVER_BUILD_CONCURRENCY=8
 export UWSGI_PROFILE_OVERRIDE=ssl=true
 export CPUCOUNT=1
+# Make UPPER_CONSTRAINTS_BUILD visible in xargs -P
+export UPPER_CONSTRAINTS_BUILD
+
+# Construct upper-constraints with honor of locally downloaded projects
+make_build_constraints
+rm -rf $UPPER_CONSTRAINTS
+mv $UPPER_CONSTRAINTS_DEV $UPPER_CONSTRAINTS
 
 echo "DEBUG: ${UPPER_CONSTRAINTS_BUILD}"
 cat ${UPPER_CONSTRAINTS_BUILD}
@@ -168,7 +174,7 @@ cat ${UPPER_CONSTRAINTS}
 # constrained on the version and we are building with --no-deps
 echo uwsgi enum-compat ${PIP_PACKAGES} | xargs -n1 | split -l1 -a3
 if [[ "$KEEP_ALL_WHEELS" == "False" ]]; then
-  ls -1 | xargs -n1 -P20 -t bash -c 'pip wheel ${PIP_WHEEL_ARGS} --find-links /source-wheels --find-links / --no-deps --wheel-dir / -c /global-requirements.txt -c ${UPPER_CONSTRAINTS_BUILD}  $1 || cat $1 >> /failure' _ | tee /tmp/wheels.txt
+  ls -1 | xargs -n1 -P20 -t bash -c 'set -x; pip wheel ${PIP_WHEEL_ARGS} --find-links /source-wheels --find-links / --no-deps --wheel-dir / -c /global-requirements.txt -c ${UPPER_CONSTRAINTS_BUILD}  $1 || cat $1 >> /failure' _ | tee /tmp/wheels.txt
   # Remove native-binary wheels, we only want to keep wheels that we
   # compiled ourselves.
   awk -F'[ ,]+' '/^Skipping/ {gsub("-","_");print $2}' /tmp/wheels.txt | xargs -r -n1 bash -c 'ls /$1-*' _ | sort -u | xargs -t -r rm
