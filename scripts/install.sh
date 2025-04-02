@@ -10,7 +10,7 @@ if [[ ${distro} == "ubuntu" ]]; then
 fi
 export distro_version=${DISTRO_VERSION:=$distro_version}
 
-dpkg_python_packages=("python3" "python3-virtualenv")
+dpkg_python_packages=("python3" "python3-venv")
 rpm_python_packages=("python3")
 
 case ${distro} in
