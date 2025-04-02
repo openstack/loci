@@ -2,8 +2,6 @@ currentdate: "{{ now(utc=True,fmt='%Y%m%d') }}"
 local_registry: "172.17.0.1:5000"
 local_registry_image: "quay.io/airshipit/registry:2"
 image_registries:
-  - host: "docker.io"
-    org: "loci"
   - host: "quay.io"
     org: "airshipit"
 container_command: docker
