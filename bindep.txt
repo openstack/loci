@@ -54,6 +54,7 @@ libmysqlclient-dev                   [platform:ubuntu requirements]
 libnss3-dev                          [platform:dpkg requirements]
 libosinfo                            [platform:rpm nova]
 libosinfo-bin                        [platform:dpkg nova]
+libpcre3                             [platform:ubuntu-noble]
 libpcre3-dev                         [platform:dpkg requirements]
 libpq-dev                            [platform:dpkg requirements]
 # libpythonx.y installation logic is moved to scripts to be able to dynamically
