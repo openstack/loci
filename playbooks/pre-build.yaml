@@ -1,36 +1,7 @@
-- hosts: all[0]
+- hosts: all
   gather_facts: true
   roles:
     - ensure-python
     - ensure-pip
     - clear-firewall
     - ensure-docker
-
-  tasks:
-    - name: Vars
-      include_vars:
-        file: "vars.yaml"
-
-    - name: Create docker directory
-      become: yes
-      file:
-        state: directory
-        path: /etc/docker
-        mode: 0755
-
-    - name: Configure docker daemon
-      become: yes
-      template:
-        dest: /etc/docker/daemon.json
-        group: root
-        mode: 0644
-        owner: root
-        src: files/daemon.json.j2
-
-    - name: Print docker config
-      command: "cat /etc/docker/daemon.json"
-
-    # This is necessary to serve requirements image to fetch wheels
-    # during building project images
-    - name: Start local registry
-      command: "docker run -d -p {{ local_registry }}:5000 --restart always --name registry {{ local_registry_image }}"

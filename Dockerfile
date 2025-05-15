@@ -1,10 +1,17 @@
+ARG WHEELS=quay.io/airshipit/requirements:master-ubuntu_jammy
 ARG FROM=ubuntu:jammy
-FROM ${FROM}
+
+# This is an alias for mounting the wheels image
+FROM ${WHEELS} AS wheels
+
+FROM ${FROM} AS common
 
 ENV PATH=/var/lib/openstack/bin:$PATH
 ENV LANG=C.UTF-8
+
+# WHEELS_PATH must not be somewhere in /tmp because /tmp/* are deleted in the end of build
+ARG WHEELS_PATH="/wheels"
 ARG PROJECT
-ARG WHEELS=loci/requirements:master-ubuntu_jammy
 ARG PROJECT_REPO=https://opendev.org/openstack/${PROJECT}
 ARG PROJECT_REF=master
 ARG PROJECT_RELEASE=master
@@ -56,4 +63,8 @@ ADD data /tmp/
 COPY scripts /opt/loci/scripts
 ADD bindep.txt pydep.txt $EXTRA_BINDEP $EXTRA_PYDEP /opt/loci/
 
+FROM common AS requirements
 RUN /opt/loci/scripts/install.sh
+
+FROM common AS project
+RUN --mount=type=bind,from=wheels,target=${WHEELS_PATH} /opt/loci/scripts/install.sh

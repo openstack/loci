@@ -75,9 +75,9 @@ For more advanced building you can use docker build arguments to define:
   * `PROJECT_PIP_EXTRAS` python extras to use during project install.
   * `UID` The uid of the user that will be created (defaults to 42424).
   * `GID` The gid of the group that will be created (default to 42424).
-  * `WHEELS` The location of the wheels tarball. This accepts a url to a
-    tarball or a Docker image name in the form of
-    `[myregistry/]mydockernamespace/requirements[:ubuntu]`
+  * `WHEELS` The location of the wheels Docker image. The image must contain
+    wheels in the root directory. It is mounted while building other images.
+    `[myregistry/]mydockernamespace/requirements[:tag]`
   * `DISTRO` This is a helper variable used for scripts. It would primarily be
     used in situations where the script would not detect the correct distro.
     For example, you would set `DISTRO=centos` when running from an oraclelinux

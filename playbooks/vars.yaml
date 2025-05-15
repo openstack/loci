@@ -23,6 +23,7 @@ requirements_image:
   context: "."
   dockerfile: "Dockerfile"
   container_filename: "Dockerfile"
+  target: "requirements"
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/requirements"
   tags: *tags
@@ -36,6 +37,7 @@ barbican_image:
   context: "."
   dockerfile: "Dockerfile"
   container_filename: "Dockerfile"
+  target: "project"
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/barbican"
   tags: *tags
@@ -44,7 +46,7 @@ barbican_image:
     - "PROJECT='barbican'"
     - "PROJECT_REF={{ openstack_release }}"
     - "PROFILES='fluent'"
-    - "WHEELS='{{ local_registry }}/{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
+    - "WHEELS='{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
     - "KEEP_ALL_WHEELS=yes"
     - "DIST_PACKAGES='python3-dev gcc'"
     - "PIP_ARGS='--only-binary :none:'"
@@ -53,6 +55,7 @@ cinder_image:
   context: "."
   dockerfile: "Dockerfile"
   container_filename: "Dockerfile"
+  target: "project"
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/cinder"
   tags: *tags
@@ -62,13 +65,14 @@ cinder_image:
     - "PROJECT_REF={{ openstack_release }}"
     - "PROFILES='fluent lvm ceph qemu apache'"
     - "PIP_PACKAGES='python-swiftclient'"
-    - "WHEELS='{{ local_registry }}/{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
+    - "WHEELS='{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
     - "KEEP_ALL_WHEELS=yes"
 
 cyborg_image:
   context: "."
   dockerfile: "Dockerfile"
   container_filename: "Dockerfile"
+  target: "project"
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/cyborg"
   tags: *tags
@@ -77,13 +81,14 @@ cyborg_image:
     - "PROJECT='cyborg'"
     - "PROJECT_REF={{ openstack_release }}"
     - "DIST_PACKAGES='pciutils'"
-    - "WHEELS='{{ local_registry }}/{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
+    - "WHEELS='{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
     - "KEEP_ALL_WHEELS=yes"
 
 designate_image:
   context: "."
   dockerfile: "Dockerfile"
   container_filename: "Dockerfile"
+  target: "project"
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/designate"
   tags: *tags
@@ -92,13 +97,14 @@ designate_image:
     - "PROJECT='designate'"
     - "PROJECT_REF={{ openstack_release }}"
     - "PROFILES='fluent'"
-    - "WHEELS='{{ local_registry }}/{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
+    - "WHEELS='{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
     - "KEEP_ALL_WHEELS=yes"
 
 glance_image:
   context: "."
   dockerfile: "Dockerfile"
   container_filename: "Dockerfile"
+  target: "project"
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/glance"
   tags: *tags
@@ -108,13 +114,14 @@ glance_image:
     - "PROJECT_REF={{ openstack_release }}"
     - "PROFILES='fluent ceph qemu-utils'"
     - "PIP_PACKAGES='python-swiftclient os-brick python-cinderclient oslo-rootwrap'"
-    - "WHEELS='{{ local_registry }}/{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
+    - "WHEELS='{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
     - "KEEP_ALL_WHEELS=yes"
 
 heat_image:
   context: "."
   dockerfile: "Dockerfile"
   container_filename: "Dockerfile"
+  target: "project"
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/heat"
   tags: *tags
@@ -123,7 +130,7 @@ heat_image:
     - "PROJECT='heat'"
     - "PROJECT_REF={{ openstack_release }}"
     - "PROFILES='fluent apache'"
-    - "WHEELS='{{ local_registry }}/{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
+    - "WHEELS='{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
     - "KEEP_ALL_WHEELS=yes"
     - "DIST_PACKAGES='curl'"
 
@@ -131,6 +138,7 @@ horizon_image:
   context: "."
   dockerfile: "Dockerfile"
   container_filename: "Dockerfile"
+  target: "project"
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/horizon"
   tags: *tags
@@ -139,7 +147,7 @@ horizon_image:
     - "PROJECT='horizon'"
     - "PROJECT_REF={{ openstack_release }}"
     - "PROFILES='fluent apache'"
-    - "WHEELS='{{ local_registry }}/{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
+    - "WHEELS='{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
     - "KEEP_ALL_WHEELS=yes"
     - "PIP_PACKAGES='pymemcache'"
 
@@ -147,6 +155,7 @@ ironic_image:
   context: "."
   dockerfile: "Dockerfile"
   container_filename: "Dockerfile"
+  target: "project"
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/ironic"
   tags: *tags
@@ -156,13 +165,14 @@ ironic_image:
     - "PROJECT_REF={{ openstack_release }}"
     - "PROFILES='fluent ipxe ipmi qemu tftp'"
     - "DIST_PACKAGES='ethtool lshw iproute2'"
-    - "WHEELS='{{ local_registry }}/{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
+    - "WHEELS='{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
     - "KEEP_ALL_WHEELS=yes"
 
 keystone_image:
   context: "."
   dockerfile: "Dockerfile"
   container_filename: "Dockerfile"
+  target: "project"
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/keystone"
   tags: *tags
@@ -172,13 +182,14 @@ keystone_image:
     - "PROJECT_REF={{ openstack_release }}"
     - "PROFILES='fluent apache ldap {{ openstack_release }}'"
     - "PIP_PACKAGES='python-openstackclient'"
-    - "WHEELS='{{ local_registry }}/{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
+    - "WHEELS='{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
     - "KEEP_ALL_WHEELS=yes"
 
 manila_image:
   context: "."
   dockerfile: "Dockerfile"
   container_filename: "Dockerfile"
+  target: "project"
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/manila"
   tags: *tags
@@ -186,13 +197,14 @@ manila_image:
     - "FROM='base:{{ image_tag }}'"
     - "PROJECT='manila'"
     - "PROJECT_REF={{ openstack_release }}"
-    - "WHEELS='{{ local_registry }}/{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
+    - "WHEELS='{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
     - "KEEP_ALL_WHEELS=yes"
 
 monasca_api_image:
   context: "."
   dockerfile: "Dockerfile"
   container_filename: "Dockerfile"
+  target: "project"
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/monasca-api"
   tags: *tags
@@ -202,13 +214,14 @@ monasca_api_image:
     - "PROJECT_REF={{ openstack_release }}"
     - "PROFILES='monasca api'"
     - "PIP_PACKAGES='influxdb cassandra-driver sqlalchemy'"
-    - "WHEELS='{{ local_registry }}/{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
+    - "WHEELS='{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
     - "KEEP_ALL_WHEELS=yes"
 
 neutron_image:
   context: "."
   dockerfile: "Dockerfile"
   container_filename: "Dockerfile"
+  target: "project"
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/neutron"
   tags: *tags
@@ -219,13 +232,14 @@ neutron_image:
     - "PROFILES='fluent linuxbridge openvswitch apache vpn baremetal'"
     - "PIP_PACKAGES='tap-as-a-service'"
     - "DIST_PACKAGES='jq ethtool lshw'"
-    - "WHEELS='{{ local_registry }}/{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
+    - "WHEELS='{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
     - "KEEP_ALL_WHEELS=yes"
 
 nova_image:
   context: "."
   dockerfile: "Dockerfile"
   container_filename: "Dockerfile"
+  target: "project"
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/nova"
   tags: *tags
@@ -235,13 +249,14 @@ nova_image:
     - "PROJECT_REF={{ openstack_release }}"
     - "PROFILES='fluent ceph linuxbridge openvswitch configdrive qemu apache migration'"
     - "DIST_PACKAGES='net-tools openssh-server'"
-    - "WHEELS='{{ local_registry }}/{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
+    - "WHEELS='{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
     - "KEEP_ALL_WHEELS=yes"
 
 octavia_image:
   context: "."
   dockerfile: "Dockerfile"
   container_filename: "Dockerfile"
+  target: "project"
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/octavia"
   tags: *tags
@@ -249,7 +264,7 @@ octavia_image:
     - "FROM='base:{{ image_tag }}'"
     - "PROJECT='octavia'"
     - "PROJECT_REF={{ openstack_release }}"
-    - "WHEELS='{{ local_registry }}/{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
+    - "WHEELS='{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
     - "KEEP_ALL_WHEELS=yes"
 
 openstack_client_pip_packages:
@@ -280,6 +295,7 @@ openstack_client_image:
   context: "."
   dockerfile: "Dockerfile"
   container_filename: "Dockerfile"
+  target: "project"
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/openstack-client"
   tags: *tags
@@ -287,7 +303,7 @@ openstack_client_image:
     - "FROM='base:{{ image_tag }}'"
     - "PROJECT='python-openstackclient'"
     - "PROJECT_REF={{ openstack_release }}"
-    - "WHEELS='{{ local_registry }}/{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
+    - "WHEELS='{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
     - "KEEP_ALL_WHEELS=yes"
     - "PIP_PACKAGES='{{ openstack_client_pip_packages | join(' ') }}'"
 
@@ -295,6 +311,7 @@ placement_image:
   context: "."
   dockerfile: "Dockerfile"
   container_filename: "Dockerfile"
+  target: "project"
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/placement"
   tags: *tags
@@ -304,13 +321,14 @@ placement_image:
     - "PROJECT_REF={{ openstack_release }}"
     - "PROFILES='apache'"
     - "PIP_PACKAGES='httplib2'"
-    - "WHEELS='{{ local_registry }}/{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
+    - "WHEELS='{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
     - "KEEP_ALL_WHEELS=yes"
 
 tacker_image:
   context: "."
   dockerfile: "Dockerfile"
   container_filename: "Dockerfile"
+  target: "project"
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/tacker"
   tags: *tags
@@ -318,13 +336,14 @@ tacker_image:
     - "FROM='base:{{ image_tag }}'"
     - "PROJECT='tacker'"
     - "PROJECT_REF={{ openstack_release }}"
-    - "WHEELS='{{ local_registry }}/{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
+    - "WHEELS='{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
     - "KEEP_ALL_WHEELS=yes"
 
 watcher_image:
   context: "."
   dockerfile: "Dockerfile"
   container_filename: "Dockerfile"
+  target: "project"
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/watcher"
   tags: *tags
@@ -332,5 +351,5 @@ watcher_image:
     - "FROM='base:{{ image_tag }}'"
     - "PROJECT='watcher'"
     - "PROJECT_REF={{ openstack_release }}"
-    - "WHEELS='{{ local_registry }}/{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
+    - "WHEELS='{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
     - "KEEP_ALL_WHEELS=yes"

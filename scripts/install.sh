@@ -63,7 +63,6 @@ if [ "${KEEP_ALL_WHEELS}" != "False" ]; then
     NO_INDEX=--no-index
 fi
 
-$(dirname $0)/fetch_wheels.sh
 if [[ "${PROJECT}" == "infra" ]]; then
     $(dirname $0)/setup_pip.sh
     $(dirname $0)/pip_install.sh bindep ${PIP_PACKAGES}

@@ -51,16 +51,6 @@
         loop_var: image_registry
       loop: "{{ image_registries }}"
 
-    - name: Tag requirements image and push to local registry
-      shell: |
-        for tag in {{ requirements_image.tags | join(" ") }}; do
-          docker tag {{ requirements_image.repository }}:$tag {{ local_registry }}/{{ requirements_image.repository }}:$tag
-          docker push {{ local_registry }}/{{ requirements_image.repository }}:$tag
-        done
-      loop_control:
-        loop_var: image_registry
-      loop: "{{ image_registries }}"
-
     - name: Build project images
       include_role:
         name: build-container-image
