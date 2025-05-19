@@ -62,17 +62,6 @@ function make_build_constraints {
     popd
 }
 
-# TODO: Make python-qpid-proton build here (possibly patch it)
-# or remove when python-qpid-proton is updated with build fix.
-#   https://issues.apache.org/jira/browse/PROTON-1381
-if (( $(openssl version | awk -F'[ .]' '{print $3}') >= 1 )); then
-    sed -i '/python-qpid-proton/d' /upper-constraints.txt
-fi
-
-# Remove python-qpid-proton 0.14.0 as this old version cannot be built in CI
-# anymore
-sed -i '/python-qpid-proton===0.14.0/d' /upper-constraints.txt
-
 # Setuptools from constraints is not compatible with other constrainted packages
 [[ "${PROJECT_REF}" == "master" ]] && sed -i '/setuptools/d' /upper-constraints.txt
 # https://review.opendev.org/c/openstack/requirements/+/813693
