@@ -64,8 +64,6 @@ function make_build_constraints {
 
 # Setuptools from constraints is not compatible with other constrainted packages
 [[ "${PROJECT_REF}" == "master" ]] && sed -i '/setuptools/d' /upper-constraints.txt
-# https://review.opendev.org/c/openstack/requirements/+/813693
-sed -i '/^futures===/d' /upper-constraints.txt
 
 # NOTE(mnaser): confluent-kafka fails to build under aarch64 because the version
 #               of libfdkafka-dev in the distributions is too old (x86_64 relies
