@@ -72,15 +72,6 @@ if [[ "$(uname -p)" == "aarch64" ]]; then
     sed -i '/confluent-kafka/d' /upper-constraints.txt
 fi
 
-# Remove any pylxd before 2.2.7 as the old versions cannot be built in CI.
-if lxd_constraint=$(grep pylxd /upper-constraints.txt); then
-    # This removes (##) everything (*) from the lxd_constraint until the last =,
-    # and removes all '.' to look like a number.
-    if (( $(echo ${lxd_constraint##*=} | sed 's#\.##g') < 227 )); then
-        sed -i '/pylxd/d' /upper-constraints.txt
-    fi
-fi
-
 # Ceilometer uses extras in requirements, which does not work for case when
 # tooz is installed from local folder
 # AssertionError: Internal issue: Candidate is not for this requirement tooz vs tooz[zake]
