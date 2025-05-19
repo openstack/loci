@@ -1,6 +1,7 @@
 - job:
     name: loci-build-master-ubuntu_jammy
     timeout: 10800
+    voting: false
     dependencies:
       - name: loci-buildset-registry
     pre-run:
@@ -15,6 +16,7 @@
 - job:
     name: loci-upload-master-ubuntu_jammy
     timeout: 10800
+    voting: false
     dependencies:
       - name: loci-buildset-registry
     pre-run:
@@ -31,6 +33,7 @@
 
 - job:
     name: loci-promote-master-ubuntu_jammy
+    voting: false
     run:
       - playbooks/promote.yaml
     vars: *vars
