@@ -63,13 +63,6 @@ if [ "${KEEP_ALL_WHEELS}" != "False" ]; then
     NO_INDEX=--no-index
 fi
 
-if [[ "${PROJECT}" == "infra" ]]; then
-    $(dirname $0)/setup_pip.sh
-    $(dirname $0)/pip_install.sh bindep ${PIP_PACKAGES}
-    $(dirname $0)/install_packages.sh
-    $(dirname $0)/cleanup.sh
-    exit 0
-fi
 if [[ "${PLUGIN}" == "no" ]]; then
     $(dirname $0)/create_user.sh
     $(dirname $0)/setup_pip.sh
