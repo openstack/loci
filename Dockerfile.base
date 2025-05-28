@@ -16,11 +16,11 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
         apt-transport-https \
         ca-certificates \
         gnupg2 \
+        lsb-release \
         wget && \
     wget -q -O- ${CEPH_KEY} | apt-key add - && \
     if [ -n "${CEPH_REPO}" ]; then \
         echo "${CEPH_REPO}" | tee /etc/apt/sources.list.d/ceph.list; \
     fi && \
-    apt-get remove -y wget gnupg2 && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
