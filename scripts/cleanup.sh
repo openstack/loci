@@ -9,6 +9,9 @@ case ${distro} in
             patch \
             python3-virtualenv \
             virtualenv
+        if [ -f /etc/apt/sources.list.bak ]; then
+            mv /etc/apt/sources.list.bak /etc/apt/sources.list
+        fi
         rm -rf /var/lib/apt/lists/*
         ;;
     centos)

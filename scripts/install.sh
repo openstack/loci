@@ -16,6 +16,15 @@ rpm_python_packages=("python3")
 case ${distro} in
     ubuntu)
         export LC_CTYPE=C.UTF-8
+        # This overrides the base image configuration
+        echo 'APT::Get::AllowUnauthenticated "true";' > /etc/apt/apt.conf.d/99allow-unauthenticated
+        mv /etc/apt/sources.list /etc/apt/sources.list.bak
+        cat > /etc/apt/sources.list <<EOF
+deb ${APT_MIRROR} ${distro_version} main universe
+deb ${APT_MIRROR} ${distro_version}-updates main universe
+deb ${APT_MIRROR} ${distro_version}-security main universe
+deb ${APT_MIRROR} ${distro_version}-backports main universe
+EOF
         apt-get update
         if [[ ! -z "$(apt-cache search ^python3-distutils$)" ]]; then
             dpkg_python_packages+=("python3-distutils")
