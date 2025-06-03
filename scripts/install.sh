@@ -2,66 +2,33 @@
 
 set -ex
 
-distro=$(awk -F= '/^ID=/ {gsub(/\"/, "", $2); print $2}' /etc/*release)
-export distro=${DISTRO:=$distro}
+source /etc/lsb-release
 
-if [[ ${distro} == "ubuntu" ]]; then
-    distro_version=$(awk -F= '/^UBUNTU_CODENAME=/ {gsub(/\"/, "", $2); print $2}' /etc/*release)
-fi
-export distro_version=${DISTRO_VERSION:=$distro_version}
-
-dpkg_python_packages=("python3" "python3-venv")
-rpm_python_packages=("python3")
-
-case ${distro} in
-    ubuntu)
-        export LC_CTYPE=C.UTF-8
-        # This overrides the base image configuration
-        echo 'APT::Get::AllowUnauthenticated "true";' > /etc/apt/apt.conf.d/99allow-unauthenticated
-        mv /etc/apt/sources.list /etc/apt/sources.list.bak
-        cat > /etc/apt/sources.list <<EOF
-deb ${APT_MIRROR} ${distro_version} main universe
-deb ${APT_MIRROR} ${distro_version}-updates main universe
-deb ${APT_MIRROR} ${distro_version}-security main universe
-deb ${APT_MIRROR} ${distro_version}-backports main universe
+export LC_CTYPE=C.UTF-8
+# This overrides the base image configuration
+echo 'APT::Get::AllowUnauthenticated "true";' > /etc/apt/apt.conf.d/99allow-unauthenticated
+mv /etc/apt/sources.list /etc/apt/sources.list.bak
+cat > /etc/apt/sources.list <<EOF
+deb ${APT_MIRROR} ${DISTRIB_CODENAME} main universe
+deb ${APT_MIRROR} ${DISTRIB_CODENAME}-updates main universe
+deb ${APT_MIRROR} ${DISTRIB_CODENAME}-security main universe
+deb ${APT_MIRROR} ${DISTRIB_CODENAME}-backports main universe
 EOF
-        apt-get update
-        if [[ ! -z "$(apt-cache search ^python3-distutils$)" ]]; then
-            dpkg_python_packages+=("python3-distutils")
-        fi
-        apt-get upgrade -y
-        apt-get install -y --no-install-recommends \
-            git \
-            ca-certificates \
-            netbase \
-            lsb-release \
-            patch \
-            sudo \
-            wget \
-            bind9-host \
-            ${dpkg_python_packages[@]}
-        apt-get install -y --no-install-recommends \
-            libpython3.$(python3 -c 'import sys; print(sys.version_info.minor);')
-        ;;
-    centos)
-        export LC_CTYPE=en_US.UTF-8
-        yum upgrade -y
-        yum install -y --setopt=skip_missing_names_on_install=False \
-            git \
-            patch \
-            redhat-lsb-core \
-            sudo \
-            bind-utils \
-            ${rpm_python_packages[@]}
-        if [[ "${PYTHON3}" != "no" ]]; then
-          pip3 install virtualenv
-        fi
-        ;;
-    *)
-        echo "Unknown distro: ${distro}"
-        exit 1
-        ;;
-esac
+apt-get update
+apt-get upgrade -y
+apt-get install -y --no-install-recommends \
+    git \
+    netbase \
+    patch \
+    sudo \
+    bind9-host \
+    python3 \
+    python3-venv
+if [[ ! -z "$(apt-cache search ^python3-distutils$)" ]]; then
+    apt-get install -y --no-install-recommends python3-distutils
+fi
+apt-get install -y --no-install-recommends \
+    libpython3.$(python3 -c 'import sys; print(sys.version_info.minor);')
 
 if [[ "${PROJECT}" == "requirements" ]]; then
     $(dirname $0)/requirements.sh

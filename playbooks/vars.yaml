@@ -9,8 +9,8 @@ apt_mirror: "[trusted=yes] https://{{ zuul_site_mirror_fqdn | default('archive.u
 
 base_image:
   context: "."
-  dockerfile: "dockerfiles/ubuntu/Dockerfile"
-  container_filename: "dockerfiles/ubuntu/Dockerfile"
+  dockerfile: "Dockerfile.base"
+  container_filename: "Dockerfile.base"
   repository: "base"
   tags: &tags
     - "{{ image_tag }}"
