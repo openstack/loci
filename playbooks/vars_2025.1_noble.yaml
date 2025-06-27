@@ -21,3 +21,5 @@ openstack_images:
   - "{{ placement_image }}"
   - "{{ tacker_image}}"
   - "{{ watcher_image }}"
+  - "{{ freezer_image }}"
+  - "{{ freezer_api_image }}"

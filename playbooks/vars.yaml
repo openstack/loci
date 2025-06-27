@@ -124,6 +124,43 @@ glance_image:
     - "KEEP_ALL_WHEELS=yes"
     - "APT_MIRROR='{{ apt_mirror }}'"
 
+freezer_image:
+  context: "."
+  dockerfile: "Dockerfile"
+  container_filename: "Dockerfile"
+  target: "project"
+  registry: "{{ image_registry.host }}"
+  repository: "{{ image_registry.host }}/{{ image_registry.org }}/freezer"
+  tags: *tags
+  build_args:
+    - "FROM='base:{{ image_tag }}'"
+    - "PROJECT='freezer'"
+    - "PROJECT_REF={{ openstack_release }}"
+    - "PROFILES='fluent ceph lvm qemu scheduler apache'"
+    - "PIP_PACKAGES='python-swiftclient python-keystoneclient python-cinderclient'"
+    - "WHEELS='{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
+    - "KEEP_ALL_WHEELS=yes"
+    - "DIST_PACKAGES='rsync tar gzip bzip2 lzop cron'"
+    - "APT_MIRROR='{{ apt_mirror }}'"
+
+freezer_api_image:
+  context: "."
+  dockerfile: "Dockerfile"
+  container_filename: "Dockerfile"
+  target: "project"
+  registry: "{{ image_registry.host }}"
+  repository: "{{ image_registry.host }}/{{ image_registry.org }}/freezer-api"
+  tags: *tags
+  build_args:
+    - "FROM='base:{{ image_tag }}'"
+    - "PROJECT='freezer-api'"
+    - "PROJECT_REF={{ openstack_release }}"
+    - "PROFILES='fluent apache'"
+    - "PIP_PACKAGES='python-swiftclient python-keystoneclient'"
+    - "WHEELS='{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
+    - "KEEP_ALL_WHEELS=yes"
+    - "APT_MIRROR='{{ apt_mirror }}'"
+
 heat_image:
   context: "."
   dockerfile: "Dockerfile"
@@ -307,6 +344,8 @@ openstack_client_pip_packages:
   - python-watcherclient
   - python-zaqarclient
   - python-zunclient
+  - python-freezerclient
+
 openstack_client_image:
   context: "."
   dockerfile: "Dockerfile"
