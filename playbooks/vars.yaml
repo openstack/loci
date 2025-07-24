@@ -54,6 +54,25 @@ barbican_image:
     - "PIP_ARGS='--only-binary :none:'"
     - "APT_MIRROR='{{ apt_mirror }}'"
 
+blazar_image:
+  context: "."
+  dockerfile: "Dockerfile"
+  container_filename: "Dockerfile"
+  target: "project"
+  registry: "{{ image_registry.host }}"
+  repository: "{{ image_registry.host }}/{{ image_registry.org }}/blazar"
+  tags: *tags
+  build_args:
+    - "FROM='base:{{ image_tag }}'"
+    - "PROJECT='blazar'"
+    - "PROJECT_REF={{ openstack_release }}"
+    - "PROFILES='fluent apache ldap'"
+    - "PIP_PACKAGES='python-memcached pymemcache'"
+    - "WHEELS='{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
+    - "KEEP_ALL_WHEELS=yes"
+    - "DIST_PACKAGES='curl ca-certificates'"
+    - "APT_MIRROR='{{ apt_mirror }}'"
+
 cinder_image:
   context: "."
   dockerfile: "Dockerfile"

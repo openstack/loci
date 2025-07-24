@@ -22,3 +22,4 @@ openstack_images:
   - "{{ watcher_image }}"
   - "{{ freezer_image }}"
   - "{{ freezer_api_image }}"
+  - "{{ blazar_image }}"
