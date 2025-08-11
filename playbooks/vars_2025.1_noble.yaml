@@ -24,3 +24,4 @@ openstack_images:
   - "{{ freezer_image }}"
   - "{{ freezer_api_image }}"
   - "{{ blazar_image }}"
+  - "{{ zaqar_image }}"
