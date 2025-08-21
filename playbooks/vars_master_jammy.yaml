@@ -5,6 +5,7 @@ ceph_repo: "deb https://download.ceph.com/debian-squid/ jammy main"
 openstack_images:
   - "{{ barbican_image }}"
   - "{{ cinder_image }}"
+  - "{{ cloudkitty_image }}"
   - "{{ cyborg_image }}"
   - "{{ designate_image }}"
   - "{{ glance_image }}"

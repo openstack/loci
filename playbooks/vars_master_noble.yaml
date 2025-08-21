@@ -6,6 +6,7 @@ ceph_repo: ""
 openstack_images:
   - "{{ barbican_image }}"
   - "{{ cinder_image }}"
+  - "{{ cloudkitty_image }}"
   - "{{ cyborg_image }}"
   - "{{ designate_image }}"
   - "{{ glance_image }}"

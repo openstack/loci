@@ -91,6 +91,23 @@ cinder_image:
     - "KEEP_ALL_WHEELS=yes"
     - "APT_MIRROR='{{ apt_mirror }}'"
 
+cloudkitty_image:
+  context: "."
+  dockerfile: "Dockerfile"
+  container_filename: "Dockerfile"
+  target: "project"
+  registry: "{{ image_registry.host }}"
+  repository: "{{ image_registry.host }}/{{ image_registry.org }}/cinder"
+  tags: *tags
+  build_args:
+    - "FROM='base:{{ image_tag }}'"
+    - "PROJECT='cloudkitty'"
+    - "PROJECT_REF={{ openstack_release }}"
+    - "PROFILES='fluent'"
+    - "WHEELS='{{ image_registries[0].host }}/{{ image_registries[0].org }}/requirements:{{ image_tag }}'"
+    - "KEEP_ALL_WHEELS=yes"
+    - "APT_MIRROR='{{ apt_mirror }}'"
+
 cyborg_image:
   context: "."
   dockerfile: "Dockerfile"
@@ -344,6 +361,8 @@ openstack_client_pip_packages:
   - python-barbicanclient
   - python-blazarclient
   - python-cinderclient
+  - python-cloudkittyclient
+  - python-cyborgclient
   - python-designateclient
   - python-glanceclient
   - python-heatclient
