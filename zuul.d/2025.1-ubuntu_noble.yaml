@@ -43,6 +43,8 @@
 - job:
     name: loci-compute-kit-2025-1-ubuntu_noble
     parent: openstack-helm-compute-kit-2025-1-ubuntu_noble
+    files:
+      - ^.*$
     required-projects:
       - openstack/openstack-helm
     dependencies:
@@ -54,6 +56,8 @@
 - job:
     name: loci-cinder-2025-1-ubuntu_noble
     parent: openstack-helm-cinder-2025-1-ubuntu_noble
+    files:
+      - ^.*$
     required-projects:
       - openstack/openstack-helm
     dependencies:

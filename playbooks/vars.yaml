@@ -97,7 +97,7 @@ cloudkitty_image:
   container_filename: "Dockerfile"
   target: "project"
   registry: "{{ image_registry.host }}"
-  repository: "{{ image_registry.host }}/{{ image_registry.org }}/cinder"
+  repository: "{{ image_registry.host }}/{{ image_registry.org }}/cloudkitty"
   tags: *tags
   build_args:
     - "FROM='base:{{ image_tag }}'"
