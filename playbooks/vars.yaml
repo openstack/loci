@@ -468,3 +468,4 @@ zaqar_image:
     - "WHEELS='{{ image_registry.host }}/{{ image_registry.org }}/requirements:{{ image_tag }}'"
     - "KEEP_ALL_WHEELS=yes"
     - "APT_MIRROR='{{ apt_mirror }}'"
+    - "PIP_PACKAGES='redis'"
