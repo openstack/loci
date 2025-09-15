@@ -34,36 +34,14 @@
       environment:
         LC_ALL: C
 
-    - name: Build base image
+    - name: Build images
       include_role:
         name: build-container-image
       vars:
-        container_images:
-          - "{{ base_image }}"
-
-    - name: Build requirements image
-      include_role:
-        name: build-container-image
-      vars:
-        container_images:
-          - "{{ requirements_image }}"
-      loop_control:
-        loop_var: image_registry
-      loop: "{{ image_registries }}"
-
-    - name: Build project images
-      include_role:
-        name: build-container-image
-      vars:
-        container_images: "{{ openstack_images }}"
-      loop_control:
-        loop_var: image_registry
-      loop: "{{ image_registries }}"
+        container_images: "{{ [base_image] + [requirements_image] + openstack_images }}"
 
     - name: Return images to zuul
       include_tasks: _return-image.yml
       loop: "{{ openstack_images }}"
       loop_control:
         loop_var: zj_image
-      vars:
-        image_registry: "{{ image_registries[0] }}"

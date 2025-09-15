@@ -13,7 +13,4 @@
       include_role:
         name: promote-container-image
       vars:
-        container_images: "{{ openstack_images + [requirements_image] }}"
-      loop_control:
-        loop_var: image_registry
-      loop: "{{ image_registries }}"
+        container_images: "{{ [requirements_image] + openstack_images }}"
