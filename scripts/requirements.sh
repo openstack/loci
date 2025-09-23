@@ -85,6 +85,12 @@ if [[ ${PROJECT_REF} == "stable/2025.1" ]]; then
     sed -i "s|^python-openstackclient===.*|git+https://opendev.org/openstack/python-openstackclient.git@stable/2025.1#egg=python-openstackclient|g" /upper-constraints.txt
 fi
 
+# NOTE: This is to install tap-as-a-service the stable/2025.2 branch
+#       It has been removed from the upper-constraints.txt.
+if [[ ${PROJECT_REF} == "stable/2025.2" ]]; then
+    echo "git+https://opendev.org/openstack/tap-as-a-service.git@stable/2025.2#egg=tap-as-a-service" >> /upper-constraints.txt
+fi
+
 mkdir /source-wheels
 # Pre-build wheels for unnamed constraints
 for entry in $(grep '^git+' /upper-constraints.txt); do
