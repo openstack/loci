@@ -15,6 +15,7 @@ openstack_images:
   - "{{ ironic_image }}"
   - "{{ keystone_image }}"
   - "{{ manila_image }}"
+  - "{{ mistral_image }}"
   - "{{ neutron_image }}"
   - "{{ nova_image }}"
   - "{{ octavia_image }}"
