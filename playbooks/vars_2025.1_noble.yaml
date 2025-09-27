@@ -5,6 +5,7 @@ openstack_release: "stable/2025.1"
 ceph_repo: ""
 openstack_images:
   - "{{ barbican_image }}"
+  - "{{ ceilometer_image }}"
   - "{{ cinder_image }}"
   - "{{ cloudkitty_image }}"
   - "{{ cyborg_image }}"
