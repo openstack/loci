@@ -14,6 +14,7 @@ openstack_images:
   - "{{ horizon_image }}"
   - "{{ ironic_image }}"
   - "{{ keystone_image }}"
+  - "{{ magnum_image }}"
   - "{{ manila_image }}"
   - "{{ mistral_image }}"
   - "{{ neutron_image }}"

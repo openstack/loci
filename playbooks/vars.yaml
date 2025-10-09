@@ -287,6 +287,22 @@ keystone_image:
     - "KEEP_ALL_WHEELS=yes"
     - "APT_MIRROR='{{ apt_mirror }}'"
 
+magnum_image:
+  context: "."
+  dockerfile: "Dockerfile"
+  container_filename: "Dockerfile"
+  target: "project"
+  registry: "{{ image_registry.host }}"
+  repository: "{{ image_registry.host }}/{{ image_registry.org }}/magnum"
+  tags: *tags
+  build_args:
+    - "FROM='{{ image_registry.host }}/{{ image_registry.org }}/base:{{ image_tag }}'"
+    - "PROJECT='magnum'"
+    - "PROJECT_REF={{ openstack_release }}"
+    - "WHEELS='{{ image_registry.host }}/{{ image_registry.org }}/requirements:{{ image_tag }}'"
+    - "KEEP_ALL_WHEELS=yes"
+    - "APT_MIRROR='{{ apt_mirror }}'"
+
 manila_image:
   context: "."
   dockerfile: "Dockerfile"
