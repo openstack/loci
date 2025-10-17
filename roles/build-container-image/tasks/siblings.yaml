@@ -1,0 +1,26 @@
+- name: Check sibling directory
+  stat:
+    path: '{{ zuul_work_dir }}/{{ zj_image.context }}/.zuul-siblings'
+  register: _dot_zuul_siblings
+
+# This should have been cleaned up; multiple builds may specify
+# different siblings to include so we need to start fresh.
+- name: Check for clean build
+  assert:
+    that: not _dot_zuul_siblings.stat.exists
+
+- name: Create sibling source directory
+  file:
+    path: '{{ zuul_work_dir }}/{{ zj_image.context }}/.zuul-siblings'
+    state: directory
+    mode: 0755
+  when: zj_image.siblings is defined
+
+- name: Copy sibling source directories
+  command:
+    cmd: 'cp --parents -r {{ zj_sibling }} {{ ansible_user_dir }}/{{ zuul_work_dir }}/{{ zj_image.context }}/.zuul-siblings'
+    chdir: '~/src'
+  loop: '{{ zj_image.siblings }}'
+  loop_control:
+    loop_var: zj_sibling
+  when: zj_image.siblings is defined

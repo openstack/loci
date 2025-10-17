@@ -1,0 +1,21 @@
+- name: Log in to registry
+  command: "{{ container_command }} login -u {{ container_registry_credentials[zj_image.registry].username }} -p {{ container_registry_credentials[zj_image.registry].password }} {{ zj_image.registry }}"
+  no_log: true
+
+- name: Publish images
+  block:
+    - name: Upload tag to registry
+      vars:
+        promote_tag_prefix: "{{ ('change_' + zuul.change) if (zuul.change is defined) else zuul.pipeline }}_"
+      command: "{{ container_command }} push {{ zj_image.repository }}:{{ upload_container_image_promote | ternary(promote_tag_prefix, '') }}{{ zj_image_tag }}"
+      loop: "{{ zj_image.tags | default(['latest']) }}"
+      loop_control:
+        loop_var: zj_image_tag
+      register: result
+      until: result.rc == 0
+      retries: 3
+      delay: 30
+
+  always:
+    - name: Log out of registry
+      command: "{{ container_command }} logout {{ zj_image.registry }}"

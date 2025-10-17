@@ -1,5 +1,8 @@
 - job:
     name: loci-build-2025-1-ubuntu_jammy
+    roles:
+      - zuul: openstack/loci
+      - zuul: zuul/zuul-jobs
     timeout: 10800
     dependencies:
       - name: loci-buildset-registry
@@ -14,6 +17,9 @@
 
 - job:
     name: loci-upload-2025-1-ubuntu_jammy
+    roles:
+      - zuul: openstack/loci
+      - zuul: zuul/zuul-jobs
     timeout: 10800
     dependencies:
       - name: loci-buildset-registry
@@ -31,6 +37,9 @@
 
 - job:
     name: loci-promote-2025-1-ubuntu_jammy
+    roles:
+      - zuul: openstack/loci
+      - zuul: zuul/zuul-jobs
     run:
       - playbooks/promote.yaml
     vars: *vars

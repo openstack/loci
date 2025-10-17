@@ -1,0 +1,19 @@
+- name: Tag image for buildset registry
+  command: >-
+    {{ container_command }} tag {{ zj_image.repository }}:{{ zj_image_tag }} {{ buildset_registry_alias }}:{{ buildset_registry.port }}/{{ zj_image.repository }}:{{ zj_image_tag }}
+  register: result
+  until: result is succeeded
+  retries: 3
+  loop: "{{ zj_image.tags | default(['latest']) }}"
+  loop_control:
+    loop_var: zj_image_tag
+
+- name: Push tag to buildset registry
+  command: >-
+    {{ container_command }} push {{ buildset_registry_alias }}:{{ buildset_registry.port }}/{{ zj_image.repository }}:{{ zj_image_tag }}
+  register: result
+  until: result is succeeded
+  retries: 3
+  loop: "{{ zj_image.tags | default(['latest']) }}"
+  loop_control:
+    loop_var: zj_image_tag

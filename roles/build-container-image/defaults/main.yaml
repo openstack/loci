@@ -1,0 +1,5 @@
+zuul_work_dir: "{{ zuul.project.src_dir }}"
+container_command: podman
+container_build_extra_env: {}
+# synced with roles/build-docker-image/defaults/main.yaml
+container_builder_image: quay.io/opendevmirror/buildkit:buildx-stable-1

@@ -1,0 +1,32 @@
+- name: Control when we push to the upstream registry
+  # We only want to push upstream if we are in a release / tag pipeline or
+  # if we are using the tag promotion method.
+  block:
+    - name: Verify repository names
+      when: |
+        container_registry_credentials is defined
+        and zj_image.registry not in container_registry_credentials
+      loop: "{{ container_images }}"
+      loop_control:
+        loop_var: zj_image
+      fail:
+        msg: "{{ zj_image.registry }} credentials not found"
+
+    - name: Verify repository permission
+      when: |
+        container_registry_credentials[zj_image.registry].repository is defined and
+        not zj_image.repository | regex_search(container_registry_credentials[zj_image.registry].repository)
+      loop: "{{ container_images }}"
+      loop_control:
+        loop_var: zj_image
+      fail:
+        msg: "{{ zj_image.repository }} not permitted by {{ container_registry_credentials[zj_image.registry].repository }}"
+
+    - name: Upload image to container registry
+      loop: "{{ container_images }}"
+      loop_control:
+        loop_var: zj_image
+      include_tasks: push.yaml
+  when:
+    - inventory_hostname == ansible_play_hosts[0]
+    - not upload_container_image_promote|default(true) or promote_container_image_method|default('tag') == 'tag'

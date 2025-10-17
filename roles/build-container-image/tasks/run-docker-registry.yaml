@@ -1,0 +1,52 @@
+# Required vars:
+#  registry:
+#      host: "{{ ansible_host }}"
+#      port: 5000
+#      username: zuul
+#      password: testpassword
+#  container_command: docker
+
+- name: Install container system
+  include_role:
+    name: "ensure-{{ container_command }}"
+
+- name: Create temporary registry working directory
+  tempfile:
+    state: directory
+  register: registry_tempdir
+
+- name: Create auth directory
+  file:
+    path: "{{ registry_tempdir.path }}/auth"
+    state: directory
+    mode: 0755
+
+- name: Install passlib for htpasswd
+  become: true
+  package:
+    name:
+      - python3-passlib
+      - python3-bcrypt
+    state: present
+
+- name: Write htpasswd file
+  htpasswd:
+    create: true
+    crypt_scheme: bcrypt
+    path: "{{ registry_tempdir.path }}/auth/htpasswd"
+    mode: 0644
+    name: "{{ registry.username }}"
+    password: "{{ registry.password }}"
+
+- name: Start registry with basic auth
+  command: >-
+    {{ container_command }} run -d \
+    -p {{ registry.port }}:5000
+    --restart=always
+    -v {{ registry_tempdir.path }}/auth:/auth \
+    -e "REGISTRY_AUTH=htpasswd" \
+    -e "REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm" \
+    -e REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd \
+    quay.io/opendevmirror/registry:2
+  args:
+    chdir: "{{ registry_tempdir.path }}"

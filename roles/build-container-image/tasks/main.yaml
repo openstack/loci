@@ -1,0 +1,100 @@
+- name: Check for results.json
+  stat:
+    path: "{{ zuul.executor.result_data_file }}"
+  register: result_json_stat
+  delegate_to: localhost
+
+# This can be removed if we add this functionality to Zuul directly
+- name: Load information from zuul_return
+  set_fact:
+    buildset_registry: "{{ (lookup('file', zuul.executor.result_data_file) | from_json)['secret_data']['buildset_registry'] }}"
+  when:
+    - buildset_registry is not defined
+    - result_json_stat.stat.exists
+    - result_json_stat.stat.size > 0
+    - "'buildset_registry' in (lookup('file', zuul.executor.result_data_file) | from_json).get('secret_data')"
+  no_log: true
+
+# Docker, and therefore skopeo and podman, don't understand docker
+# push [1234:5678::]:5000/image/path:tag so we set up /etc/hosts with
+# a registry alias name to support ipv6 and 4.
+- name: Configure /etc/hosts for buildset_registry to workaround not understanding ipv6 addresses
+  become: yes
+  lineinfile:
+    path: /etc/hosts
+    state: present
+    regex: "^{{ buildset_registry.host }}\tzuul-jobs.buildset-registry$"
+    line: "{{ buildset_registry.host }}\tzuul-jobs.buildset-registry"
+    insertafter: EOF
+  when: buildset_registry is defined and buildset_registry.host | ipaddr
+
+- name: Set buildset_registry alias variable when using ip
+  set_fact:
+    buildset_registry_alias: zuul-jobs.buildset-registry
+  when: buildset_registry is defined and buildset_registry.host | ipaddr
+
+- name: Set buildset_registry alias variable when using name
+  set_fact:
+    buildset_registry_alias: "{{ buildset_registry.host }}"
+  when: buildset_registry is defined and not ( buildset_registry.host | ipaddr )
+
+- name: Determine if we are building multiarch or not
+  set_fact:
+    _multiarch: "{{ container_images | selectattr('arch', 'defined') | list }}"
+
+- name: Multiarch podman block
+  when:
+    - _multiarch
+    - container_command == 'podman'
+  block:
+    - name: Unimplemented podman multiarch block
+      fail:
+        msg: "Multiarch podman is not yet implemented"
+
+- name: Normal podman build block
+  when: container_command == 'podman'
+  block:
+    - name: Build container images
+      include_tasks: build.yaml
+      loop: "{{ container_images }}"
+      loop_control:
+        loop_var: zj_image
+
+    # Push each image.
+    - name: Push image to buildset registry
+      when: buildset_registry is defined
+      include_tasks: push.yaml
+      loop: "{{ container_images }}"
+      loop_control:
+        loop_var: zj_image
+
+# Docker multiarch and native arch all use buildx. This ensures that we are
+# able to take advantage of speculative container states through the custom
+# buildx builder.
+- name: Docker build block
+  when: container_command == 'docker'
+  vars:
+    temp_registry:
+      host: "127.0.0.1"
+      port: 5100
+      username: zuul
+      password: tempregistry
+  block:
+    - name: Set up a temporary registry for holding buildx-built images
+      import_tasks: run-docker-registry.yaml
+      vars:
+        registry: "{{ temp_registry }}"
+
+    - name: Log in to temporary registry
+      command: "docker login -u {{ temp_registry.username }} -p {{ temp_registry.password }} {{ temp_registry.host }}:{{ temp_registry.port }}"
+
+    - name: Set up buildx builders
+      include_tasks: setup-buildx.yaml
+
+    # TODO is push here wrong?
+    - name: Build and push each image using buildx.
+      include_tasks: buildx.yaml
+      loop: "{{ container_images }}"
+      loop_control:
+        loop_var: zj_image
+      when: inventory_hostname == ansible_play_hosts[0]

@@ -1,5 +1,8 @@
 - job:
     name: loci-build-master-ubuntu_jammy
+    roles:
+      - zuul: openstack/loci
+      - zuul: zuul/zuul-jobs
     timeout: 10800
     voting: false
     dependencies:
@@ -15,6 +18,9 @@
 
 - job:
     name: loci-upload-master-ubuntu_jammy
+    roles:
+      - zuul: openstack/loci
+      - zuul: zuul/zuul-jobs
     timeout: 10800
     voting: false
     dependencies:
@@ -33,6 +39,9 @@
 
 - job:
     name: loci-promote-master-ubuntu_jammy
+    roles:
+      - zuul: openstack/loci
+      - zuul: zuul/zuul-jobs
     voting: false
     run:
       - playbooks/promote.yaml

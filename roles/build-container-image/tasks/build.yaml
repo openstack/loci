@@ -1,0 +1,41 @@
+- name: Set container filename arg
+  set_fact:
+    containerfile: "{{ zj_image.container_filename | default(container_filename) | default('') }}"
+
+- name: Set up siblings
+  include_tasks: siblings.yaml
+
+- name: Build a container image
+  vars:
+    tag_prefix: "{{ ('change_' + zuul.change) if (zuul.change is defined) else zuul.pipeline }}_"
+  command: >-
+    {{ container_command }} build {{ zj_image.path | default('.') }} {% if containerfile %}-f {{ containerfile }}{% endif %}
+    {% if container_command == 'podman' -%}
+      --cgroup-manager cgroupfs
+    {% endif -%}
+    {% if zj_image.target | default(false) -%}
+      --target {{ zj_image.target }}
+    {% endif -%}
+    {% for build_arg in zj_image.build_args | default([]) -%}
+      --build-arg {{ build_arg }}
+    {% endfor -%}
+    {% if zj_image.siblings | default(false) -%}
+      --build-arg "ZUUL_SIBLINGS={{ zj_image.siblings | join(' ') }}"
+    {% endif -%}
+    {% for tag in zj_image.tags | default(['latest']) -%}
+      --tag {{ zj_image.repository }}:{{ tag_prefix }}{{ tag }}
+      --tag {{ zj_image.repository }}:{{ tag }}
+    {% endfor -%}
+    {% for label in zj_image.labels | default([]) -%}
+      --label "{{ label }}"
+    {% endfor %}
+    {% if zuul.change | default(false) -%}
+      --label "org.zuul-ci.change={{ zuul.change }}"
+    {% endif -%}
+    --label "org.zuul-ci.change_url={{ zuul.change_url }}"
+  args:
+    chdir: "{{ zuul_work_dir }}/{{ zj_image.context }}"
+  environment: "{{ container_build_extra_env }}"
+
+- name: Cleanup sibling source directory
+  include_tasks: clean-siblings.yaml

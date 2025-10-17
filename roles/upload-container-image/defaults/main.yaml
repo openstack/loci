@@ -1,0 +1,2 @@
+zuul_work_dir: "{{ zuul.project.src_dir }}"
+upload_container_image_promote: true
