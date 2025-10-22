@@ -469,6 +469,23 @@ placement_image:
     - "KEEP_ALL_WHEELS=yes"
     - "APT_MIRROR='{{ apt_mirror }}'"
 
+skyline_image:
+  context: "."
+  dockerfile: "Dockerfile"
+  container_filename: "Dockerfile"
+  target: "project"
+  registry: "{{ image_registry.host }}"
+  repository: "{{ image_registry.host }}/{{ image_registry.org }}/skyline"
+  tags: *tags
+  build_args:
+    - "FROM='{{ image_registry.host }}/{{ image_registry.org }}/base:{{ image_tag }}'"
+    - "PROJECT='skyline-apiserver'"
+    - "PROJECT_REF={{ openstack_release }}"
+    - "WHEELS='{{ image_registry.host }}/{{ image_registry.org }}/requirements:{{ image_tag }}'"
+    - "KEEP_ALL_WHEELS=False"
+    - "APT_MIRROR='{{ apt_mirror }}'"
+    - "SKYLINE_CONSOLE_REF={{ openstack_release }}"
+
 tacker_image:
   context: "."
   dockerfile: "Dockerfile"

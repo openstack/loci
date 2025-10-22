@@ -26,10 +26,12 @@
         - loci-build-2025-2-ubuntu_noble
         # - loci-compute-kit-2025-2-ubuntu_noble
         # - loci-cinder-2025-2-ubuntu_noble
-        # Master Ubuntu Jammy
-        - loci-build-master-ubuntu_jammy
-        # Master Ubuntu Noble
-        - loci-build-master-ubuntu_noble
+
+        # Disabled for now because master builds are unstable
+        # # Master Ubuntu Jammy
+        # - loci-build-master-ubuntu_jammy
+        # # Master Ubuntu Noble
+        # - loci-build-master-ubuntu_noble
     gate:
       jobs:
         - loci-buildset-registry
