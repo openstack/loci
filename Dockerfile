@@ -49,6 +49,9 @@ ARG NOVNC_REF=v1.0.0
 ARG SPICE_REPO=https://gitlab.freedesktop.org/spice/spice-html5.git
 ARG SPICE_REF=spice-html5-0.1.6
 
+ARG SKYLINE_CONSOLE_REPO=https://opendev.org/openstack/skyline-console
+ARG SKYLINE_CONSOLE_REF=master
+
 # End Nova arguments
 
 # Virtualenv arguments
