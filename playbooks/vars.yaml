@@ -485,6 +485,7 @@ skyline_image:
     - "KEEP_ALL_WHEELS=False"
     - "APT_MIRROR='{{ apt_mirror }}'"
     - "SKYLINE_CONSOLE_REF={{ openstack_release }}"
+    - "DIST_PACKAGES='nginx'"
 
 tacker_image:
   context: "."
