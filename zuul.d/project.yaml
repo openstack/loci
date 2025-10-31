@@ -2,10 +2,6 @@
     check:
       jobs:
         - loci-buildset-registry
-        # 2024.1 Ubuntu Jammy
-        - loci-build-2024-1-ubuntu_jammy
-        - loci-compute-kit-2024-1-ubuntu_jammy
-        - loci-cinder-2024-1-ubuntu_jammy
         # 2024.2 Ubuntu Jammy
         - loci-build-2024-2-ubuntu_jammy
         - loci-compute-kit-2024-2-ubuntu_jammy
@@ -18,52 +14,31 @@
         - loci-build-2025-1-ubuntu_noble
         - loci-compute-kit-2025-1-ubuntu_noble
         - loci-cinder-2025-1-ubuntu_noble
-        # 2025.2 Ubuntu Jammy
-        - loci-build-2025-2-ubuntu_jammy
-        # - loci-compute-kit-2025-2-ubuntu_jammy
-        # - loci-cinder-2025-2-ubuntu_jammy
         # 2025.2 Ubuntu Noble
         - loci-build-2025-2-ubuntu_noble
-        # - loci-compute-kit-2025-2-ubuntu_noble
-        # - loci-cinder-2025-2-ubuntu_noble
-
+        - loci-compute-kit-2025-2-ubuntu_noble
+        - loci-cinder-2025-2-ubuntu_noble
         # Disabled for now because master builds are unstable
-        # # Master Ubuntu Jammy
-        # - loci-build-master-ubuntu_jammy
         # # Master Ubuntu Noble
         # - loci-build-master-ubuntu_noble
     gate:
       jobs:
         - loci-buildset-registry
-        - loci-upload-2024-1-ubuntu_jammy
         - loci-upload-2024-2-ubuntu_jammy
         - loci-upload-2025-1-ubuntu_jammy
         - loci-upload-2025-1-ubuntu_noble
-        - loci-upload-2025-2-ubuntu_jammy
         - loci-upload-2025-2-ubuntu_noble
-        - loci-upload-master-ubuntu_jammy
-        - loci-upload-master-ubuntu_noble
+        # - loci-upload-master-ubuntu_noble
     promote:
       jobs:
-        - loci-promote-2024-1-ubuntu_jammy
         - loci-promote-2024-2-ubuntu_jammy
         - loci-promote-2025-1-ubuntu_jammy
         - loci-promote-2025-1-ubuntu_noble
-        - loci-promote-2025-2-ubuntu_jammy
         - loci-promote-2025-2-ubuntu_noble
-        - loci-promote-master-ubuntu_jammy
-        - loci-promote-master-ubuntu_noble
+        # - loci-promote-master-ubuntu_noble
     periodic:
       jobs:
         - loci-buildset-registry
-        # 2024.1 Ubuntu Jammy
-        - loci-upload-2024-1-ubuntu_jammy
-        - loci-compute-kit-2024-1-ubuntu_jammy
-        - loci-cinder-2024-1-ubuntu_jammy
-        - loci-promote-2024-1-ubuntu_jammy:
-            dependencies:
-              - name: loci-compute-kit-2024-1-ubuntu_jammy
-              - name: loci-cinder-2024-1-ubuntu_jammy
         # 2024.2 Ubuntu Jammy
         - loci-upload-2024-2-ubuntu_jammy
         - loci-compute-kit-2024-2-ubuntu_jammy
@@ -88,31 +63,16 @@
             dependencies:
               - name: loci-compute-kit-2025-1-ubuntu_noble
               - name: loci-cinder-2025-1-ubuntu_noble
-        # 2025.2 Ubuntu Jammy
-        - loci-upload-2025-2-ubuntu_jammy
-        # - loci-compute-kit-2025-2-ubuntu_jammy
-        # - loci-cinder-2025-2-ubuntu_jammy
-        - loci-promote-2025-2-ubuntu_jammy:
-            dependencies:
-              - name: loci-upload-2025-2-ubuntu_jammy
-              # - name: loci-compute-kit-2025-2-ubuntu_jammy
-              # - name: loci-cinder-2025-2-ubuntu_jammy
         # 2025.2 Ubuntu Noble
         - loci-upload-2025-2-ubuntu_noble
-        # - loci-compute-kit-2025-2-ubuntu_noble
-        # - loci-cinder-2025-2-ubuntu_noble
+        - loci-compute-kit-2025-2-ubuntu_noble
+        - loci-cinder-2025-2-ubuntu_noble
         - loci-promote-2025-2-ubuntu_noble:
             dependencies:
-              - name: loci-upload-2025-2-ubuntu_noble
-              # - name: loci-compute-kit-2025-2-ubuntu_noble
-              # - name: loci-cinder-2025-2-ubuntu_noble
-        # Master Ubuntu Jammy
-        - loci-upload-master-ubuntu_jammy
-        - loci-promote-master-ubuntu_jammy:
-            dependencies:
-              - name: loci-upload-master-ubuntu_jammy
-        # Master Ubuntu Noble
-        - loci-upload-master-ubuntu_noble
-        - loci-promote-master-ubuntu_noble:
-            dependencies:
-              - name: loci-upload-master-ubuntu_noble
+              - name: loci-compute-kit-2025-2-ubuntu_noble
+              - name: loci-cinder-2025-2-ubuntu_noble
+        # # Master Ubuntu Noble
+        # - loci-upload-master-ubuntu_noble
+        # - loci-promote-master-ubuntu_noble:
+        #     dependencies:
+        #       - name: loci-upload-master-ubuntu_noble

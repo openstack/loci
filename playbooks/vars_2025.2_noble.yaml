@@ -1,7 +1,7 @@
 image_tag: "2025.2-ubuntu_noble"
 distro_image: "public.ecr.aws/ubuntu/ubuntu:noble"
 openstack_release: "stable/2025.2"
-# NOTE: Ubuntu Noble provides Ceph Squid packages out of the box
+# NOTE: Ubuntu Noble provides Ceph packages out of the box
 ceph_repo: ""
 openstack_images:
   - "{{ barbican_image }}"
