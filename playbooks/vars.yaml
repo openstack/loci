@@ -503,6 +503,24 @@ tacker_image:
     - "KEEP_ALL_WHEELS=yes"
     - "APT_MIRROR='{{ apt_mirror }}'"
 
+trove_image:
+  context: "."
+  dockerfile: "Dockerfile"
+  container_filename: "Dockerfile"
+  target: "project"
+  registry: "{{ image_registry.host }}"
+  repository: "{{ image_registry.host }}/{{ image_registry.org }}/trove"
+  tags: *tags
+  build_args:
+    - "FROM='{{ image_registry.host }}/{{ image_registry.org }}/base:{{ image_tag }}'"
+    - "PROJECT='trove'"
+    - "PROJECT_REF={{ openstack_release }}"
+    - "PROFILES='apache'"
+    - "DIST_PACKAGES='mysql-client postgresql-client curl'"
+    - "PIP_PACKAGES='python-swiftclient'"
+    - "WHEELS='{{ image_registry.host }}/{{ image_registry.org }}/requirements:{{ image_tag }}'"
+    - "KEEP_ALL_WHEELS=yes"
+
 watcher_image:
   context: "."
   dockerfile: "Dockerfile"
