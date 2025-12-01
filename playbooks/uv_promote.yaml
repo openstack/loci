@@ -1,0 +1,16 @@
+- hosts: localhost
+  tasks:
+    - name: Vars
+      include_vars:
+        file: "uv_vars.yaml"
+
+    - name: Job vars
+      include_vars:
+        file: "{{ item }}"
+      loop: "{{ vars_files }}"
+
+    - name: Promote images
+      include_role:
+        name: promote-container-image
+      vars:
+        container_images: "{{ [base_image] + [venv_builder_image] + openstack_images }}"

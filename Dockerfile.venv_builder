@@ -1,0 +1,25 @@
+ARG FROM=ubuntu:jammy
+FROM ${FROM}
+
+# APT mirror to use for package installs
+ARG APT_MIRROR="https://archive.ubuntu.com/ubuntu/"
+
+ENV PATH=/var/lib/openstack/bin:$PATH
+ENV LANG=C.UTF-8
+
+# Project metadata
+ARG REQUIREMENTS_REPO=https://opendev.org/openstack/requirements.git
+ARG REQUIREMENTS_REF=master
+
+# Directory to use for source code checkouts and builds
+ARG SOURCES_DIR="/tmp"
+
+# Optional constraints for pip, setuptools, and wheel
+ARG PIP_VERSION_CONSTRAINT=""
+ARG SETUPTOOL_CONSTRAINT=""
+ARG WHEEL_CONSTRAINT=""
+
+COPY scripts /opt/loci/scripts
+ADD bindep.txt pydep.txt /opt/loci/
+
+RUN /opt/loci/scripts/venv_builder.sh

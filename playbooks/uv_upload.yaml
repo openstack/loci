@@ -1,0 +1,17 @@
+- hosts: all[0]
+  gather_facts: true
+  tasks:
+    - name: Vars
+      include_vars:
+        file: "uv_vars.yaml"
+
+    - name: Job vars
+      include_vars:
+        file: "{{ item }}"
+      loop: "{{ vars_files }}"
+
+    - name: Upload images
+      include_role:
+        name: upload-container-image
+      vars:
+        container_images: "{{ [base_image] + [venv_builder_image] + openstack_images }}"

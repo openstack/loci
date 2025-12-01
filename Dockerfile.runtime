@@ -1,0 +1,90 @@
+ARG BASE_BUILDER=quay.io/airshipit/venv_builder:master-ubuntu_noble
+ARG BASE_RUNTIME=quay.io/airshipit/base:master-ubuntu_noble
+FROM ${BASE_BUILDER} as build
+
+ENV PATH=/var/lib/openstack/bin:$PATH
+ENV LANG=C.UTF-8
+
+# APT mirror to use for package installs
+ARG APT_MIRROR="https://archive.ubuntu.com/ubuntu/"
+
+ARG PROJECT
+ARG PROJECT_REPO=https://opendev.org/openstack/${PROJECT}
+ARG PROJECT_REF=master
+# Openstack release name or "master" for the latest code.
+# Used to select as a bindep profile.
+ARG PROJECT_RELEASE=master
+ARG EXTRA_PROJECTS=""
+ARG PROFILES=""
+ARG PIP_PACKAGES=""
+
+# Not fully compatible with pip options. Only use those that are supported by `uv pip`.
+ARG UV_PIP_ARGS=""
+
+# Additional pydep files which will be copied to /opt/loci/ during build.
+ARG EXTRA_PYDEP=""
+
+# Directory to use for source code checkouts and builds
+ARG SOURCES_DIR="/tmp"
+
+ARG PROJECT_PIP_EXTRAS
+
+# These are needed when virtualenv is created.
+ARG PIP_VERSION_CONSTRAINT=""
+ARG SETUPTOOL_CONSTRAINT=""
+ARG WHEEL_CONSTRAINT=""
+
+COPY scripts /opt/loci/scripts
+COPY pydep.txt $EXTRA_PYDEP /opt/loci/
+
+RUN --mount=type=cache,id=default-uv,target=/root/.cache/uv /opt/loci/scripts/uv_build_venv.sh
+
+FROM ${BASE_RUNTIME} as runtime
+ENV PATH=/var/lib/openstack/bin:$PATH
+
+# APT mirror to use for package installs
+ARG APT_MIRROR="https://archive.ubuntu.com/ubuntu/"
+
+ARG PROJECT
+ARG PROJECT_REPO=https://opendev.org/openstack/${PROJECT}
+ARG PROJECT_REF=master
+# Openstack release name or "master" for the latest code.
+# Used to when collecting info for the image.
+ARG PROJECT_RELEASE=master
+ARG PROFILES=""
+
+# Specify the list of distribution packages to be installed
+# in the particular project runtime image.
+ARG DIST_PACKAGES=""
+
+# User/group to create in the runtime project image. The user
+# will be used to run services in the container.
+ARG UID=42424
+ARG GID=42424
+
+# These are needed for horizon project specific scripts.
+ARG HORIZON_EXTRA_PANELS
+
+# These are needed for nova project specific scripts.
+# User/group that swtpm binary runs as.
+ARG NOVA_TSS_USER=tss
+ARG NOVA_TSS_UID=42434
+ARG NOVA_TSS_GID=42434
+ARG NOVNC_REPO=https://github.com/novnc/novnc
+ARG NOVNC_REF=v1.0.0
+ARG SPICE_REPO=https://gitlab.freedesktop.org/spice/spice-html5.git
+ARG SPICE_REF=spice-html5-0.1.6
+
+# These are needed for skyline-api project specific scripts.
+ARG SKYLINE_CONSOLE_REPO=https://opendev.org/openstack/skyline-console
+ARG SKYLINE_CONSOLE_REF=master
+
+# Additional bindep files which will be copied to /opt/loci/ during build.
+ARG EXTRA_BINDEP=""
+
+COPY --from=build --link /var/lib/openstack /var/lib/openstack
+COPY --from=build /global-requirements.txt /upper-constraints.txt /
+COPY --from=build /etc/image_info /etc/image_info
+COPY scripts /opt/loci/scripts
+COPY bindep.txt $EXTRA_BINDEP /opt/loci/
+RUN /opt/loci/scripts/uv_runtime.sh

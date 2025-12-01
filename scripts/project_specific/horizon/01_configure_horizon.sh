@@ -8,7 +8,22 @@ DASHBOARD_ROOT=/usr/local/share/openstack_dashboard
 MANAGE_CMD="${SITE_PACKAGES_ROOT}/openstack_dashboard/manage.py"
 LOCAL_SETTINGS="${SITE_PACKAGES_ROOT}/openstack_dashboard/local/local_settings.py"
 
-cp /tmp/${PROJECT}/manage.py ${SITE_PACKAGES_ROOT}/openstack_dashboard/
+if [[ -f /tmp/${PROJECT}/manage.py ]]; then
+    cp /tmp/${PROJECT}/manage.py ${SITE_PACKAGES_ROOT}/openstack_dashboard/
+else
+    cat <<EOF > ${SITE_PACKAGES_ROOT}/openstack_dashboard/manage.py
+#!/usr/bin/env python
+import os
+import sys
+from django.core.management import execute_from_command_line
+
+if __name__ == "__main__":
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE",
+                        "openstack_dashboard.settings")
+    execute_from_command_line(sys.argv)
+EOF
+    chmod +x ${SITE_PACKAGES_ROOT}/openstack_dashboard/manage.py
+fi
 
 # wsgi/horizon-http needs open files here, including secret_key_store
 chown -R horizon ${SITE_PACKAGES_ROOT}/openstack_dashboard/local/

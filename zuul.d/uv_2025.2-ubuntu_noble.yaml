@@ -1,0 +1,76 @@
+- job:
+    name: loci-build-2025-2-ubuntu_noble_uv
+    roles:
+      - zuul: openstack/loci
+      - zuul: zuul/zuul-jobs
+    timeout: 10800
+    dependencies:
+      - name: loci-buildset-registry
+    pre-run:
+      - playbooks/inject-keys.yaml
+      - playbooks/pre-build.yaml
+    run:
+      - playbooks/uv_build.yaml
+    vars: &vars
+      vars_files:
+        - uv_vars_2025.2_noble.yaml
+
+- job:
+    name: loci-upload-2025-2-ubuntu_noble_uv
+    roles:
+      - zuul: openstack/loci
+      - zuul: zuul/zuul-jobs
+    timeout: 10800
+    dependencies:
+      - name: loci-buildset-registry
+    pre-run:
+      - playbooks/inject-keys.yaml
+      - playbooks/pre-build.yaml
+    run:
+      - playbooks/uv_build.yaml
+    post-run:
+      - playbooks/uv_upload.yaml
+    vars: *vars
+    secrets:
+      name: container_registry_credentials
+      secret: loci_registry_credentials
+
+- job:
+    name: loci-promote-2025-2-ubuntu_noble_uv
+    roles:
+      - zuul: openstack/loci
+      - zuul: zuul/zuul-jobs
+    run:
+      - playbooks/uv_promote.yaml
+    vars: *vars
+    secrets:
+      name: container_registry_credentials
+      secret: loci_registry_credentials
+    nodeset:
+      nodes: []
+
+- job:
+    name: loci-compute-kit-2025-2-ubuntu_noble_uv
+    parent: openstack-helm-compute-kit-2025-2-ubuntu_noble_uv
+    files:
+      - ^.*$
+    required-projects:
+      - openstack/openstack-helm
+    dependencies:
+      - name: loci-build-2025-2-ubuntu_noble_uv
+        soft: true
+      - name: loci-upload-2025-2-ubuntu_noble_uv
+        soft: true
+
+- job:
+    name: loci-cinder-2025-2-ubuntu_noble_uv
+    parent: openstack-helm-cinder-2025-2-ubuntu_noble_uv
+    files:
+      - ^.*$
+    required-projects:
+      - openstack/openstack-helm
+    dependencies:
+      - name: loci-build-2025-2-ubuntu_noble_uv
+        soft: true
+      - name: loci-upload-2025-2-ubuntu_noble_uv
+        soft: true
