@@ -29,3 +29,4 @@ openstack_images:
   - "{{ freezer_api_image }}"
   - "{{ blazar_image }}"
   - "{{ zaqar_image }}"
+  - "{{ trove_image }}"
