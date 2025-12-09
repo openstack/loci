@@ -433,6 +433,7 @@ openstack_client_pip_packages:
   - python-zaqarclient
   - python-zunclient
   - python-freezerclient
+  - sqlalchemy
 
 openstack_client_image:
   context: "."
