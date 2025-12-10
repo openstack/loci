@@ -1,4 +1,4 @@
-apache2                              [platform:dpkg platform:suse apache]
+apache2                              [platform:dpkg apache]
 bridge-utils                         [(neutron linuxbridge) (nova linuxbridge)]
 build-essential                      [platform:dpkg requirements]
 ceph-common                          [(ceph cinder) (ceph glance) (ceph nova) (ceph manila)]
@@ -59,7 +59,6 @@ open-iscsi                           [platform:dpkg (cinder purestorage) (nova p
 openssh-client                       [platform:dpkg (nova migration)]
 openvswitch-switch                   [platform:dpkg (neutron openvswitch) (nova openvswitch)]
 pkg-config                           [platform:dpkg requirements]
-postgresql-server-devel              [platform:suse requirements]
 python3-dev                          [platform:dpkg requirements]
 python3-mysqldb                      [platform:dpkg (monasca api)]
 python3-rados                        [platform:dpkg (glance ceph) (cinder ceph) (manila ceph) (nova ceph)]
