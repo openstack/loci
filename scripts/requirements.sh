@@ -2,65 +2,18 @@
 
 set -eux
 
+source $(dirname $0)/helpers.sh
 
-SOURCES_DIR=/tmp
 UPPER_CONSTRAINTS=/upper-constraints.txt
 UPPER_CONSTRAINTS_BUILD=/build-upper-constraints.txt
-UPPER_CONSTRAINTS_DEV=/dev-upper-constraints.txt
 
-$(dirname $0)/setup_pip.sh
-pip install ${PIP_ARGS} bindep pkginfo
+setup_venv
 
-$(dirname $0)/install_packages.sh
-$(dirname $0)/clone_project.sh
-mv /tmp/requirements/{global-requirements.txt,upper-constraints.txt} /
+read -r -a bindep_packages <<<"$(get_bindep_system_packages "${PROJECT}")"
+install_system_packages "${bindep_packages[@]}"
 
-function get_pkg_name {
-  local folder=$1
-  local name
-  pushd $folder > /dev/null
-  name=$(python3 setup.py --name 2>/dev/null | grep -v '^\[pbr\]')
-  popd > /dev/null
-  echo $name
-}
-
-function get_pkg_version {
-  local folder=$1
-  local vesion
-  pushd $folder > /dev/null
-  version=$(python3 setup.py --version 2>/dev/null | grep -v '^\[pbr\]')
-  popd > /dev/null
-  echo $version
-}
-
-function get_pipy_name_by_project_name {
-    local project_name=$1
-    while read _folder_name _pipy_name _pkg_name; do
-            if [[ "${_pkg_name}" == "${project_name}" ]]; then
-                echo "${_pipy_name}"
-                return
-            fi
-    done < /opt/loci/scripts/python-custom-name-mapping.txt
-    echo "$project_name"
-}
-
-function make_build_constraints {
-    cp $UPPER_CONSTRAINTS $UPPER_CONSTRAINTS_DEV
-    cp $UPPER_CONSTRAINTS $UPPER_CONSTRAINTS_BUILD
-    pushd $SOURCES_DIR
-    for repo in $(ls -1 $SOURCES_DIR); do
-        if [[ ! -f $repo/setup.cfg ]]; then
-            continue
-        fi
-        echo "Making build constraint for $repo"
-        pkg_name=$(get_pkg_name $repo)
-        pkg_version=$(get_pkg_version $repo)
-        pipy_name=$(get_pipy_name_by_project_name $pkg_name)
-        sed -i "s|^${pipy_name}===.*|file://${SOURCES_DIR}/${repo}#egg=${pkg_name}|g" $UPPER_CONSTRAINTS_BUILD
-        sed -i "s|^${pipy_name}===.*|${pipy_name}===${pkg_version}|g" $UPPER_CONSTRAINTS_DEV
-    done
-    popd
-}
+clone_project "${PROJECT}" "${PROJECT_REPO}" "${PROJECT_REF}"
+mv ${SOURCES_DIR}/requirements/{global-requirements.txt,upper-constraints.txt} /
 
 # Setuptools from constraints is not compatible with other constrainted packages
 [[ "${PROJECT_REF}" == "master" ]] && sed -i '/setuptools/d' /upper-constraints.txt
@@ -78,15 +31,7 @@ fi
 # Drop ceilometer from constraints.
 sed -i '/ceilometer===.*/d' /upper-constraints.txt
 
-# NOTE: This is to install python-openstackclient from the HEAD of the stable/2025.1 branch
-#       This was merged after 7.4.0 which is pinned in the 2025.1 constraints.
-#       https://review.opendev.org/c/openstack/python-openstackclient/+/944991
-if [[ ${PROJECT_REF} == "stable/2025.1" ]]; then
-    sed -i "s|^python-openstackclient===.*|git+https://opendev.org/openstack/python-openstackclient.git@stable/2025.1#egg=python-openstackclient|g" /upper-constraints.txt
-fi
-
-# NOTE: This is to install tap-as-a-service the stable/2025.2 branch
-#       It has been removed from the upper-constraints.txt.
+# NOTE: This is to build tap-as-a-service. It was removed from the upper-constraints.txt in stable/2025.2.
 if [[ ${PROJECT_REF} == "stable/2025.2" ]]; then
     echo "git+https://opendev.org/openstack/tap-as-a-service.git@stable/2025.2#egg=tap-as-a-service" >> /upper-constraints.txt
 fi
@@ -128,9 +73,7 @@ export CPUCOUNT=1
 export UPPER_CONSTRAINTS_BUILD
 
 # Construct upper-constraints with honor of locally downloaded projects
-make_build_constraints
-rm -rf $UPPER_CONSTRAINTS
-mv $UPPER_CONSTRAINTS_DEV $UPPER_CONSTRAINTS
+honor_local_sources "${SOURCES_DIR}" "${UPPER_CONSTRAINTS}" "${UPPER_CONSTRAINTS_BUILD}"
 
 echo "DEBUG: ${UPPER_CONSTRAINTS_BUILD}"
 cat ${UPPER_CONSTRAINTS_BUILD}

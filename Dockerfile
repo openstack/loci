@@ -30,6 +30,7 @@ ARG KEEP_ALL_WHEELS="False"
 ARG HORIZON_EXTRA_PANELS
 ARG PROJECT_PIP_EXTRAS
 ARG APT_MIRROR="https://archive.ubuntu.com/ubuntu/"
+ARG SOURCES_DIR="/tmp"
 
 # NOTE: This option is only applicable to apt/dpkg systems. The value is noop
 # for rpm based systems. This will not show up in the final image regardless.
@@ -58,7 +59,7 @@ ARG SKYLINE_CONSOLE_REF=master
 
 ARG PIP_VERSION_CONSTRAINT=""
 ARG SETUPTOOL_CONSTRAINT=""
-ARG WHEEL_CONSTRAIN=""
+ARG WHEEL_CONSTRAINT=""
 
 # End virtualenv argumens
 
@@ -67,7 +68,7 @@ COPY scripts /opt/loci/scripts
 ADD bindep.txt pydep.txt $EXTRA_BINDEP $EXTRA_PYDEP /opt/loci/
 
 FROM common AS requirements
-RUN /opt/loci/scripts/install.sh
+RUN /opt/loci/scripts/requirements.sh
 
 FROM common AS project
-RUN --mount=type=bind,from=wheels,target=${WHEELS_PATH} /opt/loci/scripts/install.sh
+RUN --mount=type=bind,from=wheels,target=${WHEELS_PATH} /opt/loci/scripts/project.sh
