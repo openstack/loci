@@ -451,6 +451,7 @@ openstack_client_image:
     - "KEEP_ALL_WHEELS=yes"
     - "PIP_PACKAGES='{{ openstack_client_pip_packages | join(' ') }}'"
     - "APT_MIRROR='{{ apt_mirror }}'"
+    - "DIST_PACKAGES='curl jq'"
 
 placement_image:
   context: "."
