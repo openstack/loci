@@ -1,4 +1,4 @@
-ARG FROM=ubuntu:jammy
+ARG FROM=quay.io/airshipit/base:2025.2-ubuntu_noble_uv
 FROM ${FROM}
 
 # APT mirror to use for package installs

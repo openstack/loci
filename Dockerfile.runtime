@@ -1,5 +1,5 @@
-ARG BASE_BUILDER=quay.io/airshipit/venv_builder:master-ubuntu_noble
-ARG BASE_RUNTIME=quay.io/airshipit/base:master-ubuntu_noble
+ARG BASE_BUILDER=quay.io/airshipit/venv_builder:2025.2-ubuntu_noble_uv
+ARG BASE_RUNTIME=quay.io/airshipit/base:2025.2-ubuntu_noble_uv
 FROM ${BASE_BUILDER} as build
 
 ENV PATH=/var/lib/openstack/bin:$PATH

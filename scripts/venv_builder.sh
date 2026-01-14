@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eux
+set -xeo pipefail
 
 source $(dirname $0)/helpers.sh
 

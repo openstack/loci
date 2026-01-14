@@ -1,4 +1,4 @@
-ARG FROM=ubuntu:jammy
+ARG FROM=ubuntu:noble
 FROM ${FROM}
 
 ARG CEPH_REPO
