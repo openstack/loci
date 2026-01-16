@@ -50,8 +50,8 @@ done
 
 pushd $(mktemp -d)
 
-# Drop python packages requested by monasca_analytics. Their
-# build time is huge and on !x86 we do not get binaries from Pypi.
+# Drop analytics python packages. Their build time is huge
+# and on !x86 we do not get binaries from Pypi.
 egrep -v "(scipy|scikit-learn)" /upper-constraints.txt | split -l1
 
 # When a package uses the variable 'setup_requires' in 'setup.py',
