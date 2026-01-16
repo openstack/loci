@@ -16,6 +16,8 @@ openstack_images:
   - "{{ keystone_image }}"
   - "{{ magnum_image }}"
   - "{{ manila_image }}"
+  - "{{ masakari_image }}"
+  - "{{ masakari_monitors_image }}"
   - "{{ neutron_image }}"
   - "{{ nova_image }}"
   - "{{ octavia_image }}"
