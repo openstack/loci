@@ -265,6 +265,32 @@ manila_image:
     - "PROJECT_REF={{ openstack_release }}"
     - "APT_MIRROR='{{ apt_mirror }}'"
 
+masakari_image:
+  context: "."
+  container_filename: "Dockerfile.runtime"
+  registry: "{{ image_registry.host }}"
+  repository: "{{ image_registry.host }}/{{ image_registry.org }}/masakari"
+  tags: *tags
+  build_args:
+    - "BASE_BUILDER='{{ image_registry.host }}/{{ image_registry.org }}/venv_builder:{{ image_tag }}'"
+    - "BASE_RUNTIME='{{ image_registry.host }}/{{ image_registry.org }}/base:{{ image_tag }}'"
+    - "PROJECT='masakari'"
+    - "PROJECT_REF={{ openstack_release }}"
+    - "APT_MIRROR='{{ apt_mirror }}'"
+
+masakari_monitors_image:
+  context: "."
+  container_filename: "Dockerfile.runtime"
+  registry: "{{ image_registry.host }}"
+  repository: "{{ image_registry.host }}/{{ image_registry.org }}/masakari-monitors"
+  tags: *tags
+  build_args:
+    - "BASE_BUILDER='{{ image_registry.host }}/{{ image_registry.org }}/venv_builder:{{ image_tag }}'"
+    - "BASE_RUNTIME='{{ image_registry.host }}/{{ image_registry.org }}/base:{{ image_tag }}'"
+    - "PROJECT='masakari-monitors'"
+    - "PROJECT_REF={{ openstack_release }}"
+    - "APT_MIRROR='{{ apt_mirror }}'"
+
 mistral_image:
   context: "."
   container_filename: "Dockerfile.runtime"
