@@ -278,21 +278,6 @@ mistral_image:
     - "PROJECT_REF={{ openstack_release }}"
     - "APT_MIRROR='{{ apt_mirror }}'"
 
-monasca_api_image:
-  context: "."
-  container_filename: "Dockerfile.runtime"
-  registry: "{{ image_registry.host }}"
-  repository: "{{ image_registry.host }}/{{ image_registry.org }}/monasca-api"
-  tags: *tags
-  build_args:
-    - "BASE_BUILDER='{{ image_registry.host }}/{{ image_registry.org }}/venv_builder:{{ image_tag }}'"
-    - "BASE_RUNTIME='{{ image_registry.host }}/{{ image_registry.org }}/base:{{ image_tag }}'"
-    - "PROJECT='monasca-api'"
-    - "PROJECT_REF={{ openstack_release }}"
-    - "PROFILES='monasca api'"
-    - "PIP_PACKAGES='influxdb cassandra-driver sqlalchemy'"
-    - "APT_MIRROR='{{ apt_mirror }}'"
-
 neutron_image:
   context: "."
   container_filename: "Dockerfile.runtime"
@@ -352,7 +337,6 @@ openstack_client_pip_packages:
   - python-magnumclient
   - python-manilaclient
   - python-mistralclient
-  - python-monascaclient
   - python-neutronclient
   - python-novaclient
   - python-octaviaclient
