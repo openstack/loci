@@ -500,6 +500,22 @@ skyline_image:
     - "SKYLINE_CONSOLE_REF={{ openstack_release }}"
     - "DIST_PACKAGES='nginx'"
 
+swift_image:
+  context: "."
+  dockerfile: "Dockerfile"
+  container_filename: "Dockerfile"
+  target: "project"
+  registry: "{{ image_registry.host }}"
+  repository: "{{ image_registry.host }}/{{ image_registry.org }}/swift"
+  tags: *tags
+  build_args:
+    - "FROM='{{ image_registry.host }}/{{ image_registry.org }}/base:{{ image_tag }}'"
+    - "PROJECT='swift'"
+    - "PROJECT_REF={{ openstack_release }}"
+    - "WHEELS='{{ image_registry.host }}/{{ image_registry.org }}/requirements:{{ image_tag }}'"
+    - "KEEP_ALL_WHEELS=False"
+    - "APT_MIRROR='{{ apt_mirror }}'"
+
 tacker_image:
   context: "."
   dockerfile: "Dockerfile"

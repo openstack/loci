@@ -356,6 +356,7 @@ openstack_client_pip_packages:
   - python-cloudkittyclient
   - python-cyborgclient
   - python-designateclient
+  - python-freezerclient
   - python-glanceclient
   - python-heatclient
   - python-ironicclient
@@ -373,7 +374,7 @@ openstack_client_pip_packages:
   - python-watcherclient
   - python-zaqarclient
   - python-zunclient
-  - python-freezerclient
+  - sqlalchemy
 
 openstack_client_image:
   context: "."
@@ -388,6 +389,7 @@ openstack_client_image:
     - "PROJECT_REF={{ openstack_release }}"
     - "PIP_PACKAGES='{{ openstack_client_pip_packages | join(' ') }}'"
     - "APT_MIRROR='{{ apt_mirror }}'"
+    - "DIST_PACKAGES='curl jq'"
 
 placement_image:
   context: "."
@@ -419,6 +421,19 @@ skyline_image:
     - "SKYLINE_CONSOLE_REF={{ openstack_release }}"
     - "DIST_PACKAGES='nginx'"
 
+swift_image:
+  context: "."
+  container_filename: "Dockerfile.runtime"
+  registry: "{{ image_registry.host }}"
+  repository: "{{ image_registry.host }}/{{ image_registry.org }}/swift"
+  tags: *tags
+  build_args:
+    - "BASE_BUILDER='{{ image_registry.host }}/{{ image_registry.org }}/venv_builder:{{ image_tag }}'"
+    - "BASE_RUNTIME='{{ image_registry.host }}/{{ image_registry.org }}/base:{{ image_tag }}'"
+    - "PROJECT='swift'"
+    - "PROJECT_REF={{ openstack_release }}"
+    - "APT_MIRROR='{{ apt_mirror }}'"
+
 tacker_image:
   context: "."
   container_filename: "Dockerfile.runtime"
@@ -431,6 +446,22 @@ tacker_image:
     - "PROJECT='tacker'"
     - "PROJECT_REF={{ openstack_release }}"
     - "APT_MIRROR='{{ apt_mirror }}'"
+
+trove_image:
+  context: "."
+  container_filename: "Dockerfile.runtime"
+  registry: "{{ image_registry.host }}"
+  repository: "{{ image_registry.host }}/{{ image_registry.org }}/trove"
+  tags: *tags
+  build_args:
+    - "BASE_BUILDER='{{ image_registry.host }}/{{ image_registry.org }}/venv_builder:{{ image_tag }}'"
+    - "BASE_RUNTIME='{{ image_registry.host }}/{{ image_registry.org }}/base:{{ image_tag }}'"
+    - "PROJECT='trove'"
+    - "PROJECT_REF={{ openstack_release }}"
+    - "APT_MIRROR='{{ apt_mirror }}'"
+    - "PROFILES='apache'"
+    - "DIST_PACKAGES='mysql-client postgresql-client curl'"
+    - "PIP_PACKAGES='python-swiftclient'"
 
 watcher_image:
   context: "."
