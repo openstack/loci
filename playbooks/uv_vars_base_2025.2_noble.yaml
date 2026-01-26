@@ -1,0 +1,8 @@
+image_tag: "2025.2-ubuntu_noble_uv"
+distro_image: "public.ecr.aws/ubuntu/ubuntu:noble"
+openstack_release: "stable/2025.2"
+# NOTE: Ubuntu Noble provides Ceph packages out of the box
+ceph_repo: ""
+container_images:
+  - "{{ base_image }}"
+  - "{{ venv_builder_image }}"

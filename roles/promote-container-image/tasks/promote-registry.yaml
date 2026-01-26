@@ -1,0 +1,24 @@
+- name: Log in to registry
+  no_log: true
+  command: >-
+    skopeo login {{ zj_image.registry }} -u {{ container_registry_credentials[zj_image.registry].username }} -p {{ container_registry_credentials[zj_image.registry].password }}
+  register: result
+  until: result.rc == 0
+  retries: 3
+  delay: 30
+
+- name: Copy image
+  block:
+    - name: Copy image
+      loop: "{{ zj_image.tags | default(['latest']) }}"
+      loop_control:
+        loop_var: zj_image_tag
+      command: >-
+        skopeo --insecure-policy copy --all {{ zj_artifact_map[zj_image.repository + ':' + zj_image_tag] }} docker://{{ zj_image.repository }}:{{ zj_image_tag }}
+      register: result
+      until: result.rc == 0
+      retries: 3
+      delay: 30
+  always:
+    - name: Log out of registry
+      command: "skopeo logout {{ zj_image.registry }}"

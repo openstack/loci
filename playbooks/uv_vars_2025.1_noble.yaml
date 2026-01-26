@@ -3,7 +3,7 @@ distro_image: "public.ecr.aws/ubuntu/ubuntu:noble"
 openstack_release: "stable/2025.1"
 # NOTE: Ubuntu Noble provides Ceph Squid packages out of the box
 ceph_repo: ""
-openstack_images:
+container_images:
   - "{{ barbican_image }}"
   - "{{ blazar_image }}"
   - "{{ ceilometer_image }}"

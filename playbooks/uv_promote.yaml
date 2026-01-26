@@ -1,4 +1,4 @@
-- hosts: localhost
+- hosts: all[0]
   tasks:
     - name: Vars
       include_vars:
@@ -12,5 +12,3 @@
     - name: Promote images
       include_role:
         name: promote-container-image
-      vars:
-        container_images: "{{ [base_image] + [venv_builder_image] + openstack_images }}"

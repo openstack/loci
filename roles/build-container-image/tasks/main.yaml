@@ -15,6 +15,12 @@
     - "'buildset_registry' in (lookup('file', zuul.executor.result_data_file) | from_json).get('secret_data')"
   no_log: true
 
+- name: Fail if buildset_registry is not defined
+  fail:
+    msg: "buildset_registry is not defined"
+  when:
+    - buildset_registry is not defined
+
 # Docker, and therefore skopeo and podman, don't understand docker
 # push [1234:5678::]:5000/image/path:tag so we set up /etc/hosts with
 # a registry alias name to support ipv6 and 4.
@@ -73,28 +79,14 @@
 # buildx builder.
 - name: Docker build block
   when: container_command == 'docker'
-  vars:
-    temp_registry:
-      host: "127.0.0.1"
-      port: 5100
-      username: zuul
-      password: tempregistry
   block:
-    - name: Set up a temporary registry for holding buildx-built images
-      import_tasks: run-docker-registry.yaml
-      vars:
-        registry: "{{ temp_registry }}"
-
-    - name: Log in to temporary registry
-      command: "docker login -u {{ temp_registry.username }} -p {{ temp_registry.password }} {{ temp_registry.host }}:{{ temp_registry.port }}"
-
     - name: Set up buildx builders
       include_tasks: setup-buildx.yaml
 
-    # TODO is push here wrong?
     - name: Build and push each image using buildx.
       include_tasks: buildx.yaml
       loop: "{{ container_images }}"
       loop_control:
         loop_var: zj_image
-      when: inventory_hostname == ansible_play_hosts[0]
+      when:
+        - inventory_hostname == ansible_play_hosts[0]

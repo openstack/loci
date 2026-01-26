@@ -2,351 +2,430 @@ currentdate: "{{ now(utc=True,fmt='%Y%m%d') }}"
 image_registry:
   host: "quay.io"
   org: "airshipit"
-container_command: docker
-apt_mirror: "[trusted=yes] https://{{ zuul_site_mirror_fqdn | default('archive.ubuntu.com') }}/{{ ansible_distribution | lower }}"
+# apt_mirror_host: "{{ zuul_site_mirror_fqdn }}"
+apt_mirror_host: "mirrors.mit.edu"
+image_tags:
+  - "{{ image_tag }}"
+  - "{{ image_tag }}-{{ currentdate }}"
+
+# base_registry_prefix is set in zuul_return.data by the base images build job
+# So when base images and openstack images are built in the same buildset,
+# openstack image build job can use base images from the buildset registry.
+# Otherwise if the buildset only builds openstack images then the build job
+# uses base images from the public registry (base_registry_prefix is not set).
+base_builder_image: "{{ base_registry_prefix | default('') }}{{ image_registry.host }}/{{ image_registry.org }}/venv_builder:{{ image_tag }}"
+base_runtime_image: "{{ base_registry_prefix | default('') }}{{ image_registry.host }}/{{ image_registry.org }}/base:{{ image_tag }}"
 
 base_image:
   context: "."
   container_filename: "Dockerfile.base"
+  arch:
+    - linux/amd64
+    - linux/arm64
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/base"
-  tags: &tags
-    - "{{ image_tag }}"
-    - "{{ image_tag }}-{{ currentdate }}"
+  tags: "{{ image_tags }}"
   build_args:
     - "FROM='{{ distro_image }}'"
-    - "CEPH_REPO='{{ ceph_repo }}'"
-    - "CEPH_KEY='http://download.ceph.com/keys/release.asc'"
-    - "APT_MIRROR='{{ apt_mirror }}'"
+    - "APT_MIRROR_HOST='{{ apt_mirror_host }}'"
 
 venv_builder_image:
   context: "."
   container_filename: "Dockerfile.venv_builder"
+  arch:
+    - linux/amd64
+    - linux/arm64
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/venv_builder"
-  tags: *tags
+  tags: "{{ image_tags }}"
   build_args:
-    - "FROM='{{ image_registry.host }}/{{ image_registry.org }}/base:{{ image_tag }}'"
+    - "FROM='{{ base_runtime_image }}'"
     - "REQUIREMENTS_REF={{ openstack_release }}"
-    - "APT_MIRROR='{{ apt_mirror }}'"
+    - "APT_MIRROR_HOST='{{ apt_mirror_host }}'"
 
 barbican_image:
   context: "."
   container_filename: "Dockerfile.runtime"
+  arch:
+    - linux/amd64
+    - linux/arm64
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/barbican"
-  tags: *tags
+  tags: "{{ image_tags }}"
   build_args:
-    - "BASE_BUILDER='{{ image_registry.host }}/{{ image_registry.org }}/venv_builder:{{ image_tag }}'"
-    - "BASE_RUNTIME='{{ image_registry.host }}/{{ image_registry.org }}/base:{{ image_tag }}'"
+    - "BASE_BUILDER='{{ base_builder_image }}'"
+    - "BASE_RUNTIME='{{ base_runtime_image }}'"
     - "PROJECT='barbican'"
     - "PROJECT_REF={{ openstack_release }}"
     - "PROFILES='fluent'"
     - "DIST_PACKAGES='python3-dev gcc'"
     - "PIP_ARGS='--only-binary :none:'"
-    - "APT_MIRROR='{{ apt_mirror }}'"
+    - "APT_MIRROR_HOST='{{ apt_mirror_host }}'"
 
 blazar_image:
   context: "."
   container_filename: "Dockerfile.runtime"
+  arch:
+    - linux/amd64
+    - linux/arm64
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/blazar"
-  tags: *tags
+  tags: "{{ image_tags }}"
   build_args:
-    - "BASE_BUILDER='{{ image_registry.host }}/{{ image_registry.org }}/venv_builder:{{ image_tag }}'"
-    - "BASE_RUNTIME='{{ image_registry.host }}/{{ image_registry.org }}/base:{{ image_tag }}'"
+    - "BASE_BUILDER='{{ base_builder_image }}'"
+    - "BASE_RUNTIME='{{ base_runtime_image }}'"
     - "PROJECT='blazar'"
     - "PROJECT_REF={{ openstack_release }}"
     - "PROFILES='fluent apache ldap'"
     - "PIP_PACKAGES='python-memcached pymemcache'"
     - "DIST_PACKAGES='curl ca-certificates'"
-    - "APT_MIRROR='{{ apt_mirror }}'"
+    - "APT_MIRROR_HOST='{{ apt_mirror_host }}'"
 
 ceilometer_image:
   context: "."
   container_filename: "Dockerfile.runtime"
+  arch:
+    - linux/amd64
+    - linux/arm64
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/ceilometer"
-  tags: *tags
+  tags: "{{ image_tags }}"
   build_args:
-    - "BASE_BUILDER='{{ image_registry.host }}/{{ image_registry.org }}/venv_builder:{{ image_tag }}'"
-    - "BASE_RUNTIME='{{ image_registry.host }}/{{ image_registry.org }}/base:{{ image_tag }}'"
+    - "BASE_BUILDER='{{ base_builder_image }}'"
+    - "BASE_RUNTIME='{{ base_runtime_image }}'"
     - "PROJECT='ceilometer'"
     - "PROJECT_REF={{ openstack_release }}"
     - "PROFILES='fluent'"
-    - "APT_MIRROR='{{ apt_mirror }}'"
+    - "APT_MIRROR_HOST='{{ apt_mirror_host }}'"
 
 cinder_image:
   context: "."
   container_filename: "Dockerfile.runtime"
+  arch:
+    - linux/amd64
+    - linux/arm64
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/cinder"
-  tags: *tags
+  tags: "{{ image_tags }}"
   build_args:
-    - "BASE_BUILDER='{{ image_registry.host }}/{{ image_registry.org }}/venv_builder:{{ image_tag }}'"
-    - "BASE_RUNTIME='{{ image_registry.host }}/{{ image_registry.org }}/base:{{ image_tag }}'"
+    - "BASE_BUILDER='{{ base_builder_image }}'"
+    - "BASE_RUNTIME='{{ base_runtime_image }}'"
     - "PROJECT='cinder'"
     - "PROJECT_REF={{ openstack_release }}"
     - "PROFILES='fluent lvm ceph qemu apache'"
     - "PIP_PACKAGES='python-swiftclient'"
-    - "APT_MIRROR='{{ apt_mirror }}'"
+    - "APT_MIRROR_HOST='{{ apt_mirror_host }}'"
 
 cloudkitty_image:
   context: "."
   container_filename: "Dockerfile.runtime"
+  arch:
+    - linux/amd64
+    - linux/arm64
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/cloudkitty"
-  tags: *tags
+  tags: "{{ image_tags }}"
   build_args:
-    - "BASE_BUILDER='{{ image_registry.host }}/{{ image_registry.org }}/venv_builder:{{ image_tag }}'"
-    - "BASE_RUNTIME='{{ image_registry.host }}/{{ image_registry.org }}/base:{{ image_tag }}'"
+    - "BASE_BUILDER='{{ base_builder_image }}'"
+    - "BASE_RUNTIME='{{ base_runtime_image }}'"
     - "PROJECT='cloudkitty'"
     - "PROJECT_REF={{ openstack_release }}"
     - "PROFILES='fluent'"
-    - "APT_MIRROR='{{ apt_mirror }}'"
+    - "APT_MIRROR_HOST='{{ apt_mirror_host }}'"
 
 cyborg_image:
   context: "."
   container_filename: "Dockerfile.runtime"
+  arch:
+    - linux/amd64
+    - linux/arm64
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/cyborg"
-  tags: *tags
+  tags: "{{ image_tags }}"
   build_args:
-    - "BASE_BUILDER='{{ image_registry.host }}/{{ image_registry.org }}/venv_builder:{{ image_tag }}'"
-    - "BASE_RUNTIME='{{ image_registry.host }}/{{ image_registry.org }}/base:{{ image_tag }}'"
+    - "BASE_BUILDER='{{ base_builder_image }}'"
+    - "BASE_RUNTIME='{{ base_runtime_image }}'"
     - "PROJECT='cyborg'"
     - "PROJECT_REF={{ openstack_release }}"
     - "DIST_PACKAGES='pciutils'"
-    - "APT_MIRROR='{{ apt_mirror }}'"
+    - "APT_MIRROR_HOST='{{ apt_mirror_host }}'"
 
 designate_image:
   context: "."
   container_filename: "Dockerfile.runtime"
+  arch:
+    - linux/amd64
+    - linux/arm64
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/designate"
-  tags: *tags
+  tags: "{{ image_tags }}"
   build_args:
-    - "BASE_BUILDER='{{ image_registry.host }}/{{ image_registry.org }}/venv_builder:{{ image_tag }}'"
-    - "BASE_RUNTIME='{{ image_registry.host }}/{{ image_registry.org }}/base:{{ image_tag }}'"
+    - "BASE_BUILDER='{{ base_builder_image }}'"
+    - "BASE_RUNTIME='{{ base_runtime_image }}'"
     - "PROJECT='designate'"
     - "PROJECT_REF={{ openstack_release }}"
     - "PROFILES='fluent'"
-    - "APT_MIRROR='{{ apt_mirror }}'"
+    - "APT_MIRROR_HOST='{{ apt_mirror_host }}'"
 
 glance_image:
   context: "."
   container_filename: "Dockerfile.runtime"
+  arch:
+    - linux/amd64
+    - linux/arm64
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/glance"
-  tags: *tags
+  tags: "{{ image_tags }}"
   build_args:
-    - "BASE_BUILDER='{{ image_registry.host }}/{{ image_registry.org }}/venv_builder:{{ image_tag }}'"
-    - "BASE_RUNTIME='{{ image_registry.host }}/{{ image_registry.org }}/base:{{ image_tag }}'"
+    - "BASE_BUILDER='{{ base_builder_image }}'"
+    - "BASE_RUNTIME='{{ base_runtime_image }}'"
     - "PROJECT='glance'"
     - "PROJECT_REF={{ openstack_release }}"
     - "PROFILES='fluent ceph qemu-utils'"
     - "PIP_PACKAGES='python-swiftclient os-brick python-cinderclient oslo-rootwrap'"
-    - "APT_MIRROR='{{ apt_mirror }}'"
+    - "APT_MIRROR_HOST='{{ apt_mirror_host }}'"
 
 freezer_image:
   context: "."
   container_filename: "Dockerfile.runtime"
+  arch:
+    - linux/amd64
+    - linux/arm64
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/freezer"
-  tags: *tags
+  tags: "{{ image_tags }}"
   build_args:
-    - "BASE_BUILDER='{{ image_registry.host }}/{{ image_registry.org }}/venv_builder:{{ image_tag }}'"
-    - "BASE_RUNTIME='{{ image_registry.host }}/{{ image_registry.org }}/base:{{ image_tag }}'"
+    - "BASE_BUILDER='{{ base_builder_image }}'"
+    - "BASE_RUNTIME='{{ base_runtime_image }}'"
     - "PROJECT='freezer'"
     - "PROJECT_REF={{ openstack_release }}"
     - "PROFILES='fluent ceph lvm qemu scheduler apache'"
     - "PIP_PACKAGES='python-swiftclient python-keystoneclient python-cinderclient'"
     - "DIST_PACKAGES='rsync tar gzip bzip2 lzop cron'"
-    - "APT_MIRROR='{{ apt_mirror }}'"
+    - "APT_MIRROR_HOST='{{ apt_mirror_host }}'"
 
 freezer_api_image:
   context: "."
   container_filename: "Dockerfile.runtime"
+  arch:
+    - linux/amd64
+    - linux/arm64
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/freezer-api"
-  tags: *tags
+  tags: "{{ image_tags }}"
   build_args:
-    - "BASE_BUILDER='{{ image_registry.host }}/{{ image_registry.org }}/venv_builder:{{ image_tag }}'"
-    - "BASE_RUNTIME='{{ image_registry.host }}/{{ image_registry.org }}/base:{{ image_tag }}'"
+    - "BASE_BUILDER='{{ base_builder_image }}'"
+    - "BASE_RUNTIME='{{ base_runtime_image }}'"
     - "PROJECT='freezer-api'"
     - "PROJECT_REF={{ openstack_release }}"
     - "PROFILES='fluent apache'"
     - "PIP_PACKAGES='python-swiftclient python-keystoneclient'"
-    - "APT_MIRROR='{{ apt_mirror }}'"
+    - "APT_MIRROR_HOST='{{ apt_mirror_host }}'"
 
 heat_image:
   context: "."
   container_filename: "Dockerfile.runtime"
+  arch:
+    - linux/amd64
+    - linux/arm64
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/heat"
-  tags: *tags
+  tags: "{{ image_tags }}"
   build_args:
-    - "BASE_BUILDER='{{ image_registry.host }}/{{ image_registry.org }}/venv_builder:{{ image_tag }}'"
-    - "BASE_RUNTIME='{{ image_registry.host }}/{{ image_registry.org }}/base:{{ image_tag }}'"
+    - "BASE_BUILDER='{{ base_builder_image }}'"
+    - "BASE_RUNTIME='{{ base_runtime_image }}'"
     - "PROJECT='heat'"
     - "PROJECT_REF={{ openstack_release }}"
     - "PROFILES='fluent apache'"
     - "DIST_PACKAGES='curl'"
-    - "APT_MIRROR='{{ apt_mirror }}'"
+    - "APT_MIRROR_HOST='{{ apt_mirror_host }}'"
 
 horizon_image:
   context: "."
   container_filename: "Dockerfile.runtime"
+  arch:
+    - linux/amd64
+    - linux/arm64
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/horizon"
-  tags: *tags
+  tags: "{{ image_tags }}"
   build_args:
-    - "BASE_BUILDER='{{ image_registry.host }}/{{ image_registry.org }}/venv_builder:{{ image_tag }}'"
-    - "BASE_RUNTIME='{{ image_registry.host }}/{{ image_registry.org }}/base:{{ image_tag }}'"
+    - "BASE_BUILDER='{{ base_builder_image }}'"
+    - "BASE_RUNTIME='{{ base_runtime_image }}'"
     - "PROJECT='horizon'"
     - "PROJECT_REF={{ openstack_release }}"
     - "PROFILES='fluent apache'"
     - "PIP_PACKAGES='pymemcache'"
-    - "APT_MIRROR='{{ apt_mirror }}'"
+    - "APT_MIRROR_HOST='{{ apt_mirror_host }}'"
 
 ironic_image:
   context: "."
   container_filename: "Dockerfile.runtime"
+  arch:
+    - linux/amd64
+    - linux/arm64
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/ironic"
-  tags: *tags
+  tags: "{{ image_tags }}"
   build_args:
-    - "BASE_BUILDER='{{ image_registry.host }}/{{ image_registry.org }}/venv_builder:{{ image_tag }}'"
-    - "BASE_RUNTIME='{{ image_registry.host }}/{{ image_registry.org }}/base:{{ image_tag }}'"
+    - "BASE_BUILDER='{{ base_builder_image }}'"
+    - "BASE_RUNTIME='{{ base_runtime_image }}'"
     - "PROJECT='ironic'"
     - "PROJECT_REF={{ openstack_release }}"
     - "PROFILES='fluent ipxe ipmi qemu tftp'"
     - "DIST_PACKAGES='ethtool lshw iproute2'"
-    - "APT_MIRROR='{{ apt_mirror }}'"
+    - "APT_MIRROR_HOST='{{ apt_mirror_host }}'"
 
 keystone_image:
   context: "."
   container_filename: "Dockerfile.runtime"
+  arch:
+    - linux/amd64
+    - linux/arm64
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/keystone"
-  tags: *tags
+  tags: "{{ image_tags }}"
   build_args:
-    - "BASE_BUILDER='{{ image_registry.host }}/{{ image_registry.org }}/venv_builder:{{ image_tag }}'"
-    - "BASE_RUNTIME='{{ image_registry.host }}/{{ image_registry.org }}/base:{{ image_tag }}'"
+    - "BASE_BUILDER='{{ base_builder_image }}'"
+    - "BASE_RUNTIME='{{ base_runtime_image }}'"
     - "PROJECT='keystone'"
     - "PROJECT_REF={{ openstack_release }}"
     - "PROFILES='fluent apache ldap {{ openstack_release }}'"
     - "PIP_PACKAGES='python-openstackclient'"
-    - "APT_MIRROR='{{ apt_mirror }}'"
+    - "APT_MIRROR_HOST='{{ apt_mirror_host }}'"
 
 magnum_image:
   context: "."
   container_filename: "Dockerfile.runtime"
+  arch:
+    - linux/amd64
+    - linux/arm64
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/magnum"
-  tags: *tags
+  tags: "{{ image_tags }}"
   build_args:
-    - "BASE_BUILDER='{{ image_registry.host }}/{{ image_registry.org }}/venv_builder:{{ image_tag }}'"
-    - "BASE_RUNTIME='{{ image_registry.host }}/{{ image_registry.org }}/base:{{ image_tag }}'"
+    - "BASE_BUILDER='{{ base_builder_image }}'"
+    - "BASE_RUNTIME='{{ base_runtime_image }}'"
     - "PROJECT='magnum'"
     - "PROJECT_REF={{ openstack_release }}"
-    - "APT_MIRROR='{{ apt_mirror }}'"
+    - "APT_MIRROR_HOST='{{ apt_mirror_host }}'"
 
 manila_image:
   context: "."
   container_filename: "Dockerfile.runtime"
+  arch:
+    - linux/amd64
+    - linux/arm64
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/manila"
-  tags: *tags
+  tags: "{{ image_tags }}"
   build_args:
-    - "BASE_BUILDER='{{ image_registry.host }}/{{ image_registry.org }}/venv_builder:{{ image_tag }}'"
-    - "BASE_RUNTIME='{{ image_registry.host }}/{{ image_registry.org }}/base:{{ image_tag }}'"
+    - "BASE_BUILDER='{{ base_builder_image }}'"
+    - "BASE_RUNTIME='{{ base_runtime_image }}'"
     - "PROJECT='manila'"
     - "PROJECT_REF={{ openstack_release }}"
-    - "APT_MIRROR='{{ apt_mirror }}'"
+    - "APT_MIRROR_HOST='{{ apt_mirror_host }}'"
 
 masakari_image:
   context: "."
   container_filename: "Dockerfile.runtime"
+  arch:
+    - linux/amd64
+    - linux/arm64
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/masakari"
-  tags: *tags
+  tags: "{{ image_tags }}"
   build_args:
-    - "BASE_BUILDER='{{ image_registry.host }}/{{ image_registry.org }}/venv_builder:{{ image_tag }}'"
-    - "BASE_RUNTIME='{{ image_registry.host }}/{{ image_registry.org }}/base:{{ image_tag }}'"
+    - "BASE_BUILDER='{{ base_builder_image }}'"
+    - "BASE_RUNTIME='{{ base_runtime_image }}'"
     - "PROJECT='masakari'"
     - "PROJECT_REF={{ openstack_release }}"
-    - "APT_MIRROR='{{ apt_mirror }}'"
+    - "APT_MIRROR_HOST='{{ apt_mirror_host }}'"
 
 masakari_monitors_image:
   context: "."
   container_filename: "Dockerfile.runtime"
+  arch:
+    - linux/amd64
+    - linux/arm64
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/masakari-monitors"
-  tags: *tags
+  tags: "{{ image_tags }}"
   build_args:
-    - "BASE_BUILDER='{{ image_registry.host }}/{{ image_registry.org }}/venv_builder:{{ image_tag }}'"
-    - "BASE_RUNTIME='{{ image_registry.host }}/{{ image_registry.org }}/base:{{ image_tag }}'"
+    - "BASE_BUILDER='{{ base_builder_image }}'"
+    - "BASE_RUNTIME='{{ base_runtime_image }}'"
     - "PROJECT='masakari-monitors'"
     - "PROJECT_REF={{ openstack_release }}"
-    - "APT_MIRROR='{{ apt_mirror }}'"
+    - "APT_MIRROR_HOST='{{ apt_mirror_host }}'"
 
 mistral_image:
   context: "."
   container_filename: "Dockerfile.runtime"
+  arch:
+    - linux/amd64
+    - linux/arm64
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/mistral"
-  tags: *tags
+  tags: "{{ image_tags }}"
   build_args:
-    - "BASE_BUILDER='{{ image_registry.host }}/{{ image_registry.org }}/venv_builder:{{ image_tag }}'"
-    - "BASE_RUNTIME='{{ image_registry.host }}/{{ image_registry.org }}/base:{{ image_tag }}'"
+    - "BASE_BUILDER='{{ base_builder_image }}'"
+    - "BASE_RUNTIME='{{ base_runtime_image }}'"
     - "PROJECT='mistral'"
     - "PROJECT_REF={{ openstack_release }}"
-    - "APT_MIRROR='{{ apt_mirror }}'"
+    - "APT_MIRROR_HOST='{{ apt_mirror_host }}'"
 
 neutron_image:
   context: "."
   container_filename: "Dockerfile.runtime"
+  arch:
+    - linux/amd64
+    - linux/arm64
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/neutron"
-  tags: *tags
+  tags: "{{ image_tags }}"
   build_args:
-    - "BASE_BUILDER='{{ image_registry.host }}/{{ image_registry.org }}/venv_builder:{{ image_tag }}'"
-    - "BASE_RUNTIME='{{ image_registry.host }}/{{ image_registry.org }}/base:{{ image_tag }}'"
+    - "BASE_BUILDER='{{ base_builder_image }}'"
+    - "BASE_RUNTIME='{{ base_runtime_image }}'"
     - "PROJECT='neutron'"
     - "PROJECT_REF={{ openstack_release }}"
     - "PROFILES='fluent linuxbridge openvswitch apache vpn baremetal'"
     - "PIP_PACKAGES='tap-as-a-service'"
     - "DIST_PACKAGES='jq ethtool lshw'"
-    - "APT_MIRROR='{{ apt_mirror }}'"
+    - "APT_MIRROR_HOST='{{ apt_mirror_host }}'"
 
 nova_image:
   context: "."
   container_filename: "Dockerfile.runtime"
+  arch:
+    - linux/amd64
+    - linux/arm64
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/nova"
-  tags: *tags
+  tags: "{{ image_tags }}"
   build_args:
-    - "BASE_BUILDER='{{ image_registry.host }}/{{ image_registry.org }}/venv_builder:{{ image_tag }}'"
-    - "BASE_RUNTIME='{{ image_registry.host }}/{{ image_registry.org }}/base:{{ image_tag }}'"
+    - "BASE_BUILDER='{{ base_builder_image }}'"
+    - "BASE_RUNTIME='{{ base_runtime_image }}'"
     - "PROJECT='nova'"
     - "PROJECT_REF={{ openstack_release }}"
     - "PROFILES='fluent ceph linuxbridge openvswitch configdrive qemu apache migration'"
     - "DIST_PACKAGES='net-tools openssh-server'"
-    - "APT_MIRROR='{{ apt_mirror }}'"
+    - "APT_MIRROR_HOST='{{ apt_mirror_host }}'"
 
 octavia_image:
   context: "."
   container_filename: "Dockerfile.runtime"
+  arch:
+    - linux/amd64
+    - linux/arm64
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/octavia"
-  tags: *tags
+  tags: "{{ image_tags }}"
   build_args:
-    - "BASE_BUILDER='{{ image_registry.host }}/{{ image_registry.org }}/venv_builder:{{ image_tag }}'"
-    - "BASE_RUNTIME='{{ image_registry.host }}/{{ image_registry.org }}/base:{{ image_tag }}'"
+    - "BASE_BUILDER='{{ base_builder_image }}'"
+    - "BASE_RUNTIME='{{ base_runtime_image }}'"
     - "PROJECT='octavia'"
     - "PROJECT_REF={{ openstack_release }}"
-    - "APT_MIRROR='{{ apt_mirror }}'"
+    - "APT_MIRROR_HOST='{{ apt_mirror_host }}'"
 
 openstack_client_pip_packages:
   - cmd2
@@ -379,86 +458,104 @@ openstack_client_pip_packages:
 openstack_client_image:
   context: "."
   container_filename: "Dockerfile.runtime"
+  arch:
+    - linux/amd64
+    - linux/arm64
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/openstack-client"
-  tags: *tags
+  tags: "{{ image_tags }}"
   build_args:
-    - "BASE_BUILDER='{{ image_registry.host }}/{{ image_registry.org }}/venv_builder:{{ image_tag }}'"
-    - "BASE_RUNTIME='{{ image_registry.host }}/{{ image_registry.org }}/base:{{ image_tag }}'"
+    - "BASE_BUILDER='{{ base_builder_image }}'"
+    - "BASE_RUNTIME='{{ base_runtime_image }}'"
     - "PROJECT='python-openstackclient'"
     - "PROJECT_REF={{ openstack_release }}"
     - "PIP_PACKAGES='{{ openstack_client_pip_packages | join(' ') }}'"
-    - "APT_MIRROR='{{ apt_mirror }}'"
+    - "APT_MIRROR_HOST='{{ apt_mirror_host }}'"
     - "DIST_PACKAGES='curl jq'"
 
 placement_image:
   context: "."
   container_filename: "Dockerfile.runtime"
+  arch:
+    - linux/amd64
+    - linux/arm64
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/placement"
-  tags: *tags
+  tags: "{{ image_tags }}"
   build_args:
-    - "BASE_BUILDER='{{ image_registry.host }}/{{ image_registry.org }}/venv_builder:{{ image_tag }}'"
-    - "BASE_RUNTIME='{{ image_registry.host }}/{{ image_registry.org }}/base:{{ image_tag }}'"
+    - "BASE_BUILDER='{{ base_builder_image }}'"
+    - "BASE_RUNTIME='{{ base_runtime_image }}'"
     - "PROJECT='placement'"
     - "PROJECT_REF={{ openstack_release }}"
     - "PROFILES='apache'"
     - "PIP_PACKAGES='httplib2'"
-    - "APT_MIRROR='{{ apt_mirror }}'"
+    - "APT_MIRROR_HOST='{{ apt_mirror_host }}'"
 
 skyline_image:
   context: "."
   container_filename: "Dockerfile.runtime"
+  arch:
+    - linux/amd64
+    - linux/arm64
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/skyline"
-  tags: *tags
+  tags: "{{ image_tags }}"
   build_args:
-    - "BASE_BUILDER='{{ image_registry.host }}/{{ image_registry.org }}/venv_builder:{{ image_tag }}'"
-    - "BASE_RUNTIME='{{ image_registry.host }}/{{ image_registry.org }}/base:{{ image_tag }}'"
+    - "BASE_BUILDER='{{ base_builder_image }}'"
+    - "BASE_RUNTIME='{{ base_runtime_image }}'"
     - "PROJECT='skyline-apiserver'"
     - "PROJECT_REF={{ openstack_release }}"
-    - "APT_MIRROR='{{ apt_mirror }}'"
+    - "APT_MIRROR_HOST='{{ apt_mirror_host }}'"
     - "SKYLINE_CONSOLE_REF={{ openstack_release }}"
     - "DIST_PACKAGES='nginx'"
 
 swift_image:
   context: "."
   container_filename: "Dockerfile.runtime"
+  arch:
+    - linux/amd64
+    - linux/arm64
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/swift"
-  tags: *tags
+  tags: "{{ image_tags }}"
   build_args:
     - "BASE_BUILDER='{{ image_registry.host }}/{{ image_registry.org }}/venv_builder:{{ image_tag }}'"
     - "BASE_RUNTIME='{{ image_registry.host }}/{{ image_registry.org }}/base:{{ image_tag }}'"
     - "PROJECT='swift'"
     - "PROJECT_REF={{ openstack_release }}"
-    - "APT_MIRROR='{{ apt_mirror }}'"
+    - "APT_MIRROR_HOST='{{ apt_mirror_host }}'"
 
 tacker_image:
   context: "."
   container_filename: "Dockerfile.runtime"
+  arch:
+    - linux/amd64
+    - linux/arm64
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/tacker"
-  tags: *tags
+  tags: "{{ image_tags }}"
   build_args:
-    - "BASE_BUILDER='{{ image_registry.host }}/{{ image_registry.org }}/venv_builder:{{ image_tag }}'"
-    - "BASE_RUNTIME='{{ image_registry.host }}/{{ image_registry.org }}/base:{{ image_tag }}'"
+    - "BASE_BUILDER='{{ base_builder_image }}'"
+    - "BASE_RUNTIME='{{ base_runtime_image }}'"
     - "PROJECT='tacker'"
     - "PROJECT_REF={{ openstack_release }}"
-    - "APT_MIRROR='{{ apt_mirror }}'"
+    - "APT_MIRROR_HOST='{{ apt_mirror_host }}'"
 
 trove_image:
   context: "."
   container_filename: "Dockerfile.runtime"
+  arch:
+    - linux/amd64
+    - linux/arm64
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/trove"
-  tags: *tags
+  tags: "{{ image_tags }}"
   build_args:
     - "BASE_BUILDER='{{ image_registry.host }}/{{ image_registry.org }}/venv_builder:{{ image_tag }}'"
     - "BASE_RUNTIME='{{ image_registry.host }}/{{ image_registry.org }}/base:{{ image_tag }}'"
     - "PROJECT='trove'"
     - "PROJECT_REF={{ openstack_release }}"
-    - "APT_MIRROR='{{ apt_mirror }}'"
+    - "APT_MIRROR_HOST='{{ apt_mirror_host }}'"
     - "PROFILES='apache'"
     - "DIST_PACKAGES='mysql-client postgresql-client curl'"
     - "PIP_PACKAGES='python-swiftclient'"
@@ -466,27 +563,33 @@ trove_image:
 watcher_image:
   context: "."
   container_filename: "Dockerfile.runtime"
+  arch:
+    - linux/amd64
+    - linux/arm64
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/watcher"
-  tags: *tags
+  tags: "{{ image_tags }}"
   build_args:
-    - "BASE_BUILDER='{{ image_registry.host }}/{{ image_registry.org }}/venv_builder:{{ image_tag }}'"
-    - "BASE_RUNTIME='{{ image_registry.host }}/{{ image_registry.org }}/base:{{ image_tag }}'"
+    - "BASE_BUILDER='{{ base_builder_image }}'"
+    - "BASE_RUNTIME='{{ base_runtime_image }}'"
     - "PROJECT='watcher'"
     - "PROJECT_REF={{ openstack_release }}"
-    - "APT_MIRROR='{{ apt_mirror }}'"
+    - "APT_MIRROR_HOST='{{ apt_mirror_host }}'"
 
 zaqar_image:
   context: "."
   container_filename: "Dockerfile.runtime"
+  arch:
+    - linux/amd64
+    - linux/arm64
   registry: "{{ image_registry.host }}"
   repository: "{{ image_registry.host }}/{{ image_registry.org }}/zaqar"
-  tags: *tags
+  tags: "{{ image_tags }}"
   build_args:
-    - "BASE_BUILDER='{{ image_registry.host }}/{{ image_registry.org }}/venv_builder:{{ image_tag }}'"
-    - "BASE_RUNTIME='{{ image_registry.host }}/{{ image_registry.org }}/base:{{ image_tag }}'"
+    - "BASE_BUILDER='{{ base_builder_image }}'"
+    - "BASE_RUNTIME='{{ base_runtime_image }}'"
     - "PROJECT='zaqar'"
     - "PROJECT_REF={{ openstack_release }}"
     - "PROFILES='fluent ldap'"
-    - "APT_MIRROR='{{ apt_mirror }}'"
+    - "APT_MIRROR_HOST='{{ apt_mirror_host }}'"
     - "PIP_PACKAGES='redis'"

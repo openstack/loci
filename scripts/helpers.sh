@@ -65,37 +65,72 @@ get_pipy_name_by_project_name() {
 configure_apt_sources() {
     # Configure apt sources for Ubuntu based on the release version.
     # Args:
-    #   $1: apt mirror URL (defaults to APT_MIRROR env or Ubuntu archive)
-    local apt_mirror="${1}"
+    #   $1: apt mirror_host
+    local apt_mirror_host="${1}"
+    if [[ -z "${apt_mirror_host}" ]]; then
+        return
+    fi
+    local driver=${2:-https}
 
-    source /etc/lsb-release
+    source /etc/os-release
+    local ver=${VERSION_ID/./}
+    local codename="${VERSION_CODENAME}"
+    local arch="${TARGETARCH:-}"
 
-    if [[ ${DISTRIB_RELEASE%%.*} -ge 24 ]]; then  # Ubuntu 24.04 and newer
-        trusted=""
-        if echo "${apt_mirror}" | grep -q -E '\[trusted=yes\]'; then
-            apt_mirror=$(echo "${apt_mirror}" | awk '{print $2}')
-            trusted="yes"
+    if [[ -z "${arch}" ]]; then
+        arch="$(dpkg --print-architecture 2>/dev/null || true)"
+    fi
+
+    local trusted_prefix=""
+    local trusted_flag=""
+    if [[ -n "${apt_mirror_host}" ]]; then
+        trusted_prefix="[trusted=yes] "
+        trusted_flag="yes"
+    fi
+
+    case "${arch}" in
+    "arm64"|"aarch64")
+        apt_mirror="${driver}://${apt_mirror_host:-ports.ubuntu.com}/ubuntu-ports/"
+        ;;
+    "amd64"|"x86_64")
+        apt_mirror="${driver}://${apt_mirror_host:-archive.ubuntu.com}/ubuntu/"
+        ;;
+    *)
+        echo "Unsupported architecture: ${arch}"
+        exit 1
+        ;;
+    esac
+
+    if [ "$ver" -ge "2404" ]; then  # Ubuntu 24.04 and newer
+        mkdir -p /etc/apt/sources.list.d
+        if [[ -f /etc/apt/sources.list.d/ubuntu.sources && ! -f /etc/apt/sources.list.d/ubuntu.sources.orig ]]; then
+            mv /etc/apt/sources.list.d/ubuntu.sources /etc/apt/sources.list.d/ubuntu.sources.orig
         fi
-        mv /etc/apt/sources.list.d/ubuntu.sources /etc/apt/sources.list.d/ubuntu.sources.orig
         cat > /etc/apt/sources.list.d/ubuntu.sources <<EOF
 Types: deb
 URIs: ${apt_mirror}
-Suites: ${DISTRIB_CODENAME} ${DISTRIB_CODENAME}-updates ${DISTRIB_CODENAME}-backports ${DISTRIB_CODENAME}-security
-Components: main universe restricted multiverse
+Suites: ${codename} ${codename}-updates ${codename}-backports ${codename}-security
+Components: main universe
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
 EOF
-        if [[ -n "${trusted}" ]]; then
-            echo "Trusted: ${trusted}" >> /etc/apt/sources.list.d/ubuntu.sources
+        if [[ -n "${trusted_flag}" ]]; then
+            echo "Trusted: ${trusted_flag}" >> /etc/apt/sources.list.d/ubuntu.sources
         fi
         cat /etc/apt/sources.list.d/ubuntu.sources
     else
-        mv /etc/apt/sources.list /etc/apt/sources.list.orig
+        if [[ -f /etc/apt/sources.list.d/ubuntu.sources && ! -f /etc/apt/sources.list.d/ubuntu.sources.orig ]]; then
+            mv /etc/apt/sources.list.d/ubuntu.sources /etc/apt/sources.list.d/ubuntu.sources.orig
+        fi
+        if [[ -f /etc/apt/sources.list && ! -f /etc/apt/sources.list.orig ]]; then
+            mv /etc/apt/sources.list /etc/apt/sources.list.orig
+        fi
         cat > /etc/apt/sources.list <<EOF
-deb ${apt_mirror} ${DISTRIB_CODENAME} main universe
-deb ${apt_mirror} ${DISTRIB_CODENAME}-updates main universe
-deb ${apt_mirror} ${DISTRIB_CODENAME}-security main universe
-deb ${apt_mirror} ${DISTRIB_CODENAME}-backports main universe
+deb ${trusted_prefix}${apt_mirror} ${codename} main universe
+deb ${trusted_prefix}${apt_mirror} ${codename}-updates main universe
+deb ${trusted_prefix}${apt_mirror} ${codename}-security main universe
+deb ${trusted_prefix}${apt_mirror} ${codename}-backports main universe
 EOF
-    cat /etc/apt/sources.list
+        cat /etc/apt/sources.list
     fi
 }
 

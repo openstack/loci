@@ -1,0 +1,21 @@
+- name: Query Zuul API for image information
+  uri:
+    url: "{{ promote_container_image_api }}/builds?{{ promote_container_image_query }}"
+  register: build
+
+- name: Parse build response
+  set_fact:
+    build: "{{ build.json[0] }}"
+
+- name: Map image artifacts
+  set_fact:
+    zj_artifact_map: "{{ zj_artifact_map | default({}) | combine({zj_map_item.metadata.repository + ':' + zj_map_item.metadata.tag: zj_map_item.url}) }}"
+  loop_control:
+    loop_var: zj_map_item
+  loop: "{{ build | json_query(\"artifacts[?metadata.type=='container_image']\")}}"
+
+- name: Promote image
+  loop: "{{ container_images }}"
+  loop_control:
+    loop_var: zj_image
+  include_tasks: promote-registry.yaml

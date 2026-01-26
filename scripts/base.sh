@@ -3,15 +3,10 @@
 set -xeo pipefail
 
 source "$(dirname $0)/helpers.sh"
+configure_apt_sources "${APT_MIRROR_HOST}" http  # Use http before ca-certificates is installed
 
 export LC_CTYPE=C.UTF-8
 export DEBIAN_FRONTEND=noninteractive
-
-cat <<EOF >> /etc/apt/apt.conf.d/allow-unathenticated
-APT::Get::AllowUnauthenticated "${ALLOW_UNAUTHENTICATED}";
-Acquire::AllowInsecureRepositories "${ALLOW_UNAUTHENTICATED}";
-Acquire::AllowDowngradeToInsecureRepositories "${ALLOW_UNAUTHENTICATED}";
-EOF
 
 apt-get update
 apt-get install -y --no-install-recommends \
@@ -21,7 +16,14 @@ apt-get install -y --no-install-recommends \
     lsb-release \
     wget
 
-configure_apt_sources "${APT_MIRROR}"
+revert_apt_sources
+configure_apt_sources "${APT_MIRROR_HOST}"
+
+cat <<EOF >> /etc/apt/apt.conf.d/allow-unauthenticated
+APT::Get::AllowUnauthenticated "${ALLOW_UNAUTHENTICATED}";
+Acquire::AllowInsecureRepositories "${ALLOW_UNAUTHENTICATED}";
+Acquire::AllowDowngradeToInsecureRepositories "${ALLOW_UNAUTHENTICATED}";
+EOF
 
 wget -q -O- "${CEPH_KEY}" | apt-key add -
 if [ -n "${CEPH_REPO}" ]; then

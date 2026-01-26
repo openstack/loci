@@ -1,0 +1,7 @@
+- nodeset:
+    name: loci-ubuntu-noble
+    nodes:
+      - name: node-0
+        label: ubuntu-noble
+      - name: node-1
+        label: ubuntu-noble-arm64

@@ -1,5 +1,8 @@
 - hosts: all[0]
   gather_facts: true
+  roles:
+    - use-buildset-registry
+
   tasks:
     - name: Vars
       include_vars:
@@ -13,5 +16,3 @@
     - name: Upload images
       include_role:
         name: upload-container-image
-      vars:
-        container_images: "{{ [base_image] + [venv_builder_image] + openstack_images }}"

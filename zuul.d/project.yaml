@@ -1,7 +1,7 @@
 - project:
     vars:
       helm_version: "3.18.1"
-
+      container_command: docker
     check:
       jobs:
         - loci-buildset-registry
@@ -22,11 +22,21 @@
         - loci-compute-kit-2025-2-ubuntu_noble
         - loci-cinder-2025-2-ubuntu_noble
         # 2025.1 Ubuntu Noble UV
-        - loci-build-2025-1-ubuntu_noble_uv
+        - loci-build-base-2025-1-ubuntu_noble_uv
+        - loci-build-2025-1-ubuntu_noble_uv_0
+        - loci-build-2025-1-ubuntu_noble_uv_1
+        - loci-build-2025-1-ubuntu_noble_uv_2
+        - loci-build-2025-1-ubuntu_noble_uv_3
+        - loci-build-2025-1-ubuntu_noble_uv_4
         - loci-compute-kit-2025-1-ubuntu_noble_uv
         - loci-cinder-2025-1-ubuntu_noble_uv
         # 2025.2 Ubuntu Noble UV
-        - loci-build-2025-2-ubuntu_noble_uv
+        - loci-build-base-2025-2-ubuntu_noble_uv
+        - loci-build-2025-2-ubuntu_noble_uv_0
+        - loci-build-2025-2-ubuntu_noble_uv_1
+        - loci-build-2025-2-ubuntu_noble_uv_2
+        - loci-build-2025-2-ubuntu_noble_uv_3
+        - loci-build-2025-2-ubuntu_noble_uv_4
         - loci-compute-kit-2025-2-ubuntu_noble_uv
         - loci-cinder-2025-2-ubuntu_noble_uv
     gate:
@@ -36,7 +46,21 @@
         - loci-upload-2025-1-ubuntu_jammy
         - loci-upload-2025-1-ubuntu_noble
         - loci-upload-2025-2-ubuntu_noble
+        # 2025.1 Ubuntu Noble UV
+        - loci-build-base-2025-1-ubuntu_noble_uv
+        - loci-build-2025-1-ubuntu_noble_uv_0
+        - loci-build-2025-1-ubuntu_noble_uv_1
+        - loci-build-2025-1-ubuntu_noble_uv_2
+        - loci-build-2025-1-ubuntu_noble_uv_3
+        - loci-build-2025-1-ubuntu_noble_uv_4
         - loci-upload-2025-1-ubuntu_noble_uv
+        # 2025.2 Ubuntu Noble UV
+        - loci-build-base-2025-2-ubuntu_noble_uv
+        - loci-build-2025-2-ubuntu_noble_uv_0
+        - loci-build-2025-2-ubuntu_noble_uv_1
+        - loci-build-2025-2-ubuntu_noble_uv_2
+        - loci-build-2025-2-ubuntu_noble_uv_3
+        - loci-build-2025-2-ubuntu_noble_uv_4
         - loci-upload-2025-2-ubuntu_noble_uv
     promote:
       jobs:
@@ -82,18 +106,42 @@
               - name: loci-compute-kit-2025-2-ubuntu_noble
               - name: loci-cinder-2025-2-ubuntu_noble
         # 2025.1 Ubuntu Noble UV
-        - loci-upload-2025-1-ubuntu_noble_uv
-        - loci-compute-kit-2025-1-ubuntu_noble_uv
-        - loci-cinder-2025-1-ubuntu_noble_uv
-        - loci-promote-2025-1-ubuntu_noble_uv:
+        - loci-build-base-2025-1-ubuntu_noble_uv
+        - loci-upload-base-2025-1-ubuntu_noble_uv
+        - loci-build-2025-1-ubuntu_noble_uv_0
+        - loci-build-2025-1-ubuntu_noble_uv_1
+        - loci-build-2025-1-ubuntu_noble_uv_2
+        - loci-build-2025-1-ubuntu_noble_uv_3
+        - loci-build-2025-1-ubuntu_noble_uv_4
+        - loci-upload-2025-1-ubuntu_noble_uv:
             dependencies:
               - name: loci-compute-kit-2025-1-ubuntu_noble_uv
               - name: loci-cinder-2025-1-ubuntu_noble_uv
+        - loci-compute-kit-2025-1-ubuntu_noble_uv
+        - loci-cinder-2025-1-ubuntu_noble_uv
+        - loci-promote-base-2025-1-ubuntu_noble_uv:
+            dependencies:
+              - name: loci-upload-base-2025-1-ubuntu_noble_uv
+        - loci-promote-2025-1-ubuntu_noble_uv:
+            dependencies:
+              - name: loci-upload-2025-1-ubuntu_noble_uv
         # 2025.2 Ubuntu Noble UV
-        - loci-upload-2025-2-ubuntu_noble_uv
-        - loci-compute-kit-2025-2-ubuntu_noble_uv
-        - loci-cinder-2025-2-ubuntu_noble_uv
-        - loci-promote-2025-2-ubuntu_noble_uv:
+        - loci-build-base-2025-2-ubuntu_noble_uv
+        - loci-upload-base-2025-2-ubuntu_noble_uv
+        - loci-build-2025-2-ubuntu_noble_uv_0
+        - loci-build-2025-2-ubuntu_noble_uv_1
+        - loci-build-2025-2-ubuntu_noble_uv_2
+        - loci-build-2025-2-ubuntu_noble_uv_3
+        - loci-build-2025-2-ubuntu_noble_uv_4
+        - loci-upload-2025-2-ubuntu_noble_uv:
             dependencies:
               - name: loci-compute-kit-2025-2-ubuntu_noble_uv
               - name: loci-cinder-2025-2-ubuntu_noble_uv
+        - loci-compute-kit-2025-2-ubuntu_noble_uv
+        - loci-cinder-2025-2-ubuntu_noble_uv
+        - loci-promote-base-2025-2-ubuntu_noble_uv:
+            dependencies:
+              - name: loci-upload-base-2025-2-ubuntu_noble_uv
+        - loci-promote-2025-2-ubuntu_noble_uv:
+            dependencies:
+              - name: loci-upload-2025-2-ubuntu_noble_uv

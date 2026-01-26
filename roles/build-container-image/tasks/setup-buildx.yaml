@@ -1,8 +1,8 @@
-- name: Update qemu-static container settings
-  command: docker run --rm --privileged quay.io/opendevmirror/qemu-user-static --reset -p yes
-  when:
-    - _multiarch
-    - ansible_architecture == 'x86_64'
+# - name: Update qemu-static container settings
+#   command: docker run --rm --privileged quay.io/opendevmirror/qemu-user-static --reset -p yes
+#   when:
+#     - _multiarch
+#     - ansible_architecture == 'x86_64'
 
 # TODO(clarkb) Use buildkitd.toml configuration to add certificates. That
 # may allow us to drop the ca-certificates install and update-ca-certificates

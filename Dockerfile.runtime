@@ -6,10 +6,15 @@ ENV PATH=/var/lib/openstack/bin:$PATH
 ENV LANG=C.UTF-8
 
 # APT mirror to use for package installs
-ARG APT_MIRROR="https://archive.ubuntu.com/ubuntu/"
+ARG APT_MIRROR_HOST=""
+ARG TARGETARCH
+ARG TARGETPLATFORM
 
 ARG PROJECT
-ARG PROJECT_REPO=https://opendev.org/openstack/${PROJECT}
+# FIXME: opendev.org is slow on arm nodes provided by the osuosl.org
+# This is temporary workaround to speed up builds on arm64 architecture.
+# Proper solution is to use cached git repositories available on all nodepool nodes.
+ARG PROJECT_REPO=https://github.com/openstack/${PROJECT}
 ARG PROJECT_REF=master
 # Openstack release name or "master" for the latest code.
 # Used to select as a bindep profile.
@@ -37,16 +42,21 @@ ARG WHEEL_CONSTRAINT=""
 COPY scripts /opt/loci/scripts
 COPY pydep.txt $EXTRA_PYDEP /opt/loci/
 
-RUN --mount=type=cache,id=default-uv,target=/root/.cache/uv /opt/loci/scripts/uv_build_venv.sh
+RUN --mount=type=cache,id=default-uv-${TARGETPLATFORM//\//-},target=/root/.cache/uv /opt/loci/scripts/uv_build_venv.sh
 
 FROM ${BASE_RUNTIME} as runtime
 ENV PATH=/var/lib/openstack/bin:$PATH
 
 # APT mirror to use for package installs
-ARG APT_MIRROR="https://archive.ubuntu.com/ubuntu/"
+ARG APT_MIRROR_HOST=""
+ARG TARGETARCH
+ARG TARGETPLATFORM
 
 ARG PROJECT
-ARG PROJECT_REPO=https://opendev.org/openstack/${PROJECT}
+# FIXME: opendev.org is slow on arm nodes provided by the osuosl.org
+# This is temporary workaround to speed up builds on arm64 architecture.
+# Proper solution is to use cached git repositories available on all nodepool nodes.
+ARG PROJECT_REPO=https://github.com/openstack/${PROJECT}
 ARG PROJECT_REF=master
 # Openstack release name or "master" for the latest code.
 # Used to when collecting info for the image.
@@ -76,7 +86,10 @@ ARG SPICE_REPO=https://gitlab.freedesktop.org/spice/spice-html5.git
 ARG SPICE_REF=spice-html5-0.1.6
 
 # These are needed for skyline-api project specific scripts.
-ARG SKYLINE_CONSOLE_REPO=https://opendev.org/openstack/skyline-console
+# FIXME: opendev.org is slow on arm nodes provided by the osuosl.org
+# This is temporary workaround to speed up builds on arm64 architecture.
+# Proper solution is to use cached git repositories available on all nodepool nodes.
+ARG SKYLINE_CONSOLE_REPO=https://github.com/openstack/skyline-console
 ARG SKYLINE_CONSOLE_REF=master
 
 # Additional bindep files which will be copied to /opt/loci/ during build.

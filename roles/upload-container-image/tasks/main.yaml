@@ -1,3 +1,29 @@
+- name: Fail if buildset_registry is not defined
+  fail:
+    msg: "buildset_registry is not defined"
+  when:
+    - buildset_registry is not defined
+
+- name: Configure /etc/hosts for buildset_registry to workaround not understanding ipv6 addresses
+  become: yes
+  lineinfile:
+    path: /etc/hosts
+    state: present
+    regex: "^{{ buildset_registry.host }}\tzuul-jobs.buildset-registry$"
+    line: "{{ buildset_registry.host }}\tzuul-jobs.buildset-registry"
+    insertafter: EOF
+  when: buildset_registry is defined and buildset_registry.host | ipaddr
+
+- name: Set buildset_registry alias variable when using ip
+  set_fact:
+    buildset_registry_alias: zuul-jobs.buildset-registry
+  when: buildset_registry is defined and buildset_registry.host | ipaddr
+
+- name: Set buildset_registry alias variable when using name
+  set_fact:
+    buildset_registry_alias: "{{ buildset_registry.host }}"
+  when: buildset_registry is defined and not ( buildset_registry.host | ipaddr )
+
 - name: Control when we push to the upstream registry
   # We only want to push upstream if we are in a release / tag pipeline or
   # if we are using the tag promotion method.

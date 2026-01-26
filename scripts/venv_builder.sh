@@ -6,7 +6,7 @@ source $(dirname $0)/helpers.sh
 
 setup_venv
 
-configure_apt_sources "${APT_MIRROR}"
+configure_apt_sources "${APT_MIRROR_HOST}"
 
 read -r -a bindep_packages <<<"$(get_bindep_system_packages requirements)"
 install_system_packages "${bindep_packages[@]}"

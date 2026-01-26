@@ -11,12 +11,44 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- hosts: all[0]
+- hosts: all
   gather_facts: true
   roles:
     - use-buildset-registry
 
   tasks:
+    - name: Fail if buildset_registry is not defined
+      fail:
+        msg: "buildset_registry is not defined"
+      when:
+        - buildset_registry is not defined
+
+    - name: Configure /etc/hosts for buildset_registry to workaround not understanding ipv6 addresses
+      become: yes
+      lineinfile:
+        path: /etc/hosts
+        state: present
+        regex: "^{{ buildset_registry.host }}\tzuul-jobs.buildset-registry$"
+        line: "{{ buildset_registry.host }}\tzuul-jobs.buildset-registry"
+        insertafter: EOF
+      when: buildset_registry is defined and buildset_registry.host | ipaddr
+
+    - name: Set buildset_registry alias variable when using ip
+      set_fact:
+        buildset_registry_alias: zuul-jobs.buildset-registry
+      when: buildset_registry is defined and buildset_registry.host | ipaddr
+
+    - name: Set buildset_registry alias variable when using name
+      set_fact:
+        buildset_registry_alias: "{{ buildset_registry.host }}"
+      when: buildset_registry is defined and not ( buildset_registry.host | ipaddr )
+
+    - name: Set base registry prefix (base images build job sets it to use buildset registry)
+      zuul_return:
+        data:
+          base_registry_prefix: "{{ buildset_registry_alias }}:{{ buildset_registry.port }}/"
+      when: set_base_registry_prefix | default(false)
+
     - name: Vars
       include_vars:
         file: "uv_vars.yaml"
@@ -34,14 +66,28 @@
       environment:
         LC_ALL: C
 
+    - name: Initialize container_images_orig variable
+      set_fact:
+        container_images_orig: "{{ container_images }}"
+
+    - name: Initialize container_images variable
+      set_fact:
+        container_images: []
+
+    - name: Select images to build
+      set_fact:
+        container_images: "{{ container_images + [ item ] }}"
+      loop: "{{ container_images_orig }}"
+      loop_control:
+        index_var: idx
+      when: ((idx | int) % (build_jobs_total | int)) == (build_jobs_idx | int)
+
     - name: Build images
       include_role:
         name: build-container-image
-      vars:
-        container_images: "{{ [base_image] + [venv_builder_image] + openstack_images }}"
 
-    - name: Return images to zuul
+    - name: Return images to zuul (used by deployment jobs for testing images)
       include_tasks: _return-image.yml
-      loop: "{{ openstack_images }}"
+      loop: "{{ container_images }}"
       loop_control:
         loop_var: zj_image

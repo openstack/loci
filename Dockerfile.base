@@ -1,10 +1,12 @@
 ARG FROM=ubuntu:noble
 FROM ${FROM}
 
-ARG CEPH_REPO
+ARG CEPH_REPO=""
 ARG CEPH_KEY="https://download.ceph.com/keys/release.asc"
 ARG ALLOW_UNAUTHENTICATED=false
-ARG APT_MIRROR="https://archive.ubuntu.com/ubuntu/"
+ARG APT_MIRROR_HOST=""
+ARG TARGETARCH
+ARG TARGETPLATFORM
 
 COPY scripts/base.sh scripts/helpers.sh /
 RUN /base.sh && rm -f /base.sh /helpers.sh

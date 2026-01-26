@@ -1,19 +1,71 @@
 - job:
     name: loci-build-2025-1-ubuntu_noble_uv
+    abstract: true
+    nodeset: loci-ubuntu-noble
     roles:
       - zuul: openstack/loci
       - zuul: zuul/zuul-jobs
     timeout: 10800
     dependencies:
       - name: loci-buildset-registry
+      - name: loci-build-base-2025-1-ubuntu_noble_uv
+        soft: true
     pre-run:
       - playbooks/inject-keys.yaml
       - playbooks/pre-build.yaml
     run:
       - playbooks/uv_build.yaml
     vars: &vars
+      build_jobs_total: 1
+      build_jobs_idx: 0
       vars_files:
         - uv_vars_2025.1_noble.yaml
+
+- job:
+    name: loci-build-base-2025-1-ubuntu_noble_uv
+    parent: loci-build-2025-1-ubuntu_noble_uv
+    dependencies:
+      - name: loci-buildset-registry
+    vars:
+      set_base_registry_prefix: true
+      vars_files:
+        - uv_vars_base_2025.1_noble.yaml
+
+- job:
+    name: loci-build-2025-1-ubuntu_noble_uv_0
+    parent: loci-build-2025-1-ubuntu_noble_uv
+    vars:
+      build_jobs_total: 5
+      build_jobs_idx: 0
+
+- job:
+    name: loci-build-2025-1-ubuntu_noble_uv_1
+    parent: loci-build-2025-1-ubuntu_noble_uv
+    vars:
+      build_jobs_total: 5
+      build_jobs_idx: 1
+
+- job:
+    name: loci-build-2025-1-ubuntu_noble_uv_2
+    parent: loci-build-2025-1-ubuntu_noble_uv
+    vars:
+      build_jobs_total: 5
+      build_jobs_idx: 2
+
+- job:
+    name: loci-build-2025-1-ubuntu_noble_uv_3
+    parent: loci-build-2025-1-ubuntu_noble_uv
+    vars:
+      build_jobs_total: 5
+      build_jobs_idx: 3
+
+- job:
+    name: loci-build-2025-1-ubuntu_noble_uv_4
+    parent: loci-build-2025-1-ubuntu_noble_uv
+    vars:
+      build_jobs_total: 5
+      build_jobs_idx: 4
+
 
 - job:
     name: loci-upload-2025-1-ubuntu_noble_uv
@@ -23,31 +75,56 @@
     timeout: 10800
     dependencies:
       - name: loci-buildset-registry
+      - name: loci-build-2025-1-ubuntu_noble_uv_0
+      - name: loci-build-2025-1-ubuntu_noble_uv_1
+      - name: loci-build-2025-1-ubuntu_noble_uv_2
+      - name: loci-build-2025-1-ubuntu_noble_uv_3
+      - name: loci-build-2025-1-ubuntu_noble_uv_4
     pre-run:
       - playbooks/inject-keys.yaml
       - playbooks/pre-build.yaml
     run:
-      - playbooks/uv_build.yaml
-    post-run:
       - playbooks/uv_upload.yaml
-    vars: *vars
+    vars:
+      <<: *vars
     secrets:
       name: container_registry_credentials
       secret: loci_registry_credentials
+
+- job:
+    name: loci-upload-base-2025-1-ubuntu_noble_uv
+    parent: loci-upload-2025-1-ubuntu_noble_uv
+    dependencies:
+      - name: loci-buildset-registry
+      - name: loci-build-base-2025-1-ubuntu_noble_uv
+    vars:
+      <<: *vars
+      vars_files:
+        - uv_vars_base_2025.2_noble.yaml
 
 - job:
     name: loci-promote-2025-1-ubuntu_noble_uv
     roles:
       - zuul: openstack/loci
       - zuul: zuul/zuul-jobs
+    pre-run:
+      - playbooks/inject-keys.yaml
+      - playbooks/pre-build.yaml
     run:
       - playbooks/uv_promote.yaml
-    vars: *vars
+    vars:
+      <<: *vars
     secrets:
       name: container_registry_credentials
       secret: loci_registry_credentials
-    nodeset:
-      nodes: []
+
+- job:
+    name: loci-promote-base-2025-1-ubuntu_noble_uv
+    parent: loci-promote-2025-1-ubuntu_noble_uv
+    vars:
+      <<: *vars
+      vars_files:
+        - uv_vars_base_2025.2_noble.yaml
 
 - job:
     name: loci-compute-kit-2025-1-ubuntu_noble_uv
@@ -57,9 +134,15 @@
     required-projects:
       - openstack/openstack-helm
     dependencies:
-      - name: loci-build-2025-1-ubuntu_noble_uv
+      - name: loci-build-2025-1-ubuntu_noble_uv_0
         soft: true
-      - name: loci-upload-2025-1-ubuntu_noble_uv
+      - name: loci-build-2025-1-ubuntu_noble_uv_1
+        soft: true
+      - name: loci-build-2025-1-ubuntu_noble_uv_2
+        soft: true
+      - name: loci-build-2025-1-ubuntu_noble_uv_3
+        soft: true
+      - name: loci-build-2025-1-ubuntu_noble_uv_4
         soft: true
 
 - job:
@@ -70,7 +153,13 @@
     required-projects:
       - openstack/openstack-helm
     dependencies:
-      - name: loci-build-2025-1-ubuntu_noble_uv
+      - name: loci-build-2025-1-ubuntu_noble_uv_0
         soft: true
-      - name: loci-upload-2025-1-ubuntu_noble_uv
+      - name: loci-build-2025-1-ubuntu_noble_uv_1
+        soft: true
+      - name: loci-build-2025-1-ubuntu_noble_uv_2
+        soft: true
+      - name: loci-build-2025-1-ubuntu_noble_uv_3
+        soft: true
+      - name: loci-build-2025-1-ubuntu_noble_uv_4
         soft: true

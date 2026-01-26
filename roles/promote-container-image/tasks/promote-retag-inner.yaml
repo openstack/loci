@@ -1,0 +1,21 @@
+- name: Set promote_tag_prefix
+  set_fact:
+    promote_tag_prefix: "{{ ('change_' + zuul.change) if (zuul.change is defined) else zuul.pipeline }}_"
+
+- name: Upload tag to registry
+  command: >-
+    docker buildx imagetools create
+      -t {{ zj_image.repository }}:{{ zj_image_tag }}
+      {{ zj_image.repository }}:{{ promote_tag_prefix }}{{ zj_image_tag }}
+  register: result
+  until: result.rc == 0
+  retries: 3
+  delay: 30
+
+- name: Delete the temporary change tag we just renamed
+  include_role:
+    name: remove-registry-tag
+  vars:
+    remove_registry_tag_repository: '{{ zj_image.repository }}'
+    remove_registry_tag_tag: '{{ promote_tag_prefix }}{{ zj_image_tag }}'
+  no_log: true

@@ -2,7 +2,9 @@ ARG FROM=quay.io/airshipit/base:2025.2-ubuntu_noble_uv
 FROM ${FROM}
 
 # APT mirror to use for package installs
-ARG APT_MIRROR="https://archive.ubuntu.com/ubuntu/"
+ARG APT_MIRROR_HOST=""
+ARG TARGETARCH
+ARG TARGETPLATFORM
 
 ENV PATH=/var/lib/openstack/bin:$PATH
 ENV LANG=C.UTF-8

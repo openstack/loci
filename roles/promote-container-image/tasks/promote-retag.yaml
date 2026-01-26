@@ -1,0 +1,23 @@
+- name: Log in to registry
+  command: "docker login -u {{ container_registry_credentials[zj_image.registry].username }} -p {{ container_registry_credentials[zj_image.registry].password }} {{ zj_image.registry }}"
+  # no_log: true
+
+- name: Publish images
+  block:
+    - name: Retag image
+      loop: "{{ zj_image.tags | default(['latest']) }}"
+      loop_control:
+        loop_var: zj_image_tag
+      include_tasks: promote-retag-inner.yaml
+  always:
+    - name: Log out of registry
+      command: "docker logout {{ zj_image.registry }}"
+
+# If a gate job failed, we might have uploaded and leaked tags.  This
+# cleans up anything around for more than 24 hours
+- name: Cleanup leaked images
+  include_role:
+    name: remove-registry-tag
+  vars:
+    remove_registry_tag_repository: '{{ zj_image.repository }}'
+  no_log: true
