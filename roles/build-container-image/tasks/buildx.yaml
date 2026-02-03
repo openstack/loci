@@ -44,6 +44,10 @@
   command: "{{ docker_buildx_command }} {% if _multiarch %}--platform={{ zj_image.arch | join(',') }}{% endif %} --push"
   args:
     chdir: "{{ zuul_work_dir }}/{{ zj_image.context }}"
+  register: result
+  until: result.rc == 0
+  retries: 3
+  delay: 30
 
 - name: Cleanup sibling source directory
   include_tasks: clean-siblings.yaml

@@ -40,14 +40,15 @@
     roles:
       - zuul: openstack/loci
       - zuul: zuul/zuul-jobs
+    pre-run:
+      - playbooks/inject-keys.yaml
+      - playbooks/pre-build.yaml
     run:
       - playbooks/promote.yaml
     vars: *vars
     secrets:
       name: container_registry_credentials
       secret: loci_registry_credentials
-    nodeset:
-      nodes: []
 
 - job:
     name: loci-compute-kit-2025-1-ubuntu_jammy

@@ -1,4 +1,4 @@
-- hosts: localhost
+- hosts: all[0]
   tasks:
     - name: Vars
       include_vars:

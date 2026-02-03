@@ -48,6 +48,7 @@
         - loci-upload-2025-2-ubuntu_noble
         # 2025.1 Ubuntu Noble UV
         - loci-build-base-2025-1-ubuntu_noble_uv
+        - loci-upload-base-2025-1-ubuntu_noble_uv
         - loci-build-2025-1-ubuntu_noble_uv_0
         - loci-build-2025-1-ubuntu_noble_uv_1
         - loci-build-2025-1-ubuntu_noble_uv_2
@@ -56,6 +57,7 @@
         - loci-upload-2025-1-ubuntu_noble_uv
         # 2025.2 Ubuntu Noble UV
         - loci-build-base-2025-2-ubuntu_noble_uv
+        - loci-upload-base-2025-2-ubuntu_noble_uv
         - loci-build-2025-2-ubuntu_noble_uv_0
         - loci-build-2025-2-ubuntu_noble_uv_1
         - loci-build-2025-2-ubuntu_noble_uv_2
@@ -69,7 +71,9 @@
         - loci-promote-2025-1-ubuntu_noble
         - loci-promote-2025-2-ubuntu_noble
         - loci-promote-2025-1-ubuntu_noble_uv
+        - loci-promote-base-2025-1-ubuntu_noble_uv
         - loci-promote-2025-2-ubuntu_noble_uv
+        - loci-promote-base-2025-2-ubuntu_noble_uv
     periodic:
       jobs:
         - loci-buildset-registry
