@@ -524,6 +524,8 @@ swift_image:
     - "PROJECT='swift'"
     - "PROJECT_REF={{ openstack_release }}"
     - "APT_MIRROR_HOST='{{ apt_mirror_host }}'"
+    - "PIP_PACKAGES='keystonemiddleware'"
+    - "DIST_PACKAGES='rsync'"
 
 tacker_image:
   context: "."

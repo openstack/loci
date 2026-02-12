@@ -515,6 +515,8 @@ swift_image:
     - "WHEELS='{{ image_registry.host }}/{{ image_registry.org }}/requirements:{{ image_tag }}'"
     - "KEEP_ALL_WHEELS=False"
     - "APT_MIRROR='{{ apt_mirror }}'"
+    - "PIP_PACKAGES='keystonemiddleware'"
+    - "DIST_PACKAGES='rsync'"
 
 tacker_image:
   context: "."

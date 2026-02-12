@@ -34,7 +34,11 @@ fi
 # This line ensures that such constraint is absent.
 sed -i "/^${PROJECT}===/d" /upper-constraints.txt
 
-uv pip install -c /global-requirements.txt -c /upper-constraints.txt \
+# As of setuptools 82.0.0 (released 2026-02-08), pkg_resources was removed from setuptools.
+# The issue is with this package XStatic-Angular-Schema-Form
+echo "setuptools<81" >> /upper-constraints.txt
+
+uv pip install --build-constraint /upper-constraints.txt -c /global-requirements.txt -c /upper-constraints.txt \
     ${UV_PIP_ARGS} \
     ${project_cmd} ${extra_projects_path} ${PIP_PACKAGES}
 

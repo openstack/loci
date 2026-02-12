@@ -58,7 +58,8 @@ ARG SKYLINE_CONSOLE_REF=master
 # Virtualenv arguments
 
 ARG PIP_VERSION_CONSTRAINT=""
-ARG SETUPTOOL_CONSTRAINT=""
+# As of setuptools 82.0.0 (released 2026-02-08), pkg_resources was removed from setuptools.
+ARG SETUPTOOL_CONSTRAINT="<81"
 ARG WHEEL_CONSTRAINT=""
 
 # End virtualenv argumens
