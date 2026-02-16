@@ -224,7 +224,7 @@ create_user() {
     groupadd -g "${gid}" "${project}"
     if [[ "${project}" == "nova" ]]; then
         # NOTE: bash needed for nova to support instance migration
-        useradd -u "${uid}" -g "${project}" -M -d "/var/lib/${project}" -s /bin/rbash -c "${project} user" "${project}"
+        useradd -u "${uid}" -g "${project}" -M -d "/var/lib/${project}" -s /bin/bash -c "${project} user" "${project}"
     else
         useradd -u "${uid}" -g "${project}" -M -d "/var/lib/${project}" -s /usr/sbin/nologin -c "${project} user" "${project}"
     fi
