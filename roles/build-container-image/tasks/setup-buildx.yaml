@@ -13,12 +13,12 @@
   when: inventory_hostname == ansible_play_hosts[0]
 
 - name: Add host key to known_hosts
-  shell: "ssh-keyscan -H {{ ansible_host }} >> ~/.ssh/known_hosts"
+  shell: "ssh-keyscan -H {{ ansible_default_ipv4.address }} >> ~/.ssh/known_hosts"
   when: inventory_hostname != ansible_play_hosts[0]
   delegate_to: "{{ ansible_play_hosts[0] }}"
 
 - name: Append builders from other nodes
-  command: "docker buildx create --append --name mybuilder --node {{ inventory_hostname | replace('-', '_') }} --driver-opt image={{ container_builder_image }} --driver-opt network=host{% if buildset_registry is defined %} --config /etc/buildkit/buildkitd.toml {% endif %} ssh://{{ ansible_user }}@{{ ansible_host }}"
+  command: "docker buildx create --append --name mybuilder --node {{ inventory_hostname | replace('-', '_') }} --driver-opt image={{ container_builder_image }} --driver-opt network=host{% if buildset_registry is defined %} --config /etc/buildkit/buildkitd.toml {% endif %} ssh://{{ ansible_user }}@{{ ansible_default_ipv4.address }}"
   when: inventory_hostname != ansible_play_hosts[0]
   delegate_to: "{{ ansible_play_hosts[0] }}"
 
