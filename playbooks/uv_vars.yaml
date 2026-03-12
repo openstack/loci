@@ -115,6 +115,7 @@ cinder_image:
     - "PROFILES='fluent lvm ceph qemu apache'"
     - "PIP_PACKAGES='python-swiftclient'"
     - "APT_MIRROR_HOST='{{ apt_mirror_host }}'"
+    - "DIST_PACKAGES='open-iscsi multipath-tools'"
 
 cloudkitty_image:
   context: "."

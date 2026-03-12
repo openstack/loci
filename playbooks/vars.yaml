@@ -106,6 +106,7 @@ cinder_image:
     - "WHEELS='{{ image_registry.host }}/{{ image_registry.org }}/requirements:{{ image_tag }}'"
     - "KEEP_ALL_WHEELS=yes"
     - "APT_MIRROR='{{ apt_mirror }}'"
+    - "DIST_PACKAGES='open-iscsi multipath-tools'"
 
 cloudkitty_image:
   context: "."
