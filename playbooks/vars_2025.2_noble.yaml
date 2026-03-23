@@ -1,4 +1,4 @@
-image_tag: "2025.2-ubuntu_noble"
+image_tag: "2025.2-ubuntu_noble_loci"
 distro_image: "public.ecr.aws/ubuntu/ubuntu:noble"
 openstack_release: "stable/2025.2"
 # NOTE: Ubuntu Noble provides Ceph packages out of the box
