@@ -5,30 +5,19 @@
     check:
       jobs:
         - loci-buildset-registry
-        # 2025.1 Ubuntu Noble
-        - loci-build-2025-1-ubuntu_noble
-        - loci-compute-kit-2025-1-ubuntu_noble
         # 2025.2 Ubuntu Noble
         - loci-build-2025-2-ubuntu_noble
         - loci-compute-kit-2025-2-ubuntu_noble
     gate:
       jobs:
         - loci-buildset-registry
-        - loci-upload-2025-1-ubuntu_noble
         - loci-upload-2025-2-ubuntu_noble
     promote:
       jobs:
-        - loci-promote-2025-1-ubuntu_noble
         - loci-promote-2025-2-ubuntu_noble
     periodic:
       jobs:
         - loci-buildset-registry
-        # 2025.1 Ubuntu Noble
-        - loci-upload-2025-1-ubuntu_noble
-        - loci-compute-kit-2025-1-ubuntu_noble
-        - loci-promote-2025-1-ubuntu_noble:
-            dependencies:
-              - name: loci-compute-kit-2025-1-ubuntu_noble
         # 2025.2 Ubuntu Noble
         - loci-upload-2025-2-ubuntu_noble
         - loci-compute-kit-2025-2-ubuntu_noble
