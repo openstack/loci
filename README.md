@@ -24,10 +24,18 @@ It's easy to build a base image:
 ``` bash
 $ docker build . \
     -f Dockerfile.base \
-    --build-arg FROM=ubuntu:jammy \
-    --build-arg CEPH_REPO='deb https://download.ceph.com/debian-reef/ jammy main' \
-    --tag base:ubuntu_jammy
+    --build-arg FROM=ubuntu:noble \
+    --build-arg CEPH_REPO='https://download.ceph.com/debian-tentacle' \
+    --build-arg CEPH_KEY='https://download.ceph.com/keys/release.asc' \
+    --tag base:ubuntu_noble
 ```
+
+`CEPH_REPO` is the base URL of an APT repository, not a full `sources.list`
+entry: the suite is taken from the distro codename and the component is always
+`main`, so the line above becomes
+`deb [signed-by=...] https://download.ceph.com/debian-tentacle noble main`.
+`CEPH_KEY` points to the ASCII armored key the repository is signed with. When
+`CEPH_REPO` is empty the Ceph packages come from the distro mirrors.
 
 #### Requirements image
 The `requirements` image is where we put all the packages listed in the OpenStack

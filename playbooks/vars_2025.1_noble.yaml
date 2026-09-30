@@ -1,8 +1,10 @@
 image_tag: "2025.1-ubuntu_noble_loci"
 distro_image: "public.ecr.aws/ubuntu/ubuntu:noble"
 openstack_release: "stable/2025.1"
-# NOTE: Ubuntu Noble provides Ceph Squid packages out of the box
-ceph_repo: ""
+# NOTE: Ubuntu Noble provides Ceph Squid (19.x) which can not read the cephx
+# keys issued by the Ceph Tentacle (20.x) clusters we deploy in the gates.
+ceph_repo: "https://mirror.mirantis.com/acicd/ceph-20.2.x/noble"
+ceph_key: "https://mirror.mirantis.com/acicd/ceph-20.2.x/noble/release.asc"
 openstack_images:
   - "{{ barbican_image }}"
   - "{{ blazar_image }}"

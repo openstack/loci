@@ -25,9 +25,14 @@ Acquire::AllowInsecureRepositories "${ALLOW_UNAUTHENTICATED}";
 Acquire::AllowDowngradeToInsecureRepositories "${ALLOW_UNAUTHENTICATED}";
 EOF
 
-wget -q -O- "${CEPH_KEY}" | apt-key add -
 if [ -n "${CEPH_REPO}" ]; then
-    echo "${CEPH_REPO}" | tee /etc/apt/sources.list.d/ceph.list
+    source /etc/os-release
+    mkdir -p /etc/apt/keyrings
+    wget -q -O /tmp/ceph-release.asc "${CEPH_KEY}"
+    gpg --batch --dearmor -o /etc/apt/keyrings/ceph.gpg /tmp/ceph-release.asc
+    rm -f /tmp/ceph-release.asc
+    echo "deb [signed-by=/etc/apt/keyrings/ceph.gpg] ${CEPH_REPO} ${VERSION_CODENAME} main" \
+        | tee /etc/apt/sources.list.d/ceph.list
 fi
 
 apt-get update

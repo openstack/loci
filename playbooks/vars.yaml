@@ -5,6 +5,13 @@ image_registry:
 container_command: docker
 apt_mirror: "[trusted=yes] https://{{ zuul_site_mirror_fqdn | default('archive.ubuntu.com') }}/{{ ansible_distribution | lower }}"
 
+# Base URL of an APT repository providing Ceph packages and the URL of the
+# ASCII armored key it is signed with. Empty ceph_repo means the Ceph packages
+# are taken from the distro mirrors. Per release overrides live in the
+# vars_<release>_<distro>.yaml files.
+ceph_repo: ""
+ceph_key: "https://download.ceph.com/keys/release.asc"
+
 base_image:
   context: "."
   dockerfile: "Dockerfile.base"
@@ -17,7 +24,7 @@ base_image:
   build_args:
     - "FROM='{{ distro_image }}'"
     - "CEPH_REPO='{{ ceph_repo }}'"
-    - "CEPH_KEY='http://download.ceph.com/keys/release.asc'"
+    - "CEPH_KEY='{{ ceph_key }}'"
 
 requirements_image:
   context: "."
